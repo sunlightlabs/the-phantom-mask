@@ -1,0 +1,31 @@
+{% extends 'root.html' %}
+
+{% block title %}
+    Verify your contact information to send message.
+{% endblock %}
+
+{% block header %}
+    <h1 class="center-text">
+    {%  if context.message %}
+    Hi there! We need you to fill out the form below before we can send your email to Sen. Mark Warner.
+    {% else %}
+        No message found for given token!
+    {% endif %}
+    </h1>
+{% endblock %}
+
+{% block content %}
+    {% if context.message %}
+        <form action="/complete_message" method="POST">
+            {{ context.form.csrf_token }}
+            {{ context.form.firstname.label }} {{ context.form.firstname(size=20) }}
+            <input type="submit" value="Go">
+        </form>
+    {% else %}
+        SORRY!
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    <h1 class="center-text">verify it yo!</h1>
+{% endblock %}

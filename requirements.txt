@@ -1,0 +1,9 @@
+flask
+sqlalchemy
+pyyaml
+requests
+flask-sqlalchemy
+python-dateutil
+Flask-WTF
+python-postmark
+python-postmark-inbound

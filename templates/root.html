@@ -1,0 +1,19 @@
+<!doctype html>
+<head>
+    <title>{% block title %}Default Title{% endblock %}</title>
+    {% include 'snippets/css.html' %}
+    {% include 'snippets/javascript.html' %}
+</head>
+<body>
+    <header>
+        {% block header %}{% endblock %}
+    </header>
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        {% block footer %}{% endblock %}
+    </footer>
+</body>
