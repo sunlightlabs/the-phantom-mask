@@ -12,3 +12,22 @@ h1 {
     margin-right:auto;
     width:800px;
 }
+
+
+form#verification-form {
+    width: 600px;
+}
+
+div#legislator-lookup {
+    width:200px;
+    float:left;
+}
+
+a.faq-italic {
+    font-style: italic;
+    font-weight:lighter;
+}
+
+legend {
+    font-weight: bold;
+}
