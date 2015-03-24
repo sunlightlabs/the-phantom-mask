@@ -8,3 +8,5 @@ Flask-WTF
 python-postmark
 python-postmark-inbound
 futures
+inflection
+sunlight

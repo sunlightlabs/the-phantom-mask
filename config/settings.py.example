@@ -1,0 +1,17 @@
+# API KEYS
+SUNLIGHT_API_KEY = ''
+PHANTOM_DEBUG_KEY = ''
+TEXAS_AM_API_KEY = ''
+TEXAS_API_VERSION = '4.01'
+
+# gmail
+EMAIL_SERVER = 'pop.gmail.com'
+EMAIL_USERNAME = ''
+EMAIL_PASSWORD = ''
+
+#postmark
+POSTMARK_API_KEY = ''
+
+PHANTOM_API_BASE = "http://localhost:9292"
+
+CONGRESS_API_BASE = "http://congress.api.sunlightfoundation.com"
