@@ -3,9 +3,9 @@ import requests
 
 class Geocoder():
 
-    def __init__(self, type, opts=None):
-        for t in [type,camelize(type)]:
-            try: self.service = getattr(self, t)(opts)
+    def __init__(self, service, opts=None):
+        for s in [service, camelize(service)]:
+            try: self.service = getattr(self, s)(opts)
             except: continue
         if self.service is None:
             raise AttributeError
