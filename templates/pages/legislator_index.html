@@ -1,0 +1,51 @@
+{% extends 'root.html' %}
+
+{% block title %}
+    Index of contactable legislators.
+{% endblock %}
+
+{% block header %}
+    <h1 class="center-text"> Index of contactable legislators can be found below.</h1>
+{% endblock %}
+
+{% block content %}
+
+    <div id="searchdiv">
+        <h2>Filter</h2>
+        <label for="name_search">Name:</label><input id="name_search" class="filter" name="name_search" type="text" />
+        <label for="senate_search">Senate:</label><input id="senate_search" class="filter" name="senate_search" type="checkbox" checked />
+        <label for="house_search">House:</label><input id="house_search" class="filter" name="house_search" type="checkbox" checked />
+        <label for="state_search">State:</label>
+        <select id="state_search" class="filter" name="state_search">
+            <option value="Choose..." selected>Choose...</option>
+            {% for key,val in context.states.iteritems() %}
+            <option value="{{ key }}">{{ val }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="filtered">
+
+    </div>
+
+    <hr>
+
+    <div class="pure-g">
+        {% for leg in context.legislators %}
+            <div class="pure-u-1-3 {{ leg.chamber }} {{ leg.first_name.lower() }} {{ leg.last_name.lower() }} {{ leg.state }}" style="text-align:center">
+                <img src="{{ leg.image_url() }}"/>
+                <h4>{{ leg.title_and_full_name() }}</h4>
+                <h4>{{ leg.state }}{% if leg.district != None %}-{{ leg.district }}{% endif %}</h4>
+                <h6><a href="mailto:{{ leg.oc_email.lower() }}">{{ leg.oc_email.lower() }}</a></h6>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <h1>The systme works!</h1>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="/contact_congress/static/js/index_legislator_search.js"></script>
+{% endblock %}

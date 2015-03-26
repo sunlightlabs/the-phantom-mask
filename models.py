@@ -1,8 +1,6 @@
 from app import db
 import datetime
 import uuid
-import requests
-from config.settings import PHANTOM_API_BASE
 from contextlib import contextmanager
 from lib import phantom_on_the_capitol
 import urllib
@@ -69,15 +67,21 @@ class Legislator(db.Model):
             'house' : 'Rep.',
         }.get(self.chamber, 'house')
 
+    def full_name(self):
+        return self.first_name + " " + self.last_name
+
     def title_and_last_name(self):
         return self.title() + " " + self.last_name
+
+    def title_and_full_name(self):
+        return self.title() + " " + self.full_name()
 
     def image_url(self, size='small'):
         dimension = {
             'small': '225x275',
             'large': '450x550'
         }.get(size,'225x275')
-        return 'https://github.com/unitedstates/images/blob/gh-pages/congress/' + dimension + '/' + self.bioguide_id
+        return "https://raw.githubusercontent.com/unitedstates/images/gh-pages/congress/" + dimension + "/" + self.bioguide_id + '.jpg'
 
 class User(db.Model):
 
