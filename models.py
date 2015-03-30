@@ -7,6 +7,12 @@ import urllib
 import json
 from lib import usps
 import random
+from dateutil import parser
+import pytz
+from services import determine_district_service
+from services import geolocation_service
+from lib.dict_ext import remove_keys
+from lib.dict_ext import sanitize_keys
 
 @contextmanager
 def get_db_session():
@@ -15,11 +21,13 @@ def get_db_session():
     finally:
         db.session.remove()
 
+
 def set_attributes(model, attrs):
     for k,v in attrs:
         try: setattr(model, k, v)
         except: continue
     return model
+
 
 def to_json(inst, cls):
     """
@@ -50,6 +58,7 @@ class Legislator(db.Model):
     chamber = db.Column(db.String(20))
     state = db.Column(db.String(2))
     district = db.Column(db.Integer, nullable=True)
+    title = db.Column(db.String(3))
     first_name = db.Column(db.String(256))
     last_name = db.Column(db.String(256))
     oc_email = db.Column(db.String(256))
@@ -61,20 +70,22 @@ class Legislator(db.Model):
     def json(self):
         return to_json(self, self.__class__)
 
-    def title(self):
+    def full_title(self):
         return {
-            'senate' : 'Sen.',
-            'house' : 'Rep.',
-        }.get(self.chamber, 'house')
+            'Com': 'Commissioner',
+            'Del': 'Delegate',
+            'Rep': 'Representative',
+            'Sen': 'Senator'
+        }.get(self.title, 'Representative')
 
     def full_name(self):
         return self.first_name + " " + self.last_name
 
     def title_and_last_name(self):
-        return self.title() + " " + self.last_name
+        return self.title + ". " + self.last_name
 
     def title_and_full_name(self):
-        return self.title() + " " + self.full_name()
+        return self.title + ". " + self.full_name()
 
     def image_url(self, size='small'):
         dimension = {
@@ -90,29 +101,90 @@ class User(db.Model):
     user_infos = db.relationship('UserMessageInfo', backref='user')
 
     @property
-    def json(self):
-        return to_json(self, self.__class__)
-
-class UserMessageInfo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    prefix = db.Column(db.String(32))
-    first_name = db.Column(db.String(256))
-    last_name = db.Column(db.String(256))
-    street_address = db.Column(db.String(1000))
-    street_address2 = db.Column(db.String(1000))
-    city = db.Column(db.String(256))
-    state = db.Column(db.String(2))
-    zip5 = db.Column(db.String(5))
-    zip4 = db.Column(db.String(4))
-    phone_number = db.Column(db.String(20))
-    accept_tos = db.Column(db.Boolean, default=False)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    messages = db.relationship('Message', backref='user_message_info')
+    def default_info(self):
+        return UserMessageInfo.query.filter_by(user_id=self.id, default=True).last()
 
     @property
     def json(self):
         return to_json(self, self.__class__)
+
+class UserMessageInfo(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    default = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    prefix = db.Column(db.String(32), info={'user_input': True})
+    first_name = db.Column(db.String(256), info={'user_input': True})
+    last_name = db.Column(db.String(256), info={'user_input': True})
+    street_address = db.Column(db.String(1000), info={'user_input': True})
+    street_address2 = db.Column(db.String(1000), info={'user_input': True})
+    city = db.Column(db.String(256), info={'user_input': True})
+    state = db.Column(db.String(2), info={'user_input': True})
+    zip5 = db.Column(db.String(5), info={'user_input': True})
+    zip4 = db.Column(db.String(4), info={'user_input': True})
+    phone_number = db.Column(db.String(20), info={'user_input': True})
+
+    latitude = db.Column(db.String(256))
+    longitude = db.Column(db.String(256))
+
+    district = db.Column(db.Integer)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    messages = db.relationship('Message', backref='user_message_info')
+
+    @classmethod
+    def first_or_create(cls, user_id, created_at=datetime.datetime.now, **kwargs):
+        user = User.query.filter_by(id=user_id).first()
+        if user is not None:
+            sanitize_keys(kwargs, cls.user_input_columns())
+            umi = UserMessageInfo.query.filter_by(**kwargs).first()
+            if umi is not None:
+                return umi
+            else:
+                created_at = parser.parse(created_at) if type(created_at) is str else created_at().replace(tzinfo=pytz.timezone('US/Eastern'))
+                umi = UserMessageInfo(user_id=user.id, created_at=created_at, **kwargs)
+                db.session.add(umi) and db.session.commit()
+                return umi
+
+    @classmethod
+    def user_input_columns(cls):
+        ui_cols = []
+        for col in cls.__table__.columns:
+            if 'user_input' in col.info and col.info['user_input']:
+                ui_cols.append(col.name)
+        return ui_cols
+
+    def mailing_address(self):
+        return self.street_address + ', ' + self.street_address2 + ', '\
+               + self.city + ', ' + self.state + ' ' + self.zip5 + '-' + self.zip4
+
+    def geolocate_address(self):
+        if self.latitude is None and self.longitude is None:
+            self.latitude, self.longitude = geolocation_service.geolocate(self.street_address,
+                                                                          self.city,
+                                                                          self.state,
+                                                                          self.zip5)
+            db.session.commit()
+
+    def determine_district(self):
+        if self.longitude is not None and self.latitude is not None:
+            args = ['latitude', 'longitude']
+        else:
+            args = ['street_address', 'city', 'state', 'zip5']
+
+        district = determine_district_service.determine_district(**{attr: getattr(self, attr) for attr in args})
+
+        try:
+            self.district = int(district)
+            db.session.commit()
+        except:
+            print "Unable to determine district for " + self.mailing_address()
+
+    @property
+    def json(self):
+        return to_json(self, self.__class__)
+
 
 class Message(db.Model):
     """
@@ -135,6 +207,7 @@ class Message(db.Model):
     sent_at = db.Column(db.DateTime, default=datetime.datetime.now)
     subject = db.Column(db.String(256))
     msgbody = db.Column(db.String(8000))
+    accept_tos = db.Column(db.Boolean, default=False)
 
     # belongs to
     user_message_info_id = db.Column(db.Integer, db.ForeignKey('user_message_info.id'))
@@ -146,6 +219,29 @@ class Message(db.Model):
     email_uid = db.Column(db.String(1000))
     # for follow up email to enter in address information
     verification_token = db.Column(db.String(32), default=uid_creator.__func__)
+
+    @property
+    def email(self): return self.user_message_info.user.email
+    @property
+    def prefix(self): return self.user_message_info.prefix
+    @property
+    def first_name(self): return self.user_message_info.first_name
+    @property
+    def last_name(self): return self.user_message_info.last_name
+    @property
+    def street_address(self): return self.user_message_info.street_address
+    @property
+    def street_address2(self): return self.user_message_info.street_address2
+    @property
+    def city(self): return self.user_message_info.city
+    @property
+    def state(self): return self.user_message_info.state
+    @property
+    def zip5(self): return self.user_message_info.zip5
+    @property
+    def zip4(self): return self.user_message_info.zip4
+    @property
+    def phone_number(self): return self.user_message_info.phone_number
 
     def verification_link(self):
         """
@@ -182,7 +278,8 @@ class Message(db.Model):
 
         @return:
         """
-        send_to = self.namespaced_to_legislators()
+        send_to = dict(zip([x.legislator.bioguide_id for x in self.to_legislators], [ml for ml in self.to_legislators]))
+
         for bioguide_id, ra in phantom_on_the_capitol.retrieve_form_elements(send_to.keys()).iteritems():
             json_dict = send_to[bioguide_id].map_to_contact_congress()
             for step in ra['required_actions']:
@@ -217,7 +314,7 @@ class Message(db.Model):
             '$MESSAGE': self.msgbody,
             '$ADDRESS_STATE_POSTAL_ABBREV': umi.state,
             '$PHONE': umi.phone_number,
-            '$ADDRESS_STATE_FULL': usps.CODE_TO_STATE.get(umi.state).lower().capitalize()
+            '$ADDRESS_STATE_FULL': usps.CODE_TO_STATE.get(umi.state)
         }
 
     #def __repr__(self):
@@ -227,7 +324,7 @@ class MessageLegislator(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message_id = db.Column(db.Integer, db.ForeignKey('message.id'))
     legislator_id = db.Column(db.Integer, db.ForeignKey('legislator.bioguide_id'))
-    send_status = db.Column(db.String(1024), default='{"status": "unsent"}') # stringified JSON
+    send_status = db.Column(db.String(4096), default='{"status": "unsent"}') # stringified JSON
 
     def get_send_status(self):
         """
@@ -249,21 +346,3 @@ class MessageLegislator(db.Model):
     @property
     def json(self):
         return to_json(self, self.__class__)
-
-#def email_address_for_website(website):
-#    pattern = re.compile("^(http[s]{0,1}\:\/\/)*(?:www[.])?([-a-z0-9]+)[.](house|senate)[.]gov\/.*", re.I)
-#    if pattern.match(website):
-#        o = urlparse.urlparse(website)
-#        if o.netloc == '': return None
-##        name = o.netlock.split('.')
-#        if name[0] == 'www': name.pop(0)
-#        print name
-
-      #url = URI.parse(website)
-      #return nil if url.host.nil?
-      #match = pattern.match(url.host.downcase)
-      #return nil if match.nil?
-      #nameish, chamber = match.captures
-      #prefix = (chamber.downcase == 'senate') ? 'Sen' : 'Rep'
-      #return "#{prefix.capitalize}.#{nameish.capitalize}@#{Settings.email_congress_domain}"
-

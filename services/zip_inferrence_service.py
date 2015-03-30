@@ -1,26 +1,21 @@
-import requests
-import re
-from config import settings
-from lib import geocoder
 from lib import usps
-# disable invalid SSL warnings - doesn't matter
+from geolocation_service import geolocate, reverse_geolocate
 
-def zip4_lookup(street_address, city, state, zip=''):
+def zip4_lookup(street_address, city, state, zip5=''):
     # First try usps lookup because it doesn't eat up geolocation credits
     try:
         print "Trying USPS first"
-        zip5, zip4 = usps.usps_zip_lookup(street_address, city, state, zip)
-        if zip4 is not None: return zip4
+        zip5, zip4 = usps.usps_zip_lookup(street_address, city, state, zip5)
+        print zip5, zip4
+        if zip4 is not None:
+            return zip4
     except:
         print "Error scraping from USPS ... moving on to geocoding"
 
     # If USPS is unable to determine zip4 then use geolocation method
     print "Falling back to geolocation"
-    geo = geocoder.Geocoder('TexasAm', {'apiKey':settings.TEXAS_AM_API_KEY})
-    geo.lookup(street_address=street_address, city=city, state=state, zip5=zip)
-    lat,lng = geo.lat_long()
-    geo.reverse_lookup(lat,lng)
+    lat, lng = geolocate(street_address=street_address, city=city, state=state, zip5=zip5)
     try:
-        return geo.zip4()
+        return reverse_geolocate(lat, lng).zip4()
     except: # Give up. User must enter in their zip4 manually.
         return None

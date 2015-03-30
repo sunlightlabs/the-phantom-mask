@@ -2,11 +2,12 @@ from wtforms import BooleanField, StringField, PasswordField, SelectField, TextA
 from flask.ext.wtf import Form
 import re
 from lib import usps
-from config import settings
-from lib import geocoder
-import sunlight
+from lib.dict_ext import remove_keys
+from services import zip_inferrence_service
+from services.determine_district_service import determine_district
 
 class RegistrationForm(Form):
+
     prefix = SelectField('Prefix',
                          choices=[(x,x) for x in ['Choose...','Mr.','Mrs.','Ms.','Dr.']],
                          validators=[validators.NoneOf(['Choose...'])])
@@ -32,20 +33,18 @@ class RegistrationForm(Form):
 
     accept_tos = BooleanField('I accept the terms of service and privacy policy', [validators.DataRequired()])
 
+    def resolve_zip4(self):
+        self.zip4.data = zip_inferrence_service.zip4_lookup(self.street_address.data,
+                                                            self.city.data,
+                                                            self.state.data,
+                                                            self.zip5.data
+                                                            )
+
     def validate_district(self, legislators):
-        sunlight.config.API_KEY = settings.SUNLIGHT_API_KEY
-
-        data = sunlight.congress.locate_districts_by_zip(self.zip5.data)
-        if data.count > 1: # need to try by geolocation
-            geo = geocoder.Geocoder('TexasAm', {'apiKey':settings.TEXAS_AM_API_KEY})
-            geo.lookup(street_address=self.street_address.data,
-                       city=self.city.data,
-                       state=self.state.data,
-                       zip5=self.zip5.data)
-            lat,lng = geo.lat_long()
-            data = sunlight.congress.locate_districts_by_lat_lon(lat,lng)
-
-        district = data[0]['district']
+        district = determine_district(zip5=self.zip5.data,
+                                      street_address=self.street_address.data,
+                                      city=self.city.data,
+                                      state=self.state.data)
 
         does_not_represent = []
         for leg in legislators:
@@ -54,14 +53,42 @@ class RegistrationForm(Form):
 
         return does_not_represent
 
+    def populate_data_from_message(self, msg):
+        """
+        Sets form data equal to the default message data
+
+        @param msg: [Message] message model instance
+        @return:
+        """
+        for field in self:
+            try:
+                setattr(field, 'data', getattr(msg, field.name))
+            except:
+                continue
+
     def save_to_models(self, msg):
+        """
+        Saves data from form to relevant models.
+
+        @param msg: [Message] the message model instance
+        @return:
+        """
         from models import db
+        from models import UserMessageInfo
+
+        # check if user has input new contact information
+        kwargs = {getattr(field, 'name'): getattr(field, 'data') for field in self}
+        umi = UserMessageInfo.first_or_create(msg.user_message_info.user.id, **kwargs)
+        if msg.user_message_info.id != umi.id:
+            msg.user_message_info.default = False
+            umi.default = True
+            msg.user_message_info = umi
+            db.session.commit()
+
+        # save form data to models
         for field, val in self.data.iteritems():
             try:
-                if hasattr(msg.user_message_info, field):
-                    setattr(msg.user_message_info, field,val)
-                if hasattr(msg, field):
-                    setattr(msg, field, val)
+                setattr(msg, field, val)
             except:
                 continue
         db.session.commit()

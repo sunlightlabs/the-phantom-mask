@@ -27,7 +27,7 @@ CODE_TO_STATE = {
 
 USPS_BASE_URL = 'https://tools.usps.com/go/ZipLookupResultsAction!input.action'
 
-def usps_zip_lookup(street_address, city, state, zip=''):
+def usps_zip_lookup(street_address, city, state, z5=''):
     """
     Use usps to look up zip5 and zip4
     @param street_address: [String] street address
@@ -47,7 +47,7 @@ def usps_zip_lookup(street_address, city, state, zip=''):
         'state': state,
         'urbanCode': '',
         'postalCode': '',
-        'zip': zip
+        'zip': z5
     }
 
     # make request. need to spoof headers or get infinite redirect
