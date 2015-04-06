@@ -11,3 +11,4 @@ futures
 inflection
 sunlight
 pytz
+Flask-Testing

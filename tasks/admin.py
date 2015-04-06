@@ -1,34 +1,113 @@
 import os
 import sys
+import requests
+import uuid
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.path.pardir))
 
-from models import db
+from config import settings
+from phantom_mask import db
 from daily import import_congresspeople
-
+import traceback
 
 def reset_database(prompt=True):
     if prompt:
-        decision = raw_input("This will delete everything in the database. Are you sure you want to do this? [Y,n]")
+        decision = raw_input("This will delete everything in the database. Are you sure you want to do this? [Y,n] ")
+        decision2 = raw_input("Are you absolutely sure? This can not be undone... [Y,n] ")
     else:
-        decision = 'Y'
+        decision = decision2 = 'Y'
 
-    if decision == 'Y':
-        print 'Dropping all tables and recreating them from scratch...'
-        db.drop_all()
-        db.create_all()
-        print 'Importing congresspeople...'
-        import_congresspeople()
+    if decision == 'Y' and decision2 == 'Y':
+        try:
+            print 'Dropping all tables and recreating them from scratch...'
+            db.drop_all()
+            db.create_all()
+            print 'Importing congresspeople...'
+            import_congresspeople()
+        except:
+            print traceback.format_exc()
     else:
         print "Aborting resetting database."
 
+
+def create_test_data():
+    try:
+        from tests.factories import user, user_message_info, message
+
+        user1 = user(email='rioisk@gmail.com')
+        umi1 = user_message_info(user=user1, info={
+            'default': True,
+            'prefix': 'Mr.',
+            'first_name': 'Clayton',
+            'last_name': 'Dunwell',
+            'street_address': '2801 Quebec St NW',
+            'street_address2': '',
+            'city': 'Washington',
+            'state': 'DC',
+            'zip5': '20008',
+            'phone_number': '2025551234',
+            'district': 0
+        })
+        msg1 = message(umi=umi1)
+
+        print msg1.verification_link()
+
+
+        user2 = user(email='ocheng@sunlightfoundation.com')
+        umi2 = user_message_info(user=user2)
+        msg2 = message(umi=umi2)
+
+        print msg2.verification_link()
+
+        user3 = user(email='cdunwell@sunlightfoundation.com')
+        umi3 = user_message_info(user=user3)
+        msg3 = message(umi=umi3)
+
+        print msg3.verification_link()
+    except:
+        print traceback.format_exc()
+
+
+def setup_test_environment():
+    reset_database(False)
+    create_test_data()
+
+def simulate_postmark_message(from_email=settings.ADMIN_EMAILS[0], messageid=None):
+    messageid = uuid.uuid4().hex if messageid is None else messageid
+    params = {
+        'Subject': 'This is a subject.',
+        'TextBody': "This is a TextBody",
+        'Date': 'Thu, 5 Apr 2014 16:59:01 +0200',
+        'MessageID': messageid,
+        "FromFull": {
+            "Email": from_email,
+            "Name": "John Smith",
+        },
+        "ToFull": [
+            {
+                "Email": "Rep.Johnboehner@opencongress.org",
+            }
+        ]
+    }
+    try:
+        req = requests.post(settings.BASE_URL + '/postmark/inbound', json=params)
+        print req.json()
+        return req.json()
+    except:
+        print 'Request to postmark inbound url failed'
+
 if __name__ == '__main__':
+    tasks = {
+        'reset_database': reset_database,
+        'create_test_data': create_test_data,
+        'setup_test_environment': setup_test_environment,
+        'simulate_postmark_message': simulate_postmark_message,
+    }
+
     if len(sys.argv) > 1:
         try:
-            {
-                'reset_database': reset_database
-            }.get(sys.argv[1])()
+            tasks.get(sys.argv[1])()
         except:
-            print 'Admin task with name "' + sys.argv[1] + '" does not exist.'
+            print 'Admin task with name "' + sys.argv[1] + '" does not exist. Choices are: ' + str(tasks.keys())
     else:
-        print 'Please provide an admin task to run with relevant arguments.'
+        print 'Please provide an admin task to run with relevant arguments. ' + str(tasks.keys())

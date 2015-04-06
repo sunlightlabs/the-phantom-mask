@@ -1,7 +1,6 @@
 import requests
 from config import settings
 import json
-import random
 
 def retrieve_form_elements(args):
     """
@@ -22,7 +21,7 @@ def retrieve_form_elements(args):
 
         return steps.json()
     except:
-        print "Failed to obtain steps."
+        print 'Failed to obtain steps.'
         return None
 
 def fill_out_form(json_dict):
@@ -46,10 +45,33 @@ def fill_out_form(json_dict):
     """
     try:
         r = requests.post(settings.PHANTOM_API_BASE + '/fill-out-form',
-                         headers={"Content-Type": 'application/json'},
-                         data=json.dumps(json_dict))
+                          headers={"Content-Type": 'application/json'},
+                          data=json.dumps(json_dict))
 
         return r.json()
     except:
         print "Failed to send"
         return None
+
+
+"""
+topic_counts = {}
+for legislator, req in all_forms.iteritems():
+    for key,val in req.iteritems():
+        for step in val:
+            if step['value'] == '$TOPIC':
+                try:
+                    for k,v in step['options_hash'].iteritems():
+                        k = k.strip()
+                        if topic_counts.has_key(k):
+                            topic_counts[k] +=1
+                        else:
+                            topic_counts[k] = 1
+                except:
+                    for k in step['options_hash']:
+                        k = k.strip()
+                        if topic_counts.has_key(k):
+                            topic_counts[k] +=1
+                        else:
+                            topic_counts[k] = 1
+"""

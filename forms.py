@@ -2,7 +2,6 @@ from wtforms import BooleanField, StringField, PasswordField, SelectField, TextA
 from flask.ext.wtf import Form
 import re
 from lib import usps
-from lib.dict_ext import remove_keys
 from services import zip_inferrence_service
 from services.determine_district_service import determine_district
 

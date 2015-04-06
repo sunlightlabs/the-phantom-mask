@@ -10,6 +10,8 @@ import emailer
 
 def legislator_index():
     from models import Legislator
+    from models import User
+    print User.query.first().should_rate_limit()
     return render_template('pages/legislator_index.html', context={'legislators': Legislator.query.all(),
                                                                    'states': CODE_TO_STATE })
 
@@ -68,6 +70,8 @@ def postmark():
     @return:
     """
     from models import db
+    from models import db_add_and_commit
+    from models import db_first_or_create
     from models import Message
     from models import Legislator
     from models import MessageLegislator
@@ -76,19 +80,9 @@ def postmark():
     try:
         # parse inbound postmark JSON
         inbound = PostmarkInbound(json=request.get_data())
-        sender_email = inbound.sender()['Email'].lower()
 
-        # get existing user or create new one
-        sender = User.query.filter_by(email=sender_email).first()
-        if sender is None:
-            sender = User(email=sender_email)
-            db.session.add(sender) and db.session.commit()
-
-        # get default message info or create new one
-        newinfo = UserMessageInfo.query.filter_by(user_id=sender.id, default=True).first()
-        if newinfo is None:
-            newinfo = UserMessageInfo(user_id=sender.id, default=True)
-            db.session.add(newinfo) and db.session.commit()
+        user = db_first_or_create(User, email=inbound.sender()['Email'].lower())
+        umi = db_first_or_create(UserMessageInfo, user_id=user.id, default=True)
 
         # check if message exists already
         if Message.query.filter_by(email_uid=inbound.message_id()).first() is None:
@@ -96,39 +90,50 @@ def postmark():
                               subject=inbound.subject(),
                               msgbody=inbound.text_body(),
                               email_uid=inbound.message_id(),
-                              user_message_info_id=newinfo.id)
-            db.session.add(new_msg) and db.session.commit()
+                              user_message_info_id=umi.id)
+            db_add_and_commit(new_msg)
 
-            # CASES
-            # 1) Invalid @opencongress email address (not myreps@ or unknown legislator)
-            # 2) Mass spamming congress
-            # 3) myreps@opencongress
-            # 4) Individual (and valid) members of congress
-
-            legs = {True: [], False: []}
-            for recipient in inbound.to():
-                # insure legislator exists and is contactable
-                recip_email = recipient['Email'].lower()
-                leg = Legislator.query.filter_by(oc_email=recip_email).first()
-                if leg is None or not leg.contactable:
-                    legs[False].append(recip_email)
-                else:
-                    legs[True].append(leg)
-
-            for leg in legs[True]:
-                ml = MessageLegislator(message_id=new_msg.id, legislator_id=leg.bioguide_id)
-                db.session.add(ml)
-            db.session.commit()
-
-            # create outbound to send to user to confirm their information
-            if sender_email in ['rioisk@gmail.com']:
-                emailer.NoReply.complete_message(sender_email,
-                                                 legs[True],
-                                                 new_msg.verification_link()).send()
+            if not umi.check_for_validate_tos():
+                emailer.NoReply.validate_user(user.email, new_msg.verification_link()).send()
+                return jsonify({'status': 'user must first accept tos'})
             else:
-                print "not rioisk"
+                permitted_legs = umi.members_of_congress
+                legs = {'contactable': [], 'non_existent': [], 'uncontactable': [], 'does_not_represent': []}
 
-        return jsonify({'status': 'successfully received postmark message'})
+                # maximize error messages for users
+                for recipient in inbound.to():
+                    recip_email = recipient['Email'].lower()
+                    leg = Legislator.query.filter_by(oc_email=recip_email).first()
+                    if leg is None:
+                        leg['contactable'].append(recip_email)  # TODO refer user to index
+                    elif not leg.contactable:
+                        leg['uncontactable'].append(leg)
+                    elif leg not in permitted_legs:
+                        leg['does_not_represent'].append(leg)
+                    else:
+                        leg['contactable'].append(leg)
+
+                # only associate members of congress that this user is allowed to contact
+                for leg in legs['contactable']:
+                    ml = MessageLegislator(message_id=new_msg.id, legislator_id=leg.bioguide_id)
+                    db.session.add(ml)
+                db.session.commit()
+
+                # send different email depending on the status of the rate limiting...
+                message = {
+                    'free': emailer.NoReply.message_receipt(user.email, legs,
+                                                            new_msg.verification_link()),
+                    'captcha': emailer.NoReply.message_receipt(user.email, legs,
+                                                               new_msg.verification_link()),
+                    'block': emailer.NoReply.message_receipt(user.email, legs,
+                                                             new_msg.verification_link())
+                }.get(user.rate_limit_status())
+
+                if message is not None: message.send()
+
+                return jsonify({'status': 'successfully received postmark message'})
+        else:
+            return jsonify({'status': 'message already received'})
     except:
         print traceback.format_exc()
         return "Unable to parse postmark message.", 500

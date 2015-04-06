@@ -1,4 +1,5 @@
-from app import db
+from phantom_mask import db
+from config import settings
 import datetime
 import uuid
 from contextlib import contextmanager
@@ -13,6 +14,7 @@ from services import determine_district_service
 from services import geolocation_service
 from lib.dict_ext import remove_keys
 from lib.dict_ext import sanitize_keys
+from sqlalchemy.sql import or_
 
 @contextmanager
 def get_db_session():
@@ -23,9 +25,28 @@ def get_db_session():
 
 
 def set_attributes(model, attrs):
-    for k,v in attrs:
-        try: setattr(model, k, v)
-        except: continue
+    for k, v in attrs:
+        try:
+            setattr(model, k, v)
+        except:
+            continue
+    return model
+
+def db_add_and_commit(toadd):
+    try:
+        db.session.add(toadd)
+        db.session.commit()
+        return toadd
+    except:
+        db.session.rollback()
+        return None
+
+
+def db_first_or_create(cls, **kwargs):
+    model = cls.query.filter_by(**kwargs).first()
+    if model is None:
+        model = cls(**kwargs)
+        db_add_and_commit(model)
     return model
 
 
@@ -49,6 +70,7 @@ def to_json(inst, cls):
         else:
             d[c.name] = v
     return json.dumps(d)
+
 
 class Legislator(db.Model):
     """
@@ -82,27 +104,57 @@ class Legislator(db.Model):
         return self.first_name + " " + self.last_name
 
     def title_and_last_name(self):
-        return self.title + ". " + self.last_name
+        return self.title + " " + self.last_name
 
     def title_and_full_name(self):
-        return self.title + ". " + self.full_name()
+        return self.title + " " + self.full_name()
 
     def image_url(self, size='small'):
-        dimension = {
+        dimensions = {
             'small': '225x275',
             'large': '450x550'
-        }.get(size,'225x275')
-        return "https://raw.githubusercontent.com/unitedstates/images/gh-pages/congress/" + dimension + "/" + self.bioguide_id + '.jpg'
+        }
+
+        dim = dimensions.get(size, dimensions.values()[0])
+        return "https://raw.githubusercontent.com/unitedstates/images/gh-pages/congress/" + dim + "/" + self.bioguide_id + '.jpg'
 
 class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(256))
+    email = db.Column(db.String(256), unique=True)
     user_infos = db.relationship('UserMessageInfo', backref='user')
+
+    @classmethod
+    def global_captcha(cls):
+        return Message.query.filter((datetime.datetime.now() - datetime.timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS)
+                                    < Message.sent_at)).count() > settings.GLOBAL_HOURLY_CAPTCHA_THRESHOLD
+
+    def rate_limit_status(self):
+        """
+        Determines if a user should be rate limited (or blocked if argument provided
+
+        @return status of rate limit [block, captcha, free]
+        @rtype string
+        """
+        if self.global_captcha():
+            return 'captcha'
+
+        count = self.messages().filter(
+            (datetime.datetime.now() - datetime.timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS)
+                < Message.sent_at)).count()
+        if count > settings.USER_MESSAGE_LIMIT_BLOCK_COUNT:
+            return 'block'
+        elif count > settings.USER_MESSAGE_LIMIT_CAPTCHA_COUNT:
+            return 'captcha'
+        else:
+            return 'free'
+
+    def messages(self, **filters):
+        return Message.query.filter_by(**filters).join(UserMessageInfo).join(User).filter_by(email=self.email)
 
     @property
     def default_info(self):
-        return UserMessageInfo.query.filter_by(user_id=self.id, default=True).last()
+        return UserMessageInfo.query.filter_by(user_id=self.id, default=True).first()
 
     @property
     def json(self):
@@ -112,6 +164,7 @@ class UserMessageInfo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     default = db.Column(db.Boolean, default=False)
+    accept_tos = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now)
 
     prefix = db.Column(db.String(32), info={'user_input': True})
@@ -144,7 +197,7 @@ class UserMessageInfo(db.Model):
             else:
                 created_at = parser.parse(created_at) if type(created_at) is str else created_at().replace(tzinfo=pytz.timezone('US/Eastern'))
                 umi = UserMessageInfo(user_id=user.id, created_at=created_at, **kwargs)
-                db.session.add(umi) and db.session.commit()
+                db_add_and_commit(umi)
                 return umi
 
     @classmethod
@@ -155,31 +208,49 @@ class UserMessageInfo(db.Model):
                 ui_cols.append(col.name)
         return ui_cols
 
+    def check_for_validate_tos(self):
+        if self.accept_tos is None or (datetime.datetime.now() - self.accept_tos).days >= settings.TOS_DAYS_VALID:
+            self.accept_tos = None
+            db.session.commit()
+            return False
+        return True
+
     def mailing_address(self):
         return self.street_address + ', ' + self.street_address2 + ', '\
                + self.city + ', ' + self.state + ' ' + self.zip5 + '-' + self.zip4
 
     def geolocate_address(self):
+        """
+        Retrieves the latitude and longitude of the address information
+
+        """
         if self.latitude is None and self.longitude is None:
             self.latitude, self.longitude = geolocation_service.geolocate(self.street_address,
                                                                           self.city,
                                                                           self.state,
                                                                           self.zip5)
             db.session.commit()
+            return self.latitude, self.longitude
 
     def determine_district(self):
-        if self.longitude is not None and self.latitude is not None:
-            args = ['latitude', 'longitude']
-        else:
-            args = ['street_address', 'city', 'state', 'zip5']
-
-        district = determine_district_service.determine_district(**{attr: getattr(self, attr) for attr in args})
+        district = determine_district_service.determine_district(zip5=self.zip5)
+        if district is None:
+            self.geolocate_address()
+            district = determine_district_service.determine_district(latitude=self.latitude, longitude=self.longitude)
 
         try:
             self.district = int(district)
             db.session.commit()
+            return self.district
         except:
             print "Unable to determine district for " + self.mailing_address()
+
+    @property
+    def members_of_congress(self):
+        if self.district is None:
+            self.determine_district()
+        return Legislator.query.filter_by(district=UserMessageInfo.district.in_({None, self.district}),
+                                          state=self.state).all()
 
     @property
     def json(self):
@@ -207,7 +278,6 @@ class Message(db.Model):
     sent_at = db.Column(db.DateTime, default=datetime.datetime.now)
     subject = db.Column(db.String(256))
     msgbody = db.Column(db.String(8000))
-    accept_tos = db.Column(db.Boolean, default=False)
 
     # belongs to
     user_message_info_id = db.Column(db.Integer, db.ForeignKey('user_message_info.id'))
@@ -249,7 +319,7 @@ class Message(db.Model):
 
         @return: [String] full url to verification link
         """
-        return 'http://smokehouse.sunlightlabs.org/contact_congress/verify/' + self.verification_token + '?' + urllib.urlencode({'email':self.user_message_info.user.email})
+        return settings.BASE_URL + '/verify/' + self.verification_token + '?' + urllib.urlencode({'email':self.user_message_info.user.email})
 
     def get_legislators(self, as_dict=False):
         """
@@ -278,6 +348,11 @@ class Message(db.Model):
 
         @return:
         """
+
+        for msg_leg in self.to_legislators:
+            msg_leg.send()
+
+        """
         send_to = dict(zip([x.legislator.bioguide_id for x in self.to_legislators], [ml for ml in self.to_legislators]))
 
         for bioguide_id, ra in phantom_on_the_capitol.retrieve_form_elements(send_to.keys()).iteritems():
@@ -295,6 +370,7 @@ class Message(db.Model):
             send_to[bioguide_id].send_status = json.dumps(status)
         db.session.commit()
         return send_to
+        """
 
     def map_to_contact_congress_fields(self):
         umi = self.user_message_info
@@ -337,11 +413,32 @@ class MessageLegislator(db.Model):
         except:
             return self.send_status
 
-    def map_to_contact_congress(self):
-        return {
+    def send(self):
+        for bioguide_id, ra in phantom_on_the_capitol.retrieve_form_elements([self.legislator.bioguide_id]).iteritems():
+            json_dict = self.map_to_contact_congress()
+            for step in ra['required_actions']:
+                field = step.get('value')
+                options = step.get('options_hash')
+                if type(options) is dict:
+                    options = options.keys()
+                if options is not None:
+                    if field not in json_dict['fields'] or json_dict['fields'][field] not in options:
+                        json_dict['fields'][field] = random.choice(options) # TODO need smarter topic selection
+                if field not in json_dict['fields'].keys():
+                    print 'What the heck is ' + step.get('value') + ' in ' + bioguide_id + '?'
+            status = phantom_on_the_capitol.fill_out_form(json_dict)
+            self.send_status = json.dumps(status)
+        db.session.commit()
+
+    def map_to_contact_congress(self, campaign_tag=False):
+        data = {
             'bio_id': self.legislator.bioguide_id,
             'fields': self.message.map_to_contact_congress_fields()
         }
+        if campaign_tag:
+            data['campaign_tag'] = self.message.email_uid
+
+        return data
 
     @property
     def json(self):

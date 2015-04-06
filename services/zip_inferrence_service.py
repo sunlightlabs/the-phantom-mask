@@ -1,6 +1,7 @@
 from lib import usps
 from geolocation_service import geolocate, reverse_geolocate
 
+
 def zip4_lookup(street_address, city, state, zip5=''):
     # First try usps lookup because it doesn't eat up geolocation credits
     try:

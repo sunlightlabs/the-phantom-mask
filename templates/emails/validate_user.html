@@ -1,0 +1,17 @@
+{% extends 'emails/email_root.html' %}
+
+{% block title %}
+    Complete your message to Congress
+{% endblock %}
+
+{% block body %}
+    You're almost done. We need a little more information before we can send your message to members of Congress.
+    <br>
+    Please click the following link and fill out the form. <a href="{{ context.verification_link }}">{{ context.verification_link }}</a>
+    <br>
+    You will only need to do this step once?
+    <br>
+    Thank you,
+    <br>
+    The OpenCongress Team
+{% endblock %}
