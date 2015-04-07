@@ -2,7 +2,6 @@ import sunlight
 from config import settings
 from geolocation_service import geolocate
 
-
 def determine_district(**kwargs):
     sunlight.config.API_KEY = settings.SUNLIGHT_API_KEY
 

@@ -10,11 +10,13 @@ from lib import usps
 import random
 from dateutil import parser
 import pytz
+from lib.int_ext import ordinal
 from services import determine_district_service
 from services import geolocation_service
 from lib.dict_ext import remove_keys
 from lib.dict_ext import sanitize_keys
-from sqlalchemy.sql import or_
+from sqlalchemy import or_
+from sqlalchemy import and_
 
 @contextmanager
 def get_db_session():
@@ -123,11 +125,27 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), unique=True)
     user_infos = db.relationship('UserMessageInfo', backref='user')
+    role = db.Column(db.Integer, default=0)
+
+    ROLES = {
+        0: 'user',
+        1: 'special',
+        2: 'admin'
+    }
 
     @classmethod
     def global_captcha(cls):
         return Message.query.filter((datetime.datetime.now() - datetime.timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS)
                                     < Message.sent_at)).count() > settings.GLOBAL_HOURLY_CAPTCHA_THRESHOLD
+
+    def is_admin(self):
+        return self.ROLES.get(self.role) is 'admin'
+
+    def is_special(self):
+        return self.ROLES.get(self.role) is 'special'
+
+    def can_skip_rate_limit(self):
+        return self.is_admin() or self.is_special()
 
     def rate_limit_status(self):
         """
@@ -136,7 +154,11 @@ class User(db.Model):
         @return status of rate limit [block, captcha, free]
         @rtype string
         """
-        if self.global_captcha():
+
+        if self.can_skip_rate_limit():
+            return 'free'
+
+        if User.global_captcha():
             return 'captcha'
 
         count = self.messages().filter(
@@ -152,6 +174,9 @@ class User(db.Model):
     def messages(self, **filters):
         return Message.query.filter_by(**filters).join(UserMessageInfo).join(User).filter_by(email=self.email)
 
+    def last_message(self):
+        return self.messages()[-1]
+
     @property
     def default_info(self):
         return UserMessageInfo.query.filter_by(user_id=self.id, default=True).first()
@@ -162,11 +187,12 @@ class User(db.Model):
 
 class UserMessageInfo(db.Model):
 
+    # meta data
     id = db.Column(db.Integer, primary_key=True)
     default = db.Column(db.Boolean, default=False)
-    accept_tos = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now)
 
+    # input by user
     prefix = db.Column(db.String(32), info={'user_input': True})
     first_name = db.Column(db.String(256), info={'user_input': True})
     last_name = db.Column(db.String(256), info={'user_input': True})
@@ -177,12 +203,14 @@ class UserMessageInfo(db.Model):
     zip5 = db.Column(db.String(5), info={'user_input': True})
     zip4 = db.Column(db.String(4), info={'user_input': True})
     phone_number = db.Column(db.String(20), info={'user_input': True})
+    accept_tos = db.Column(db.DateTime, default=None)
 
+    # set by methods based on input address information above
     latitude = db.Column(db.String(256))
     longitude = db.Column(db.String(256))
-
     district = db.Column(db.Integer)
 
+    # relations
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     messages = db.relationship('Message', backref='user_message_info')
 
@@ -202,18 +230,13 @@ class UserMessageInfo(db.Model):
 
     @classmethod
     def user_input_columns(cls):
-        ui_cols = []
-        for col in cls.__table__.columns:
-            if 'user_input' in col.info and col.info['user_input']:
-                ui_cols.append(col.name)
-        return ui_cols
+        return [col.name for col in cls.__table__.columns if 'user_input' in col.info and col.info['user_input']]
 
-    def check_for_validate_tos(self):
-        if self.accept_tos is None or (datetime.datetime.now() - self.accept_tos).days >= settings.TOS_DAYS_VALID:
-            self.accept_tos = None
-            db.session.commit()
-            return False
-        return True
+    def humanized_district(self):
+        return ordinal(self.district) + ' Congressional district of ' + usps.CODE_TO_STATE.get(self.state)
+
+    def should_update_address_info(self):
+        return self.accept_tos is None or (datetime.datetime.now() - self.accept_tos).days >= settings.ADDRESS_DAYS_VALID
 
     def mailing_address(self):
         return self.street_address + ', ' + self.street_address2 + ', '\
@@ -244,13 +267,16 @@ class UserMessageInfo(db.Model):
             return self.district
         except:
             print "Unable to determine district for " + self.mailing_address()
+            return None
+
 
     @property
     def members_of_congress(self):
         if self.district is None:
             self.determine_district()
-        return Legislator.query.filter_by(district=UserMessageInfo.district.in_({None, self.district}),
-                                          state=self.state).all()
+        return Legislator.query.filter(
+            and_(Legislator.state.is_(self.state),
+                 or_(Legislator.district.is_(None) ,Legislator.district.is_(self.district)))).all()
 
     @property
     def json(self):
@@ -270,48 +296,80 @@ class Message(db.Model):
             @return: [String] 32 character uid /^[a-z0-9]{32}$/
         """
         while True:
-            potential_token = uuid.uuid4().hex
+            potential_token = uuid.uuid4().hex + uuid.uuid4().hex
             if Message.query.filter_by(verification_token=potential_token).count() == 0:
                 return potential_token
 
     id = db.Column(db.Integer, primary_key=True)
     sent_at = db.Column(db.DateTime, default=datetime.datetime.now)
-    subject = db.Column(db.String(256))
+    # original recipients from email as json list
+    to = db.Column(db.String(8000))
+    subject = db.Column(db.String(500))
     msgbody = db.Column(db.String(8000))
 
-    # belongs to
+    # relations
     user_message_info_id = db.Column(db.Integer, db.ForeignKey('user_message_info.id'))
-
-    # has many
     to_legislators = db.relationship('MessageLegislator', backref='message')
 
     # email uid from postmark
     email_uid = db.Column(db.String(1000))
     # for follow up email to enter in address information
-    verification_token = db.Column(db.String(32), default=uid_creator.__func__)
+    verification_token = db.Column(db.String(64), default=uid_creator.__func__)
 
     @property
     def email(self): return self.user_message_info.user.email
+    @email.setter
+    def email(self, value): self.user_message_info.user.email = value
+
     @property
     def prefix(self): return self.user_message_info.prefix
+    @prefix.setter
+    def prefix(self, value): self.user_message_info.prefix = value
+
     @property
     def first_name(self): return self.user_message_info.first_name
+    @first_name.setter
+    def first_name(self, value): self.user_message_info.first_name = value
+
     @property
     def last_name(self): return self.user_message_info.last_name
+    @last_name.setter
+    def last_name(self, value): self.user_message_info.last_name = value
+
     @property
     def street_address(self): return self.user_message_info.street_address
+    @street_address.setter
+    def street_address(self, value): self.user_message_info.street_address = value
+
     @property
     def street_address2(self): return self.user_message_info.street_address2
+    @street_address2.setter
+    def street_address2(self, value): self.user_message_info.street_address2 = value
+
     @property
     def city(self): return self.user_message_info.city
+    @city.setter
+    def city(self, value): self.user_message_info.city = value
+
     @property
     def state(self): return self.user_message_info.state
+    @state.setter
+    def state(self, value): self.user_message_info.state = value
+
     @property
     def zip5(self): return self.user_message_info.zip5
+    @zip5.setter
+    def zip5(self, value): self.user_message_info.zip5 = value
+
     @property
     def zip4(self): return self.user_message_info.zip4
+    @zip4.setter
+    def zip4(self, value): self.user_message_info.zip4 = value
+
     @property
     def phone_number(self): return self.user_message_info.phone_number
+    @phone_number.setter
+    def phone_number(self, value): self.user_message_info.phone_number = value
 
     def verification_link(self):
         """
@@ -319,7 +377,7 @@ class Message(db.Model):
 
         @return: [String] full url to verification link
         """
-        return settings.BASE_URL + '/verify/' + self.verification_token + '?' + urllib.urlencode({'email':self.user_message_info.user.email})
+        return settings.BASE_URL + '/validate/' + self.verification_token + '?' + urllib.urlencode({'email':self.user_message_info.user.email})
 
     def get_legislators(self, as_dict=False):
         """

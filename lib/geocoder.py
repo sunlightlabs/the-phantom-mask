@@ -99,6 +99,15 @@ class Geocoder():
             except:
                 pass
 
+        def address(self):
+            return {
+                'street_address': self.street_address(),
+                'city': self.city(),
+                'state': self.state(),
+                'zip5': self.zip5(),
+                'zip4': self.zip4()
+            }
+
         def street_address(self):
             return self.data['StreetAddresses'][0]['StreetAddress']
 

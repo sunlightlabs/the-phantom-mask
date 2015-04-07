@@ -1,0 +1,24 @@
+{% extends 'root.html' %}
+
+{% block title %}
+    Verify your contact information to send your e-mail.
+{% endblock %}
+
+{% block header %}
+    <h1 class="center-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1>
+{% endblock %}
+
+{% block content %}
+    {% include 'partials/district_with_reps.html' %}
+    <div id="review_message">
+        <h2>REVIEW and/or EDIT YOUR MESSAGE</h2>
+        {% with data=context %}
+            {% include 'forms/message_form.html' %}
+        {% endwith %}
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <h1 class="center-text">Footer lorem ipsum dolor sit amet.</h1>
+{% endblock %}
+

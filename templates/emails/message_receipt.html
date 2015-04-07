@@ -1,0 +1,27 @@
+{% extends 'emails/email_root.html' %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block body %}
+
+    {% if context.rls == 'free' %}
+
+    {# TODO Copy goes here for when a message was freely sent along. #}
+
+    {% elif context.rls == 'captcha' %}
+
+    {# TODO Copy goes here for when a user must solve a captcha. You have access to context.verification_link for this purpose #}
+
+    {% elif context.rls == 'block' %}
+
+    {# TODO Copy goes here for when a user is blocked from sending more messages. #}
+
+    {% else %}
+
+    {# Should never hit this case... #}
+
+    {% endif %}
+
+{% endblock %}

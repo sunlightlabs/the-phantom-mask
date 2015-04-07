@@ -1,5 +1,6 @@
 (function(){
 
+    /*
     $('.pure-g input').blur(function(evt) {
 
         var attr_map = {
@@ -12,18 +13,23 @@
 
         attr_map['zip5'] = $('#zip5').val();
 
-        $.ajax({
-            method: "GET",
-            url: "/contact_congress/zip4_lookup",
-            date: attr_map,
-            success: function(result) {
-                alert (result);
-            },
-            error: function(xhr, ajaxOptions, thrownError) {
 
-            }
-        })
 
     });
+    */
+
+    $.ajax({
+        type: 'POST',
+        url: '/ajax/autofill_address',
+        contentType: 'application/json',
+        data: JSON.stringify({'street_address': 'PO Box 1332', 'zip5': '27948'}),
+        dataType: 'json',
+        success: function(result) {
+            console.log(result);
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+
+        }
+    })
 
 })();

@@ -48,10 +48,11 @@ def create_test_data():
             'phone_number': '2025551234',
             'district': 0
         })
-        msg1 = message(umi=umi1)
+        msg1_1 = message(umi=umi1)
+        msg1_2 = message(umi=umi1)
 
-        print msg1.verification_link()
-
+        print msg1_1.verification_link()
+        print msg1_2.verification_link()
 
         user2 = user(email='ocheng@sunlightfoundation.com')
         umi2 = user_message_info(user=user2)
@@ -106,7 +107,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1:
         try:
-            tasks.get(sys.argv[1])()
+            tasks.get(sys.argv[1])(*sys.argv[2:-1])
         except:
             print 'Admin task with name "' + sys.argv[1] + '" does not exist. Choices are: ' + str(tasks.keys())
     else:

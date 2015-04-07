@@ -22,3 +22,8 @@ def render_without_request(template_name, **template_vars):
     )
     template = env.get_template(template_name)
     return template.render(**template_vars)
+
+class DummyEmail(object):
+
+    def send(self):
+        return None

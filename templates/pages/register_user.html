@@ -1,0 +1,34 @@
+{% extends 'root.html' %}
+
+{% block title %}
+    Verify your contact information to send your e-mail.
+{% endblock %}
+
+{% block header %}
+    <h1 class="center-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1>
+{% endblock %}
+
+{% block content %}
+    {% include 'partials/explainer.html' %}
+
+    {% if 'district_error' in context %}
+        {# TODO how to handle this???? #}
+        <h3 style="color:red">Unable to determine congressional district for address provided.</h3>
+    {% endif %}
+
+    {% if context.message %}
+        {% with data = context %}
+            <div style="float:left">
+                {% include 'forms/address_form.html' %}
+            </div>
+        {% endwith %}
+        <div style="clear:both"></div>
+    {% else %}
+        SORRY!
+    {% endif %}
+
+{% endblock %}
+
+{% block footer %}
+    <h1 class="center-text">Footer lorem ipsum dolor sit amet.</h1>
+{% endblock %}

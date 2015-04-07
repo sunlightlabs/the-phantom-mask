@@ -1,0 +1,10 @@
+<div class="legislator_card">
+    <div class="legislator_card_img">
+        <img src="{{ leg.image_url() }}"/>
+    </div>
+    <div class="legislator_card_info">
+        <h4>{{ leg.title_and_full_name() }}</h4>
+        <h4>{{ leg.state }}{% if leg.district != None %}-{{ leg.district }}{% endif %}</h4>
+        <h6><a href="mailto:{{ leg.oc_email.lower() }}">{{ leg.oc_email.lower() }}</a></h6>
+    </div>
+</div>

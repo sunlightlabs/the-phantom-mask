@@ -12,3 +12,4 @@ inflection
 sunlight
 pytz
 Flask-Testing
+beautifulsoup4
