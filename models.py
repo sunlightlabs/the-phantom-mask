@@ -276,7 +276,7 @@ class UserMessageInfo(db.Model):
             self.determine_district()
         return Legislator.query.filter(
             and_(Legislator.state.is_(self.state),
-                 or_(Legislator.district.is_(None) ,Legislator.district.is_(self.district)))).all()
+                 or_(Legislator.district.is_(None), Legislator.district.is_(self.district)))).all()
 
     @property
     def json(self):
