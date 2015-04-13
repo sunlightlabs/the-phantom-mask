@@ -1,97 +1,107 @@
-from flask import render_template, jsonify, redirect, request, url_for
-import forms
-from postmark_inbound import PostmarkInbound
 import traceback
 import json
+import urllib2
+import urllib
+import inspect
+from flask import jsonify, redirect, request, url_for, abort
+from postmark_inbound import PostmarkInbound
 from lib.usps import CODE_TO_STATE
 import emailer
-import urllib2
+import forms
+from config import settings
 from phantom_mask import db
+from sqlalchemy import func
 from models import Legislator, Message, MessageLegislator, User, UserMessageInfo, db_first_or_create, db_add_and_commit
+from helpers import render_template_wctx, convert_token
+from scheduler import send_to_phantom_of_the_capitol
 
-def token_to_message(verification_token, email_param):
-    """
-    Converts a verification token string and email to message entry in the database.
-
-    @param verification_token: the verification token in the url
-    @type verification_token: string
-    @param email_param: the email GET parameter
-    @type email_param: string
-    @return: the message instance or None
-    @rtype: models.Message, None
-    """
-    msg = Message.query.filter_by(verification_token=verification_token).first()
-    # verify that message with uid exists
-    if msg is None or email_param is None or email_param != msg.user_message_info.user.email:
-        return None
-    return msg
 
 def legislator_index():
-    return render_template('pages/legislator_index.html', context={'legislators': Legislator.query.all(),
-                                                                   'states': CODE_TO_STATE })
+    return render_template_wctx('pages/legislator_index.html', context={'legislators': Legislator.query.all(),
+                                                                        'states': CODE_TO_STATE})
 
+def address_changed(token):
 
-def confirm_reps(verification_token):
+    user = User.query.filter_by(address_change_token=token)
 
-    msg = token_to_message(verification_token, request.args.get('email', None))
-    if msg is None or msg.user_message_info.accept_tos is None:
-        return "Msg is none or accept_tos is none"
+    if user is not None:
+        user.new_address_change_token()
+    else:
+        return 'No user exists for specified token.'
 
-    form = forms.MessageForm(request.form)
+    return redirect(url_for('app_router.update_user_address', token=user.address_change_token) +
+                             '?' + urllib.urlencode({'email': user.email}))
 
-    print "Size of members of congress " + str(len(msg.user_message_info.members_of_congress))
+def confirm_reps(token):
+    """
+    Confirm members of congress and submit message (if message present)
+
+    @param token: token to identify the user / message
+    @type token: string
+    @return:
+    @rtype:
+    """
+
+    msg, umi, user = convert_token(token, request.args.get('email', None))
+
+    if user is None or umi.accept_tos is None:
+        abort(404)
+
+    form = forms.MessageForm(request.form, url_for('app_router.' + inspect.stack()[0][3],
+                                                   token=token) + '?email=' + urllib2.quote(user.email))
+
+    moc = umi.members_of_congress
+
     context = {
         'form': form,
         'message': msg,
-        'umi': msg.user_message_info,
-        'legislators': msg.user_message_info.members_of_congress,
-        'uncontactable': ['test@example.com','test@example.com','test@example.com','test@example.com','test@example.com']
+        'umi': umi,
+        'legislators': moc
     }
 
-    if request.method == 'POST':
-        return 'it work'
+    if msg is not None and request.method == 'POST':
+        # this message has been sent so invalidate the link
+        msg.live_link = False
+        db.session.commit()
+        # determine which legislator(s) the user wanted to contact
+        msg.set_legislators([moc[i] for i in [v for v in range(0, len(moc)) if request.form.get('legislator_' + str(v))]])
+        send_to_phantom_of_the_capitol.delay(msg.id)
+        return render_template_wctx('pages/message_sent.html', context=context)
     else:
-        form.populate_data_from_message(msg)
-        return render_template('pages/confirm_reps.html', context=context)
+        if msg is not None:
+            form.populate_data_from_message(msg)
+            context['uncontactable'] = [i for i in json.loads(msg.to_originally) if i not in [p.oc_email.lower() for p in moc]]
+        return render_template_wctx('pages/confirm_reps.html', context=context)
 
 
-def register_user(verification_token):
+def update_user_address(token):
 
+    msg, umi, user = convert_token(token, request.args.get('email', None))
 
-    msg = token_to_message(verification_token, request.args.get('email', None))
-    if msg is None:
-        return render_template("pages/register_user.html", context={})
+    if user is None:
+        abort(404)
 
-    form = forms.RegistrationForm(request.form)
+    # instantiate form and populate with data if it exists
+    form = forms.RegistrationForm(request.form, url_for('app_router.' + inspect.stack()[0][3],
+                                                        token=token) + '?' + urllib.urlencode({'email': user.email}))
+
     context = {
-        'message': msg,
         'form': form,
-        'verification_token': verification_token,
-        'msg_email': msg.user_message_info.user.email
+        'verification_token': token,
+        'msg_email': user.email
     }
 
     if request.method == 'POST':
         # get zip4 so user doesn't have to look it up
         form.resolve_zip4()
-
-        # check if user is trying to message somebody from outside their state/district
-        #does_not_represent = form.validate_district(msg.get_legislators())
-        #if does_not_represent is None or len(does_not_represent) > 0:
-        #    return render_template("verify.html", context=dict(context,**{'does_not_rep': does_not_represent}))
-
-        if form.validate_and_save_to_db(msg):
-            district = msg.user_message_info.determine_district()
-            if district is None:
-                context['district_error'] = True
-                return render_template("pages/register_user.html", context=context)
+        if form.validate_and_save_to_db(user, msg=msg):
+            district = umi.determine_district(force=True)
+            if district is None: context['district_error'] = True
             else:
-                return redirect(url_for('app_router.confirm_reps', verification_token=verification_token) +
-                                '?email=' + urllib2.quote(context['msg_email']))
-        else:
-            print 'ERROR 1'
-            return render_template("pages/register_user.html", context=context)
-    else:
-        return render_template("pages/register_user.html", context=context)
+                return redirect(url_for('app_router.confirm_reps', token=token) +
+                                '?' + urllib.urlencode({'email': user.email}))
+
+    return render_template_wctx("pages/update_user_address.html", context=context)
 
 
 def postmark_inbound():
@@ -104,13 +114,14 @@ def postmark_inbound():
         # parse inbound postmark JSON
         inbound = PostmarkInbound(json=request.get_data())
 
+        # create or get the user and his default information
         user = db_first_or_create(User, email=inbound.sender()['Email'].lower())
         umi = db_first_or_create(UserMessageInfo, user_id=user.id, default=True)
 
-        # check if message exists already
+        # check if message exists already first
         if Message.query.filter_by(email_uid=inbound.message_id()).first() is None:
             new_msg = Message(sent_at=inbound.send_date(),
-                              to=json.dumps([r['Email'].lower() for r in inbound.to()]),
+                              to_originally=json.dumps([r['Email'].lower() for r in inbound.to()]),
                               subject=inbound.subject(),
                               msgbody=inbound.text_body(),
                               email_uid=inbound.message_id(),
@@ -119,41 +130,47 @@ def postmark_inbound():
 
             # first time user or it has been a long time since they've updated their address info
             if umi.should_update_address_info():
-                emailer.NoReply.validate_user(user.email, new_msg.verification_link()).send()
+                emailer.NoReply.validate_user(user,
+                    new_msg.verification_link(url_for('app_router.update_user_address',
+                                                      token=new_msg.verification_token))).send()
                 return jsonify({'status': 'user must accept tos / update their address info'})
             else:
                 permitted_legs = umi.members_of_congress
+
                 legs = {label: [] for label in ['contactable','non_existent','uncontactable','does_not_represent']}
+                inbound_emails = [recipient['Email'] for recipient in inbound.to()]
 
-                # maximize error messages for users
-                for recipient in inbound.to():
-                    recip_email = recipient['Email'].lower()
-                    leg = Legislator.query.filter_by(oc_email=recip_email).first()
+                # user sent to catchall address
+                if settings.CATCH_ALL_MYREPS in inbound_emails:
+                    legs['contactable'] = permitted_legs
+                    inbound_emails.remove(settings.CATCH_ALL_MYREPS)
+
+                # maximize error messages for users for individual addresses
+                for recip_email in inbound_emails:
+                    leg = Legislator.query.filter(func.lower(Legislator.oc_email) == func.lower(recip_email)).first()
                     if leg is None:
-                        leg['non_existent'].append(recip_email)  # TODO refer user to index
+                        legs['non_existent'].append(recip_email)  # TODO refer user to index page?
                     elif not leg.contactable:
-                        leg['uncontactable'].append(leg)
+                        legs['uncontactable'].append(leg)
                     elif leg not in permitted_legs:
-                        leg['does_not_represent'].append(leg)
+                        legs['does_not_represent'].append(leg)
+                    elif leg not in legs['contactable']:
+                        legs['contactable'].append(leg)
                     else:
-                        leg['contactable'].append(leg)
+                        continue
 
-                # only associate members of congress that this user is allowed to contact
-                for leg in legs['contactable']:
-                    ml = MessageLegislator(message_id=new_msg.id, legislator_id=leg.bioguide_id)
-                    db.session.add(ml)
-                db.session.commit()
+                new_msg.set_legislators(legs['contactable'])
 
+                # determine rate limit status for user
                 rls = user.rate_limit_status()
                 if user.rate_limit_status() == 'free':
-                    pass  # TODO send to phantom of the capitol
+                    send_to_phantom_of_the_capitol.delay(new_msg.id)
 
-                emailer.NoReply.message_receipt(user.email, legs, new_msg.verification_link(), rls).send()
+                emailer.NoReply.message_receipt(user, legs, user.address_change_link(), rls).send()
 
                 return jsonify({'status': 'successfully received postmark message'})
         else:
-            return jsonify({'status': 'message already received'})
+            return jsonify({'status': 'message already received, but thanks anyways'})
     except:
         print traceback.format_exc()
         return "Unable to parse postmark message.", 500
-        # TODO send admin error message

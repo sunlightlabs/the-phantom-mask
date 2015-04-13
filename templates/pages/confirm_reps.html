@@ -9,16 +9,16 @@
 {% endblock %}
 
 {% block content %}
-    {% include 'partials/district_with_reps.html' %}
-    <div id="review_message">
-        <h2>REVIEW and/or EDIT YOUR MESSAGE</h2>
+    {% include 'partials/district_with_map.html' %}
+    {% if context.message %}
         {% with data=context %}
             {% include 'forms/message_form.html' %}
         {% endwith %}
-    </div>
+    {% else %}
+        {% include 'partials/your_reps.html' %}
+    {% endif %}
 {% endblock %}
 
 {% block footer %}
     <h1 class="center-text">Footer lorem ipsum dolor sit amet.</h1>
 {% endblock %}
-

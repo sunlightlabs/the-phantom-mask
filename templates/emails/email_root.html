@@ -6,8 +6,13 @@
         <title>{% block title %}Default Title{% endblock %}</title>
     </head>
     <body>
-    {% block body %}
+        {% block body %}
 
-    {% endblock %}
+        {% endblock %}
+        <hr>
+        <footer>
+        Terms & Service ... If your address has changed then <a href="{{ context.user.address_change_link() }}">click here</a>.
+        {# TODO footer text goes here... #}
+        </footer>
     </body>
 </html>

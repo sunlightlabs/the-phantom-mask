@@ -16,16 +16,12 @@
         <h3 style="color:red">Unable to determine congressional district for address provided.</h3>
     {% endif %}
 
-    {% if context.message %}
-        {% with data = context %}
-            <div style="float:left">
-                {% include 'forms/address_form.html' %}
-            </div>
-        {% endwith %}
-        <div style="clear:both"></div>
-    {% else %}
-        SORRY!
-    {% endif %}
+    {% with data = context %}
+        <div style="float:left">
+            {% include 'forms/address_form.html' %}
+        </div>
+    {% endwith %}
+    <div style="clear:both"></div>
 
 {% endblock %}
 

@@ -1,0 +1,25 @@
+<div id="your_reps_container">
+    <h2>Here are your Senators and Representative.</h2>
+    <div id="your_reps">
+        {% for leg in context.legislators %}
+            {% with leg=leg %}
+                {% if loop.length == 3 %}
+                    {% with %}
+                        {% if loop.first %}{% set margin_class='legislator_card_left' %}
+                        {% elif loop.last %}{% set margin_class='legislator_card_right' %}
+                        {% else %}{% set margin_class='legislator_card_middle' %}
+                        {% endif %}
+                        {% include 'snippets/legislator_card.html' %}
+                    {% endwith %}
+                {% elif loop.length == 2 %}
+                      {% include 'snippets/legislator_card.html' %}
+                {% elif loop.length == 1 %}
+                      {% include 'snippets/legislator_card.html' %}
+                {% else %}
+
+                {% endif %}
+            {% endwith %}
+        {% endfor %}
+        <div class="clearfix"></div>
+    </div>
+</div>

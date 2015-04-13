@@ -4,26 +4,41 @@ from flask.ext.testing import TestCase
 import unittest
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.path.pardir))
-import phantom_mask
+os.environ['PHANTOM_ENVIRONMENT'] = 'test'
+##########################################################################################
+
 import models
+import phantom_mask
 import factories
 from tasks import daily
+from tasks import monthly
+
 
 class phantom_maskTestCase(TestCase):
 
-    SQLALCHEMY_DATABASE_URI = "sqlite://"
-    TESTING = True
-
     def create_app(self):
-        app = phantom_mask.app
-        app.config['TESTING'] = self.TESTING
+        app = phantom_mask.config_app(phantom_mask.create_app())
+        app.config['TESTING'] = True
         app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
         return app
 
+    """
     def setUp(self):
         models.db.create_all()
 
+
     def tearDown(self):
+        models.db.session.remove()
+        models.db.drop_all()
+    """
+    @classmethod
+    def setUpClass(cls):
+        models.db.create_all()
+        daily.import_congresspeople(from_cache=True)
+        monthly.import_topics(from_cache=True)
+
+    @classmethod
+    def tearDownClass(cls):
         models.db.session.remove()
         models.db.drop_all()
 
@@ -32,7 +47,7 @@ class phantom_maskTestCase(TestCase):
 
         @return:
         """
-        rv = self.client.get('/legislator_index/')
+        rv = self.client.get('/legislator_index')
         assert 'Index of contactable legislators can be found below.' in rv.data
 
     def test_models__usermessageinfo(self):
@@ -44,13 +59,10 @@ class phantom_maskTestCase(TestCase):
         models.db.session.commit()
         assert umi.confirmed is True
 
-        daily.import_congresspeople()
-
         moc = umi.members_of_congress
 
         for leg in moc:
             assert leg.state == umi.state
-
 
 if __name__ == '__main__':
     unittest.main()

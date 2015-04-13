@@ -1,0 +1,12 @@
+<div id="uncontactable_reps">
+    Unfortunately, due to our <a href="/terms_of_service">terms of service</a>, we are unable to send your message to
+    {% with leng = context.uncontactable.__len__() %}
+        {% for email in context.uncontactable %}
+            <strong>{{ email }}</strong>{% if not loop.last and leng != 2 %}, {% elif leng == 2 %} and {% endif %}
+            {% if leng > 5 and loop.index0 == 4 %}{% break %}{% endif %}
+        {% endfor %}
+    {% endwith %}
+    because your inputted address indicates you do not live in their district and/or state.
+    If you believe that you do in fact live in their district and/or state then first navigate
+    to the previous page and insure your address was entered correctly.
+</div>

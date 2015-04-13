@@ -1,20 +1,31 @@
-<form id="message-form" class="pure-form pure-form-stacked" action="/contact_congress/confirm_reps/{{ data.verification_token }}?email={{ data.msg_email }}" method="POST">
+<form id="message-form" class="pure-form pure-form-stacked"  method="POST" action="{{ data.form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    <fieldset>
-        <legend>Review and/or edit your message before sending.</legend>
 
-        <div class="pure-g">
+    {% include 'partials/your_reps.html' %}
 
-            <div class="pure-u-1 pure-u-md-1-1">
-                {{ data.form.subject.label }}
-                <input class="pure-u-24-24" id="subject" name="subject" value="{{ data.message.subject }}">
+    {% if data.uncontactable %}
+        {% include 'partials/uncontactable_reps.html' %}
+    {% endif %}
+
+    <div id="edit-message-wrapper">
+        <fieldset>
+            <legend>Review and/or edit your message before sending.</legend>
+
+            <div class="pure-g">
+
+                <div class="pure-u-1 pure-u-md-1-1">
+                    {{ data.form.subject.label }}
+                    <input class="pure-u-24-24" id="subject" name="subject" value="{{ data.message.subject }}">
+                </div>
+
+                <div class="pure-u-1 pure-u-md-1-1">
+                    {{ data.form.msgbody.label }}
+                    <textarea class="pure-u-24-24" style="height:250px" id="msgbody" name="msgbody">{{ data.message.msgbody }}</textarea>
+                </div>
+
+                <button type="submit" class="pure-button pure-button-primary">Submit</button>
+
             </div>
-
-            <div class="pure-u-1 pure-u-md-1-1">
-                {{ data.form.msgbody.label }}
-                <textarea class="pure-u-24-24" style="height:250px" id="msgbody" name="msgbody">{{ data.message.msgbody }}</textarea>
-            </div>
-        </div>
-
-    </fieldset>
+        </fieldset>
+    </div>
 </form>

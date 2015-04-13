@@ -1,0 +1,30 @@
+{% extends 'root.html' %}
+
+{% block title %}
+    Your message is queued to be sent to your representatives in congress.
+{% endblock %}
+
+{% block header %}
+    <h1 class="center-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1>
+{% endblock %}
+
+{% block content %}
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ullamcorper, diam ut placerat lobortis,
+        felis sapien dignissim turpis, quis vulputate orci ipsum vitae tortor. Praesent elit purus,
+        luctus sit amet felis venenatis, bibendum consectetur est. Quisque eget sollicitudin eros.
+        Sed ac efficitur dui. Proin facilisis volutpat ante, et interdum quam aliquam vulputate. Sed et odio vel
+        dolor ornare ultricies ac vel turpis. Morbi et est id quam tempus hendrerit sed at dui.
+    </p>
+    <p>
+        Your message is queued to be sent to the following
+        {% for leg in context.legislators %}
+            <strong>{{ leg.full_title_and_full_name() }}</strong>{% if not loop.last and leng != 2 %}, {% elif leng == 2 %} and {% endif %}
+        {% endfor %}
+    </p>
+
+{% endblock %}
+
+{% block footer %}
+    <h1 class="center-text">Footer lorem ipsum dolor sit amet.</h1>
+{% endblock %}

@@ -23,6 +23,10 @@ div#legislator-lookup {
     float:left;
 }
 
+.clearfix {
+    clear:both;
+}
+
 a.faq-italic {
     font-style: italic;
     font-weight:lighter;
@@ -30,4 +34,37 @@ a.faq-italic {
 
 legend {
     font-weight: bold;
+}
+
+div.legislator_card {
+    float:left;
+    border: 1px black solid;
+    border-radius:10px;
+    width:225px;
+}
+
+div.legislator_card_left {
+    margin-right: 25px;
+}
+
+div.legislator_card_middle {
+    margin-right: 25px;
+    margin-left: 25px;
+}
+
+div.legislator_card_right {
+    margin-left: 25px;
+
+}
+
+div.legislator_card img {
+    border-radius: 10px;
+}
+
+div#uncontactable_reps {
+    margin-top:25px;
+}
+
+div#edit-message-wrapper {
+    margin-top: 25px;
 }

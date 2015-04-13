@@ -50,28 +50,5 @@ def fill_out_form(json_dict):
 
         return r.json()
     except:
-        print "Failed to send"
+        print 'Failed to execute API call to phantom of the capitol.'
         return None
-
-
-"""
-topic_counts = {}
-for legislator, req in all_forms.iteritems():
-    for key,val in req.iteritems():
-        for step in val:
-            if step['value'] == '$TOPIC':
-                try:
-                    for k,v in step['options_hash'].iteritems():
-                        k = k.strip()
-                        if topic_counts.has_key(k):
-                            topic_counts[k] +=1
-                        else:
-                            topic_counts[k] = 1
-                except:
-                    for k in step['options_hash']:
-                        k = k.strip()
-                        if topic_counts.has_key(k):
-                            topic_counts[k] +=1
-                        else:
-                            topic_counts[k] = 1
-"""

@@ -5,9 +5,12 @@ import uuid
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.path.pardir))
 
+os.environ['PHANTOM_ENVIRONMENT'] = 'dev'
+
 from config import settings
 from phantom_mask import db
 from daily import import_congresspeople
+from monthly import import_topics
 import traceback
 
 def reset_database(prompt=True):
@@ -22,8 +25,6 @@ def reset_database(prompt=True):
             print 'Dropping all tables and recreating them from scratch...'
             db.drop_all()
             db.create_all()
-            print 'Importing congresspeople...'
-            import_congresspeople()
         except:
             print traceback.format_exc()
     else:
@@ -32,7 +33,11 @@ def reset_database(prompt=True):
 
 def create_test_data():
     try:
+        from models import Topic
         from tests.factories import user, user_message_info, message
+
+        print 'Importing congresspeople...'
+        import_congresspeople(from_cache=True)
 
         user1 = user(email='rioisk@gmail.com')
         umi1 = user_message_info(user=user1, info={
@@ -45,8 +50,7 @@ def create_test_data():
             'city': 'Washington',
             'state': 'DC',
             'zip5': '20008',
-            'phone_number': '2025551234',
-            'district': 0
+            'phone_number': '2025551234'
         })
         msg1_1 = message(umi=umi1)
         msg1_2 = message(umi=umi1)
@@ -65,6 +69,10 @@ def create_test_data():
         msg3 = message(umi=umi3)
 
         print msg3.verification_link()
+
+        print "Importing topics. This may take a while..."
+        import_topics(from_cache=True)
+
     except:
         print traceback.format_exc()
 
@@ -73,22 +81,31 @@ def setup_test_environment():
     reset_database(False)
     create_test_data()
 
-def simulate_postmark_message(from_email=settings.ADMIN_EMAILS[0], messageid=None):
+def simulate_postmark_message(from_email, to_emails, messageid=None):
+
+    if from_email not in settings.ADMIN_EMAILS:
+        return from_email + " not in admin emails: " + str(settings.ADMIN_EMAILS)
+
     messageid = uuid.uuid4().hex if messageid is None else messageid
+    if to_emails is None:
+        to_emails = [{'Email': 'Rep.Johnboehner@opencongress.org'}]
+    elif type(to_emails) is str:
+        to_emails = [{'Email': to_emails}]
+    elif type(to_emails) is list:
+        to_emails = [{'Email': te} for te in to_emails]
+    else:
+        raise Exception('Bad input')
+
     params = {
-        'Subject': 'This is a subject.',
-        'TextBody': "This is a TextBody",
+        'Subject': 'Thank you!',
+        'TextBody': "Thank you for everything that you do!",
         'Date': 'Thu, 5 Apr 2014 16:59:01 +0200',
         'MessageID': messageid,
         "FromFull": {
             "Email": from_email,
             "Name": "John Smith",
         },
-        "ToFull": [
-            {
-                "Email": "Rep.Johnboehner@opencongress.org",
-            }
-        ]
+        "ToFull": to_emails
     }
     try:
         req = requests.post(settings.BASE_URL + '/postmark/inbound', json=params)
@@ -107,7 +124,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1:
         try:
-            tasks.get(sys.argv[1])(*sys.argv[2:-1])
+            tasks.get(sys.argv[1])(*sys.argv[2:])
         except:
             print 'Admin task with name "' + sys.argv[1] + '" does not exist. Choices are: ' + str(tasks.keys())
     else:

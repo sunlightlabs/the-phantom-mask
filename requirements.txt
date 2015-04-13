@@ -13,3 +13,7 @@ sunlight
 pytz
 Flask-Testing
 beautifulsoup4
+redis
+Celery
+jellyfish
+fabric

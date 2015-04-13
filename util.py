@@ -3,13 +3,16 @@ from os import walk
 import os
 import jinja2
 
+
 def abs_file_directory(file):
     dirname(realpath(file))
+
 
 def absoluteFilePaths(directory):
     for dirpath, _,filenames in walk(directory):
         for f in filenames:
             yield abspath(join(dirpath, f))
+
 
 def render_without_request(template_name, **template_vars):
     """
@@ -22,6 +25,7 @@ def render_without_request(template_name, **template_vars):
     )
     template = env.get_template(template_name)
     return template.render(**template_vars)
+
 
 class DummyEmail(object):
 

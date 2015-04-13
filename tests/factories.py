@@ -1,10 +1,13 @@
 import sys
 import os
 import uuid
+import json
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.path.pardir))
 
+
 import models
+
 
 def add_and_commit(factory):
     def create_model(**kwargs):
@@ -46,8 +49,9 @@ def user_message_info(user, info=None):
     return umi
 
 @add_and_commit
-def message(umi, subject="Test subject", msgbody="Test message"):
+def message(umi, subject="Test subject", msgbody="Test message", to_originally=None):
     return models.Message(user_message_info=umi,
+                          to_originally=json.dumps(to_originally if to_originally is not None else ['Rep.Aderholt@opencongress.org']),
                           subject=subject,
                           msgbody=msgbody,
                           email_uid=uuid.uuid4().hex)

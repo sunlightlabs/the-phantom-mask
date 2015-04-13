@@ -3,13 +3,15 @@ from flask.ext.wtf import Form
 import re
 from lib import usps
 from services import address_inferrence_service
-from services.determine_district_service import determine_district
 from phantom_mask import db
 from models import UserMessageInfo
 import datetime
-import traceback
 
 class MessageForm(Form):
+
+    def __init__(self, formdata, post_action_url, **kwargs):
+        super(MessageForm, self).__init__(formdata, **kwargs)
+        self.post_action_url = post_action_url
 
     subject = StringField("Subject", [validators.Length(min=0, max=255)])
     msgbody = TextAreaField("Message", [validators.Length(min=1, max=8000)])
@@ -29,6 +31,10 @@ class MessageForm(Form):
 
 
 class RegistrationForm(Form):
+
+    def __init__(self, formdata, post_action_url, **kwargs):
+        super(RegistrationForm, self).__init__(formdata, **kwargs)
+        self.post_action_url = post_action_url
 
     prefix = SelectField('Prefix',
                          choices=[(x,x) for x in ['Choose...','Mr.','Mrs.','Ms.','Dr.']],
@@ -52,51 +58,44 @@ class RegistrationForm(Form):
 
     accept_tos = BooleanField('I accept the terms of service and privacy policy', [validators.DataRequired()])
 
-    def resolve_zip4(self):
-        self.zip4.data = address_inferrence_service.zip4_lookup(self.street_address.data,
-                                                                self.city.data,
-                                                                self.state.data,
-                                                                self.zip5.data
-                                                                )
+    def resolve_zip4(self, force=False):
+        if force or not self.zip4.data:
+            self.zip4.data = address_inferrence_service.zip4_lookup(self.street_address.data,
+                                                                    self.city.data,
+                                                                    self.state.data,
+                                                                    self.zip5.data
+                                                                    )
 
-    def validate_district(self, legislators):
-        district = determine_district(zip5=self.zip5.data,
-                                      street_address=self.street_address.data,
-                                      city=self.city.data,
-                                      state=self.state.data)
 
-        does_not_represent = []
-        for leg in legislators:
-            if leg.state != self.state or (leg.chamber == 'house' and leg.district != district):
-                does_not_represent.append(leg)
-
-        return does_not_represent
-
-    def validate_and_save_to_db(self, msg):
+    def validate_and_save_to_db(self, user, msg=None):
         """
         Validates the form and (if valid) saves the data to the database
 
-        @param msg: message instance
+        @param user: the user
+        @type user: models.User
+        @param msg: the message
         @type msg: models.Message
         @return: True if success, False otherwise
-        @rtype: bool
+        @rtype: boolean
         """
         if self.validate():
 
-            # check if user has input new contact information
+            # get user's default info and either create new info or get the same info instance
+            first_umi = UserMessageInfo.query.filter_by(user=user, default=True).first()
             kwargs = {getattr(field, 'name'): getattr(field, 'data') for field in self}
-            umi = UserMessageInfo.first_or_create(msg.user_message_info.user.id, **kwargs)
+            umi = first_umi if first_umi.accept_tos is None else UserMessageInfo.first_or_create(user.id, **kwargs)
 
-            # if a field is different then we set the message to the new umi
-            if msg.user_message_info.id != umi.id:
-                msg.user_message_info.default = False
+            # check if the new user info differs from the newly submitted info
+            if first_umi.id is not umi.id:
+                first_umi.default = False
                 umi.default = True
-                msg.user_message_info = umi
+                if msg is not None:
+                    msg.user_message_info = umi
 
             # save form data to models
             for field, val in self.data.iteritems():
                 try:
-                    setattr(msg, field, str(val))
+                    setattr(umi, field, str(val))
                 except:
                     return False
 

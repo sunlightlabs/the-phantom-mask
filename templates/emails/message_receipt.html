@@ -1,12 +1,64 @@
 {% extends 'emails/email_root.html' %}
 
 {% block title %}
-
+test
 {% endblock %}
 
 {% block body %}
 
     {% if context.rls == 'free' %}
+
+        {% if context.legislators['contactable'] %}
+            <p>Your message is schedule to be sent to the following legislators:</p>
+
+            <ul>
+            {% for leg in context.legislators['contactable'] %}
+                <li>{{ leg.full_title_and_full_name() }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if context.legislators['does_not_represent'] %}
+            <p>
+                We unfortunately could <strong>not</strong> send your message to the following legislators
+                because our records indicate that you do not reside in their district. If your address has changed
+                then please click <a href="">here</a> to enter in your new address.
+             </p>
+
+            <ul>
+            {% for leg in context.legislators['does_not_represent'] %}
+                <li>{{ leg.full_title_and_full_name() }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if context.legislators['uncontactable'] %}
+            <p>
+                The following legislators exist but we unfortunately can not currently send messages to them. Possible
+                reasons include the legislator has taken down their webform, technical limitations, or an error
+                in our system.
+             </p>
+
+            <ul>
+            {% for leg in context.legislators['uncontactable'] %}
+                <li>{{ leg.full_title_and_full_name() }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if context.legislators['non_existent'] %}
+            <p>
+                The following emails are unrecognizable by our system. Check out the <a href="">legislator index</a>
+                to find emails for particular legislators. You can also contact all of your representatives by
+                sending your message to <a href="mailto:myreps@opencongress.org">myreps@opencongress.org</a>.
+             </p>
+
+            <ul>
+            {% for leg in context.legislators['non_existent'] %}
+                <li>{{ leg }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
 
     {# TODO Copy goes here for when a message was freely sent along. #}
 

@@ -1,0 +1,31 @@
+{% extends 'emails/email_root.html' %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block body %}
+
+    {% if context.send_statuses[True].__len__() > 0 %}
+        Your message was successfully sent to the following members of congress.
+        <ul>
+        {% for msg_leg in context.send_statuses[True] %}
+            <li>{{ msg_leg.legislator.full_title_and_full_name() }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if context.send_statuses[False].__len__() > 0 %}
+        Unfortunate we were unable to send your message to the following members of congress
+        due to technical difficulties. You can navigate to the respective webform for each
+        member below and send your message there. Apologies for the inconvenience.
+        <ul>
+        {% for msg_leg in context.send_statuses[False] %}
+            <li>{{ msg_leg.legislator.full_title_and_full_name() }} - <a href="{{ msg_leg.legislator.contact_form }}">{{ msg_leg.legislator.contact_form }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    {# TODO Copy goes here for when a message fails to send. Include link to contact form. #}
+
+{% endblock %}
