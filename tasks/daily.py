@@ -41,18 +41,17 @@ def import_congresspeople(from_cache=False):
         # Create legislator entry for congresspeople for whom we don't have a database entry
         all_legislators = []
         for bgi in bioguide_ids:
-            if Legislator.query.filter_by(bioguide_id=bgi).first() is None:
-                try:
-                    r = requests.get(settings.CONGRESS_API_BASE + '/legislators',
-                                     params={'bioguide_id': bgi, 'apikey': settings.SUNLIGHT_API_KEY})
-                    data = r.json()['results'][0]
-                    all_legislators.append(data)
-                    new = set_attributes(Legislator(), data.iteritems())
-                    db.session.add(new)
-                    db.session.commit()
-                except:
-                    print "No data from congress api for : " + bgi
-                    continue
+            leg = db_first_or_create(Legislator, bioguide_id=bgi)
+            try:
+                r = requests.get(settings.CONGRESS_API_BASE + '/legislators',
+                                 params={'bioguide_id': bgi, 'apikey': settings.SUNLIGHT_API_KEY})
+                data = r.json()['results'][0]
+                all_legislators.append(data)
+                set_attributes(leg, data.iteritems())
+                db.session.commit()
+            except:
+                print "No data from congress api for : " + bgi
+                continue
 
         # save data to cache in case we need to load it up again
         with open(os.path.dirname(os.path.realpath(__file__)) + '/../' + settings.LEGISLATOR_DATA_CACHE, mode='w') as cachejson:

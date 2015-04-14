@@ -16,6 +16,7 @@ def add_and_commit():
 def push(branch='master'):
     local("git push origin " + branch)
 
+
 def prepare_deploy(branch='master'):
     test()
     add_and_commit()

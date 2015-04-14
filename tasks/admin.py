@@ -23,9 +23,9 @@ def reset_database(prompt=True):
             print 'Dropping all tables and recreating them from scratch...'
             db.drop_all()
             db.create_all()
+            import_data()
         except:
             print traceback.format_exc()
-        import_data()
     else:
         print "Aborting resetting database."
 

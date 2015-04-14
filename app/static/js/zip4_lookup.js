@@ -20,7 +20,7 @@
 
     $.ajax({
         type: 'POST',
-        url: '/ajax/autofill_address',
+        url: '/contact_congress/ajax/autofill_address',
         contentType: 'application/json',
         data: JSON.stringify({'street_address': 'PO Box 1332', 'zip5': '27948'}),
         dataType: 'json',
