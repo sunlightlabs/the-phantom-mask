@@ -39,8 +39,8 @@ def route_app(app):
 
     from urls import app_router
     from urls import postmark_router
-    app.register_blueprint(app_router, url_prefix=settings.BASE_PREFIX)
-    app.register_blueprint(postmark_router, url_prefix=settings.BASE_PREFIX)
+    app.register_blueprint(app_router)
+    app.register_blueprint(postmark_router)
     csrf.exempt(postmark_router)
 
     return app

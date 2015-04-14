@@ -13,6 +13,7 @@ import factories
 from tasks import daily
 from tasks import monthly
 from app.helpers import abs_base_url
+from flask import url_for
 
 class phantom_maskTestCase(TestCase):
 
@@ -47,7 +48,7 @@ class phantom_maskTestCase(TestCase):
 
         @return:
         """
-        rv = self.client.get(abs_base_url() + '/legislator_index')
+        rv = self.client.get(url_for('app_router.legislator_index'))
         assert 'Index of contactable legislators can be found below.' in rv.data
 
     def test_models__usermessageinfo(self):
