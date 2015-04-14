@@ -387,8 +387,8 @@ class UserMessageInfo(db.Model):
         if self.district is None:
             self.determine_district()
         return Legislator.query.filter(
-            and_(Legislator.contactable.is_(True), Legislator.state.is_(self.state),
-                 or_(Legislator.district.is_(None), Legislator.district.is_(self.district)))).all()
+            and_(Legislator.contactable.is_(True), Legislator.state == self.state,
+                 or_(Legislator.district.is_(None), Legislator.district == self.district))).all()
 
     @property
     def json(self):
@@ -412,7 +412,7 @@ class Topic(db.Model):
     @staticmethod
     def topics_from_choices(choices):
         return list(set([top if top.wikipedia_parent is None else Topic.query.filter_by(id=top.wikipedia_parent).first()
-                        for top in Topic.query.filter(or_(*[Topic.name.is_(c.lower()) for c in choices])).all()]))
+                        for top in Topic.query.filter(or_(*[(Topic.name == c.lower()) for c in choices])).all()]))
 
     @classmethod
     def populate_topics_from_phantom_forms(cls):
@@ -615,7 +615,7 @@ class Message(db.Model):
 
     def get_send_status(self):
         target_count = len(self.to_legislators)
-        sent_count = MessageLegislator.query.join(Message).filter(Message.id.is_(self.id),
+        sent_count = MessageLegislator.query.join(Message).filter(Message.id == self.id,
                                                                   MessageLegislator.sent.is_(True)).count()
         if sent_count == 0:
             return 'unsent'
