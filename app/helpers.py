@@ -1,9 +1,12 @@
 from config import settings
 import models
-from flask import render_template
+from flask import render_template, url_for
 
 def abs_base_url():
     return settings.BASE_URL + settings.BASE_PREFIX
+
+def url_for_with_prefix(endpoint, **values):
+    return settings.BASE_PREFIX + url_for(endpoint, **values)
 
 
 def render_template_wctx(template_name_or_list, **context):

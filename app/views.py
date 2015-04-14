@@ -12,7 +12,7 @@ from config import settings
 from phantom_mask import db
 from sqlalchemy import func
 from models import Legislator, Message, MessageLegislator, User, UserMessageInfo, db_first_or_create, db_add_and_commit
-from helpers import render_template_wctx, convert_token
+from helpers import render_template_wctx, convert_token, url_for_with_prefix
 from scheduler import send_to_phantom_of_the_capitol
 
 
@@ -29,7 +29,7 @@ def address_changed(token):
     else:
         return 'No user exists for specified token.'
 
-    return redirect(url_for('app_router.update_user_address', token=user.address_change_token) +
+    return redirect(url_for_with_prefix('app_router.update_user_address', token=user.address_change_token) +
                              '?' + urllib.urlencode({'email': user.email}))
 
 def confirm_reps(token):
@@ -47,7 +47,7 @@ def confirm_reps(token):
     if user is None or umi.accept_tos is None:
         abort(404)
 
-    form = forms.MessageForm(request.form, url_for('app_router.' + inspect.stack()[0][3],
+    form = forms.MessageForm(request.form, url_for_with_prefix('app_router.' + inspect.stack()[0][3],
                                                    token=token) + '?email=' + urllib2.quote(user.email))
 
     moc = umi.members_of_congress
@@ -82,7 +82,7 @@ def update_user_address(token):
         abort(404)
 
     # instantiate form and populate with data if it exists
-    form = forms.RegistrationForm(request.form, url_for('app_router.' + inspect.stack()[0][3],
+    form = forms.RegistrationForm(request.form, url_for_with_prefix('app_router.' + inspect.stack()[0][3],
                                                         token=token) + '?' + urllib.urlencode({'email': user.email}))
 
     context = {
@@ -98,7 +98,7 @@ def update_user_address(token):
             district = umi.determine_district(force=True)
             if district is None: context['district_error'] = True
             else:
-                return redirect(url_for('app_router.confirm_reps', token=token) +
+                return redirect(url_for_with_prefix('app_router.confirm_reps', token=token) +
                                 '?' + urllib.urlencode({'email': user.email}))
 
     return render_template_wctx("pages/update_user_address.html", context=context)
@@ -131,7 +131,7 @@ def postmark_inbound():
             # first time user or it has been a long time since they've updated their address info
             if umi.should_update_address_info():
                 emailer.NoReply.validate_user(user,
-                    new_msg.verification_link(url_for('app_router.update_user_address',
+                    new_msg.verification_link(url_for_with_prefix('app_router.update_user_address',
                                                       token=new_msg.verification_token))).send()
                 return jsonify({'status': 'user must accept tos / update their address info'})
             else:

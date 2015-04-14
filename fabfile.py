@@ -73,7 +73,7 @@ def restart_gunicorn():
 @cd_and_prefix
 def deploy_run():
     run('git pull')
-    put('config/settings.py', settings.DEPLOY_SERVER_APP_PATH + '/config/settings.py')
+    #put('config/settings.py', settings.DEPLOY_SERVER_APP_PATH + '/config/settings.py')
     run('pip install -r requirements.txt')
     restart_gunicorn()
 
