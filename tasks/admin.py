@@ -5,8 +5,6 @@ import uuid
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.path.pardir))
 
-os.environ['PHANTOM_ENVIRONMENT'] = 'dev'
-
 from config import settings
 from app.phantom_mask import db
 from daily import import_congresspeople
@@ -14,7 +12,7 @@ from monthly import import_topics
 import traceback
 
 def reset_database(prompt=True):
-    if prompt:
+    if prompt is True:
         decision = raw_input("This will delete everything in the database. Are you sure you want to do this? [Y,n] ")
         decision2 = raw_input("Are you absolutely sure? This can not be undone... [Y,n] ")
     else:
@@ -27,17 +25,20 @@ def reset_database(prompt=True):
             db.create_all()
         except:
             print traceback.format_exc()
+        import_data()
     else:
         print "Aborting resetting database."
 
+def import_data():
+    print 'Importing congresspeople...'
+    import_congresspeople(from_cache=True)
+    print "Importing topics. This may take a while..."
+    import_topics(from_cache=True)
 
 def create_test_data():
     try:
-        from models import Topic
+        from app.models import Topic
         from tests.factories import user, user_message_info, message
-
-        print 'Importing congresspeople...'
-        import_congresspeople(from_cache=True)
 
         user1 = user(email='rioisk@gmail.com')
         umi1 = user_message_info(user=user1, info={
@@ -69,9 +70,6 @@ def create_test_data():
         msg3 = message(umi=umi3)
 
         print msg3.verification_link()
-
-        print "Importing topics. This may take a while..."
-        import_topics(from_cache=True)
 
     except:
         print traceback.format_exc()

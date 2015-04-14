@@ -21,14 +21,14 @@ def prepare_deploy(branch='master'):
     add_and_commit()
     push(branch)
 
-def cd_and_prefix(func):
 
+def cd_and_prefix(func):
     def inner():
         with cd(settings.DEPLOY_SERVER_APP_PATH):
             with prefix('if [ ! -f .venv/bin/activate ]; then virtualenv .venv; fi; source .venv/bin/activate'):
                 return func()
-
     return inner
+
 
 def kill_process_and_wait(process):
     try:
@@ -57,8 +57,12 @@ def stop_gunicorn():
     kill_process_and_wait('gunicorn')
 
 @cd_and_prefix
+def reset_database():
+    run('PHANTOM_ENVIRONMENT=prod python tasks/admin.py reset_database')
+
+@cd_and_prefix
 def start_gunicorn():
-    run('gunicorn -w 4 run:application --daemon -p gunicorn.pid')
+    run('PHANTOM_ENVIRONMENT=prod gunicorn -w 4 run:application --daemon -p gunicorn.pid')
 
 @cd_and_prefix
 def restart_gunicorn():

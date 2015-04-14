@@ -18,3 +18,4 @@ Celery
 jellyfish
 fabric
 gunicorn
+psycopg2

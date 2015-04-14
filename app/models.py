@@ -674,7 +674,7 @@ class Message(db.Model):
 class MessageLegislator(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message_id = db.Column(db.Integer, db.ForeignKey('message.id'))
-    legislator_id = db.Column(db.Integer, db.ForeignKey('legislator.bioguide_id'))
+    legislator_id = db.Column(db.String(7), db.ForeignKey('legislator.bioguide_id'))
     send_status = db.Column(db.String(4096), default='{"status": "unsent"}') # stringified JSON
     sent = db.Column(db.Boolean, default=False)
 
