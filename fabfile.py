@@ -21,7 +21,6 @@ def prepare_deploy(branch='master'):
     add_and_commit()
     push(branch)
 
-
 def cd_and_prefix(func):
 
     def inner():
@@ -38,6 +37,7 @@ def kill_process_and_wait(process):
         run('bin/pwait ' + pid)
     except:
         print 'Unable to kill ' + process + ' because there is no PID file.'
+    return True
 
 @cd_and_prefix
 def stop_celery():
