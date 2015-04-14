@@ -20,6 +20,7 @@ from sqlalchemy import and_
 from flask import url_for
 import jellyfish
 import sys
+from helpers import abs_base_url
 import os
 
 @contextmanager
@@ -241,7 +242,7 @@ class User(db.Model):
         @return: URL for confirmation email
         @rtype: string
         """
-        return settings.BASE_URL + (path if path is not None else '/validate/' + self.address_change_token) + \
+        return abs_base_url() + (path if path is not None else '/validate/' + self.address_change_token) + \
             '?' + urllib.urlencode({'email': self.email})
 
     @property
@@ -547,7 +548,7 @@ class Message(db.Model):
         @return: URL for confirmation email
         @rtype: string
         """
-        return settings.BASE_URL + (path if path is not None else '/validate/' + self.verification_token) + \
+        return abs_base_url() + (path if path is not None else '/validate/' + self.verification_token) + \
             '?' + urllib.urlencode({'email': self.user_message_info.user.email})
 
     def set_legislators(self, legislators):
