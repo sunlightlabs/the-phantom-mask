@@ -12,6 +12,7 @@ from app import phantom_mask
 import factories
 from tasks import daily
 from tasks import monthly
+from config import settings
 
 
 class phantom_maskTestCase(TestCase):
@@ -47,7 +48,7 @@ class phantom_maskTestCase(TestCase):
 
         @return:
         """
-        rv = self.client.get('/legislator_index')
+        rv = self.client.get(settings.BASE_PREFIX + '/legislator_index')
         assert 'Index of contactable legislators can be found below.' in rv.data
 
     def test_models__usermessageinfo(self):
