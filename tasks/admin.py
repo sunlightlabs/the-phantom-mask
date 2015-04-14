@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pat
 os.environ['PHANTOM_ENVIRONMENT'] = 'dev'
 
 from config import settings
-from phantom_mask import db
+from app.phantom_mask import db
 from daily import import_congresspeople
 from monthly import import_topics
 import traceback

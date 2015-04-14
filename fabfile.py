@@ -1,11 +1,13 @@
 from fabric.api import local
 from fabric.api import *
 from fabric.contrib.console import confirm
+from config import settings
 
-def prepare_deploy():
-    test()
-    add_and_commit()
-    push()
+# the user to use for the remote commands
+env.user = settings.DEPLOY_SERVER_USER
+# the servers where the commands are executed
+env.hosts = settings.DEPLOY_SERVER_HOSTS
+
 
 def test():
     local("python tests/phantom_mask_tests.py")
@@ -15,16 +17,23 @@ def add_and_commit():
     local("git add -p && git commit")
 
 
-def push():
-    local("git push origin master")
+def push(branch='master'):
+    local("git push origin " + branch)
 
-"""
+
+def prepare_deploy(branch='master'):
+    test()
+    add_and_commit()
+    push()
+
 
 def deploy():
-    code_dir = '/home/crd/the_phantom_mask'
-    with settings(warn_only=True):
-        if run("test -d %s" % code_dir).failed:
-            run("git clone https://github.com/sunlightlabs/the-phantom-mask.git %s" % code_dir)
-    with cd(code_dir):
-        run("git pull origin master")
-"""
+    prepare_deploy()
+    with cd(settings.DEPLOY_SERVER_APP_PATH):
+        run('git pull')
+        run('if [ ! -f .venv/bin/activate ]; then source .venv/bin/activate; else virtualenv .venv; fi')
+        run('pip install -r requirements.txt')
+        put('config/settings.py', settings.DEPLOY_SERVER_APP_PATH + '/config/settings.py')
+
+        run('')
+

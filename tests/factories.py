@@ -6,7 +6,7 @@ import json
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.path.pardir))
 
 
-import models
+from app import models
 
 
 def add_and_commit(factory):

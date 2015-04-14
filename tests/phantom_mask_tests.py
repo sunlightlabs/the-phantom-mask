@@ -7,8 +7,8 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pat
 os.environ['PHANTOM_ENVIRONMENT'] = 'test'
 ##########################################################################################
 
-import models
-import phantom_mask
+from app import models
+from app import phantom_mask
 import factories
 from tasks import daily
 from tasks import monthly
@@ -17,7 +17,7 @@ from tasks import monthly
 class phantom_maskTestCase(TestCase):
 
     def create_app(self):
-        app = phantom_mask.config_app(phantom_mask.create_app())
+        app = phantom_mask.route_app(phantom_mask.create_app())
         app.config['TESTING'] = True
         app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
         return app

@@ -4,8 +4,13 @@ import os
 
 env = os.environ.get('PHANTOM_ENVIRONMENT', 'dev')
 
-
 def create_app():
+    """
+    Creates the Flask app instance
+
+    @return: Flask app
+    @rtype: flask.Flask
+    """
     from flask import Flask
     app = Flask(__name__)
     # set debug to true so we see error dumps in the browser
@@ -15,17 +20,23 @@ def create_app():
     app.config['BASE_URL'] = settings.BASE_URL
     app.config['SQLALCHEMY_ECHO'] = settings.DATABASE[env]['echo']
     app.jinja_options['extensions'].append('jinja2.ext.loopcontrols')
-
     return app
 
 
-def config_app(app):
+def route_app(app):
+    """
+    Adds routes to the app
+
+    @param app: Flask app
+    @type app: flask.Flask
+    @return: Flask app
+    @rtype: flask.Flask
+    """
     # csrf protection
     from flask_wtf.csrf import CsrfProtect
     csrf = CsrfProtect()
     csrf.init_app(app)
 
-    # add routes
     from urls import app_router
     from urls import postmark_router
     app.register_blueprint(app_router)
@@ -34,9 +45,5 @@ def config_app(app):
 
     return app
 
-app = create_app()
-db = SQLAlchemy(app)
 
-# launch the app
-if __name__ == '__main__':
-    config_app(app).run()
+db = SQLAlchemy(create_app())

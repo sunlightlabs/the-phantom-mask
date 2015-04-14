@@ -5,10 +5,10 @@ import json
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.path.pardir))
 
 from config import settings
-from models import Topic
-from models import db
-from models import set_attributes
-from models import db_first_or_create
+from app.models import Topic
+from app.models import db
+from app.models import set_attributes
+from app.models import db_first_or_create
 
 
 def import_topics(from_cache=False):
