@@ -1,0 +1,141 @@
+#!/bin/bash
+# Copyright (c) 2013, William Ting.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+
+# modification, are permitted provided that the following conditions are met:
+#
+# - Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# - Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# default values
+version="0.4.4"
+interval=0.5
+
+name=0
+verbose=0
+
+# output formatting
+b1=
+b0=
+if [ "${TERM}" ]; then
+	b1=`tput bold`
+	b0=`tput sgr0`
+fi
+
+# assertions
+if [ -z "$(command -v ps)" ]; then
+    echo "pwait requires ps to be in \$PATH" 1>&2
+    exit 1
+fi
+
+# argument parsing
+while true; do
+    case "${1}" in
+        -i|--interval)
+            interval=${2}
+            shift 2
+            ;;
+        -n|--name)
+            name=1
+            declare -A pids
+            shift
+            ;;
+        -v|--verbose)
+            verbose=1
+            shift
+            ;;
+        -vv)
+            verbose=2
+            shift
+            ;;
+        --version)
+            echo "version ${version}"
+            exit
+            ;;
+        -*|--*)
+            echo "invalid option: ${1}" 1>&2
+            exit 1
+            ;;
+        *)
+            if [[ -n "${@}" ]]; then
+                # test if argument is a number
+                if ! (( name )) && ! [ ${1} -eq ${1} 2>/dev/null ]; then
+                    set -- "--name" "${@}"
+                else
+                    pids["${1}"]=1
+                    shift
+                fi
+            else
+                break
+            fi
+            ;;
+    esac
+done
+
+unset pids[0]
+if ! (( ${#pids[@]} )); then
+    echo "usage: ${0##*/} [-n|--name] [-v|--verbose] [pid or process_name...]" 1>&2
+    exit 1
+fi
+
+# check pids
+function display_pids {
+    if (( name )); then
+        for id in ${!pids[@]}; do
+            echo "watching [${id}]: $(pidof ${id} 2>/dev/null)"
+        done
+    else
+        echo "watching : ${!pids[@]}"
+    fi
+}
+
+function remove_pid {
+    unset pids[${1}]
+    if (( verbose )); then
+        echo "${b1}removed  : ${1}${b0}"
+    fi
+}
+
+if (( verbose )); then
+    echo "${b1}interval : ${interval}${b0}"
+    display_pids
+fi
+
+while true; do
+    for id in ${!pids[@]}; do
+        if ! (( name )) && [ ! -e "/proc/${id}" ]; then
+            remove_pid ${id}
+        elif (( name )) && ! ps -C "${id}" >/dev/null 2>&1; then
+            remove_pid ${id}
+        fi
+    done
+
+    if ! (( ${#pids[@]} )); then
+        break
+    fi
+
+    if (( verbose > 1 )); then
+        display_pids
+    fi
+
+    sleep ${interval}
+done
+
+exit
