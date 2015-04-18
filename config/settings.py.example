@@ -1,3 +1,12 @@
+APP_DEBUG = True
+
+ADMIN_EMAILS = []
+
+APP_SECRET_KEY = ""
+
+BASE_URL = 'http://localhost:5000'
+BASE_PREFIX = ''
+
 # API KEYS
 SUNLIGHT_API_KEY = ''
 PHANTOM_DEBUG_KEY = ''
@@ -9,26 +18,47 @@ EMAIL_SERVER = 'pop.gmail.com'
 EMAIL_USERNAME = ''
 EMAIL_PASSWORD = ''
 
-#postmark
+
 POSTMARK_API_KEY = ""
-
 PHANTOM_API_BASE = ""
-
 CONGRESS_API_BASE = "http://congress.api.sunlightfoundation.com"
+SELECT_SOLVER_BASE = ""
 
-SELECT_SOLVER_BASE = ''
 
-ADMIN_EMAILS = []
+DATABASE = {
+    'prod': {
+        'uri': 'postgresql://<username>:<password>@<host>/<database_name>',
+        'echo': False # set to true to print SQL statements to console
+    },
+    'dev': {
+        'uri': 'sqlite:////tmp/phantom_mask_dev.db',
+        'echo': True # set to true to print SQL statements to console
+    },
+    'test': {
+        'uri': 'sqlite:////tmp/phantom_mask_test.db',
+        'echo': False
+    }
+}
 
-APP_SECRET_KEY = ""
+# for fabric
+DEPLOY_SERVER_HOSTS = []
+DEPLOY_SERVER_USER = ''
+DEPLOY_SERVER_APP_PATH = ''
 
-DATABASE_URI = 'sqlite:////tmp/test.db'
-
-APP_DEBUG = True
+VIRTUAL_ENV_PATH = '.venv'
 
 NO_REPLY_EMAIL = ''
+SUPPORT_EMAIL = ''
 
-BASE_URL = 'http://localhost:5000'
+LEGISLATOR_DATA_CACHE = 'data/cached_legislators.json'
+TOPIC_DATA_CACHE = 'data/cached_topics.json'
+
+CELERY_BACKEND = 'redis://localhost:6379'
+CELERY_BROKER = 'redis://localhost:6379'
+CELERY_RETRY_DELAY = 3600 # seconds
+CELERY_MAX_RETRIES = 3
+
+CATCH_ALL_MYREPS = ''
 
 ADDRESS_DAYS_VALID = 180
 
@@ -37,3 +67,4 @@ USER_MESSAGE_LIMIT_CAPTCHA_COUNT = 5
 USER_MESSAGE_LIMIT_BLOCK_COUNT = 25
 
 GLOBAL_HOURLY_CAPTCHA_THRESHOLD = 1000
+
