@@ -4,6 +4,7 @@ import os
 import jinja2
 
 
+
 def abs_file_directory(file):
     dirname(realpath(file))
 

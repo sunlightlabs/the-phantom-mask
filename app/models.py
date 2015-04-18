@@ -15,12 +15,17 @@ from services import address_inferrence_service
 from services import geolocation_service
 from lib.dict_ext import remove_keys
 from lib.dict_ext import sanitize_keys
-from sqlalchemy import or_
-from sqlalchemy import and_
+from sqlalchemy import or_, and_, not_
 from flask import url_for
 import jellyfish
 import sys
+from util import render_without_request
 from helpers import abs_base_url
+from flask.ext.login import UserMixin
+import flask_login
+from flask_admin.contrib.sqla import ModelView
+from flask import jsonify, redirect, request
+
 import os
 
 @contextmanager
@@ -109,11 +114,54 @@ def uid_creator(cls, *args):
                 return potential_token
     return create_uid
 
+class MyModelView(ModelView):
+
+    def _handle_view(self, name, **kwargs):
+        if name != 'login' and not self.is_accessible():
+            return redirect(url_for('admin.login', next=request.url))
+
+    def is_accessible(self):
+        return flask_login.current_user.is_authenticated()
+
+
+class BaseAnalytics(object):
+
+    def __init__(self, model):
+        self.model = model
+        self.today = datetime.datetime.today()
+        self.today_start = self.today.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    def total_count(self):
+        return self.model.query.count()
+
+    def new_today(self):
+        return self.new_last_n_days(0)
+
+    def new_last_n_days(self, n_days):
+        return self.model.query.filter(self.model.created_at > (self.today_start - datetime.timedelta(days=n_days))).count()
+
+    def new_in_range(self, start_days, end_days):
+        return self.model.query.filter(and_(self.model.created_at > (self.today_start - datetime.timedelta(days=start_days)),
+                               self.model.created_at < (self.today_start - datetime.timedelta(days=end_days)))).count()
+
+    def growth_rate(self, n_days):
+        last_n = float(self.new_last_n_days(n_days))
+        prev_last_n = float(self.new_in_range(n_days*2, n_days))
+        return (last_n - prev_last_n) / last_n
+
+
+
+
 
 class Legislator(db.Model):
     """
     Thin model for storing data on current representatives.
     """
+
+    class ModelView(MyModelView):
+
+        column_searchable_list = ['bioguide_id', 'chamber', 'state', 'title',
+                                  'first_name', 'last_name', 'oc_email', 'contact_form']
 
     bioguide_id = db.Column(db.String(7), primary_key=True, info={'official': True})
     chamber = db.Column(db.String(20),info={'official': True})
@@ -168,10 +216,46 @@ class Legislator(db.Model):
         return "https://raw.githubusercontent.com/unitedstates/images/gh-pages/congress/" + \
                dimensions.get(size, dimensions.values()[0]) + "/" + self.bioguide_id + '.jpg'
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
+class AdminUser(db.Model, UserMixin):
+
+    class ModelView(MyModelView):
+        column_searchable_list = ['username']
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(256), unique=True, nullable=False)
+    pw_hash = db.Column(db.String(66), unique=False, nullable=False)
+
+    # UserMixin for flask.ext.login
+    active = db.Column(db.Boolean, default=True)
+    anonymous = db.Column(db.Boolean, default=False)
+
+    def is_active(self):
+        return self.active
+
+    def is_anonymous(self):
+        return self.anonymous
+
+    def set_password(self, password):
+        self.pw_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.pw_hash, password)
+
+    def get_id(self):
+        return unicode(self.id)
+
+
+
 class User(db.Model):
+
+    class ModelView(MyModelView):
+        column_searchable_list = ['email', 'address_change_token']
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), unique=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
     user_infos = db.relationship('UserMessageInfo', backref='user')
     role = db.Column(db.Integer, default=0)
     address_change_token = db.Column(db.String(64), default=uid_creator('User', 'address_change_token'))
@@ -185,14 +269,22 @@ class User(db.Model):
     def __repr__(self):
         return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
 
+    def __html__(self):
+        return render_without_request('snippets/user.html', user=self)
+
     @classmethod
     def global_captcha(cls):
         return Message.query.filter((datetime.datetime.now() - datetime.timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS)
                                     < Message.sent_at)).count() > settings.GLOBAL_HOURLY_CAPTCHA_THRESHOLD
 
+
     def new_address_change_token(self):
         self.address_change_token = uid_creator('User', 'address_change_token')()
         db.session.commit()
+        return self.address_change_token
+
+    def get_role(self):
+        return self.ROLES.get(self.role, 'unknown')
 
     def is_admin(self):
         return self.ROLES.get(self.role) is 'admin'
@@ -253,8 +345,20 @@ class User(db.Model):
     def json(self):
         return to_json(self, self.__class__)
 
+    class Analytics(BaseAnalytics):
+
+        def __init__(self):
+            super(User.Analytics, self).__init__(User)
+
+        def users_with_verified_districts(self):
+            return UserMessageInfo.query.join(User).filter(
+                and_(UserMessageInfo.default.is_(True), not_(UserMessageInfo.district.is_(None)))).count()
 
 class UserMessageInfo(db.Model):
+
+    class ModelView(MyModelView):
+        column_searchable_list = ['first_name', 'last_name', 'street_address', 'street_address2', 'city', 'state',
+                                  'zip5', 'zip4', 'phone_number']
 
     # meta data
     id = db.Column(db.Integer, primary_key=True)
@@ -397,10 +501,13 @@ class UserMessageInfo(db.Model):
 
 class Topic(db.Model):
 
+    class ModelView(MyModelView):
+        column_searchable_list = ['name']
+
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(512))
+    name = db.Column(db.String(512), unique=True)
     wikipedia_parent = db.Column(db.Integer, db.ForeignKey('topic.id'))
-    messages = db.relationship('Message', backref='topic')
+    msg_legs = db.relationship('MessageLegislator', backref='topic')
 
     def __repr__(self):
         return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
@@ -462,6 +569,28 @@ class Topic(db.Model):
 
 class Message(db.Model):
 
+    class ModelView(MyModelView):
+        column_searchable_list = ['to_originally', 'subject', 'msgbody', 'verification_token']
+
+        def scaffold_form(self):
+            from wtforms import SelectMultipleField
+            form_class = super(Message.ModelView, self).scaffold_form()
+            form_class.legislators = SelectMultipleField('Add Legislators', choices=[(x.bioguide_id,x.bioguide_id) for x in Legislator.query.all()])
+            return form_class
+
+        def update_model(self, form, model):
+            if super(Message.ModelView, self).update_model(form, model):
+                if model.set_legislators(Legislator.query.filter(Legislator.bioguide_id.in_(form.legislators.data)).all()):
+                    return True
+
+        def validate_form(self, form):
+            if super(Message.ModelView, self).validate_form(form):
+                legs = Legislator.query.filter(Legislator.bioguide_id.in_(form.legislators.data))
+                if len(form.legislators.data) != legs.count():
+                    form.legislators.errors = ['Legislators with provided bioguides do not exist.']
+                    return False
+                return True
+
     id = db.Column(db.Integer, primary_key=True)
     sent_at = db.Column(db.DateTime, default=datetime.datetime.now)
     # original recipients from email as json list
@@ -471,7 +600,6 @@ class Message(db.Model):
 
     # relations
     user_message_info_id = db.Column(db.Integer, db.ForeignKey('user_message_info.id'))
-    topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'))
     to_legislators = db.relationship('MessageLegislator', backref='message')
 
     # email uid from postmark
@@ -624,8 +752,8 @@ class Message(db.Model):
         else:
             return 'sent'
 
-    def associate_legislators(self):
-        if not self.to_legislators:
+    def associate_legislators(self, force=False):
+        if force or not self.to_legislators:
             self.set_legislators(self.user_message_info.members_of_congress)
 
     def send(self, fresh=False):
@@ -635,8 +763,6 @@ class Message(db.Model):
         @return: list of MessageLegislator instances that were processed
         @rtype: list[models.MessageLegislator]
         """
-        self.user_message_info.complete_information()
-        self.associate_legislators()
         newly_sent = []
         for msg_leg in self.to_legislators:
             try:
@@ -672,12 +798,45 @@ class Message(db.Model):
             '$ADDRESS_STATE_FULL': usps.CODE_TO_STATE.get(umi.state)
         }
 
+    class Analytics():
+
+        def __init__(self):
+            self.today = datetime.datetime.today()
+            self.today_start = self.today.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        def total_messages(self):
+            return Message.query.count()
+
+        def new_messages_today(self):
+            return self.new_users_last_n_days(0)
+
+        def new_messages_last_n_days(self, n_days):
+            return User.query.filter(User.created_at > (self.today_start - datetime.timedelta(days=n_days))).count()
+
+        def new_users_range(self, start_days, end_days):
+            return User.query.filter(and_(User.created_at > (self.today_start - datetime.timedelta(days=start_days)),
+                                   User.created_at < (self.today_start - datetime.timedelta(days=end_days)))).count()
+
+        def growth_rate(self, n_days):
+            last_n = float(self.new_users_last_n_days(n_days))
+            prev_last_n = float(self.new_users_range(n_days*2, n_days))
+            return (last_n - prev_last_n) / last_n
+
+        def users_with_verified_districts(self):
+            return UserMessageInfo.query.join(User).filter(
+                and_(UserMessageInfo.default.is_(True), not_(UserMessageInfo.district.is_(None)))).count()
+
 class MessageLegislator(db.Model):
+
+    class ModelView(MyModelView):
+        column_searchable_list = ['send_status']
+
     id = db.Column(db.Integer, primary_key=True)
     message_id = db.Column(db.Integer, db.ForeignKey('message.id'))
     legislator_id = db.Column(db.String(7), db.ForeignKey('legislator.bioguide_id'))
+    topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'))
     send_status = db.Column(db.String(4096), default='{"status": "unsent"}') # stringified JSON
-    sent = db.Column(db.Boolean, default=False)
+    sent = db.Column(db.Boolean, nullable=True, default=None)
 
     def __repr__(self):
         return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
@@ -718,21 +877,18 @@ class MessageLegislator(db.Model):
                         if field == '$TOPIC':
                             # need lower case strings for select-solver
                             options = {k.lower(): v for k, v in options.items()}
-                            try:
-                                # try to determine best topic based off content of text
+                            try:  # try to determine best topic based off content of text
                                 choice = Topic.topic_for_message(options.keys(), self.message)
                                 json_dict['fields'][field] = choice
-                                self.message.topic = Topic.query.filter_by(name=choice).first()
-                            except:
-                                # if failed, choose a random topic
+                                self.topic = Topic.query.filter_by(name=choice).first()
+                            except:  # if failed, choose a random topic
                                 pass
                         if field not in json_dict['fields'] or json_dict['fields'][field] not in options.values():
                             json_dict['fields'][field] = random.choice(options.values())
                     if field not in json_dict['fields'].keys():
                         print 'What the heck is ' + step.get('value') + ' in ' + bioguide_id + '?'
                 result = phantom_on_the_capitol.fill_out_form(json_dict)
-                if result['status'] == 'success':
-                    self.sent = True
+                self.sent = result['status'] == 'success'
                 self.send_status = json.dumps(result)
             db.session.commit()
             return self

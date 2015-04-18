@@ -30,6 +30,30 @@ class NoReply():
 
     @classmethod
     @apply_admin_filter
+    def token_reset(cls, user, veri_link):
+        """
+        Handles the case of a first time user or a user who needs to renew this contact infomration.
+
+        @param user: the user to send the email to
+        @type user: models.User
+        @param veri_link: the verification link to enter in their information
+        @type veri_link: string
+        @return: a python representation of a postmark object
+        @rtype: PMMail
+        """
+        return PMMail(api_key=settings.POSTMARK_API_KEY,
+                      sender=cls.SENDER_EMAIL,
+                      to=user.email,
+                      subject="Your OpenCongress Email Token has been reset.",
+                      html_body=render_without_request("emails/reset_token.html",
+                                                        context={'verification_link': veri_link,
+                                                                 'user': user}),
+                      track_opens=True
+                      )
+
+
+    @classmethod
+    @apply_admin_filter
     def validate_user(cls, user, veri_link):
         """
         Handles the case of a first time user or a user who needs to renew this contact infomration.

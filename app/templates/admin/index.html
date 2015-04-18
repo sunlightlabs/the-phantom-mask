@@ -1,0 +1,62 @@
+{% extends 'admin/master.html' %}
+
+{% block head_css %}
+    {{ super() }}
+    {% include 'head/css.html' %}
+{% endblock %}
+
+{% block body %}
+    <div id="at-a-glance">
+        <h3>Quick Statistics</h3>
+
+        <div id="at-a-glance-summary">
+            <h4>SUMMARY</h4>
+            <table class="pure-table pure-table-bordered">
+                <tbody>
+                    <td><strong>Message / User</strong></td>
+                    <td>{{ context.avg_msg_per_user }}</td>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="at-a-glance-user">
+            <h4>USERS</h4>
+            <table class="pure-table pure-table-bordered">
+                <tbody>
+                    <tr>
+                        <td><strong>Total Users</strong></td>
+                        <td>{{ context.user_count }}</td>
+                        <td><strong>Total Users w/ Districts</strong></td>
+                        <td>{{ context.users_w_districts_count }}</td>
+                        <td><strong>Users w/ Districts %</strong></td>
+                        <td>{{ context.users_w_districts_percent }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>New Users Today</strong></td>
+                        <td>{{ context.new_users_today_count }}</td>
+                        <td><strong>New Users Last 30 Days</strong></td>
+                        <td>{{ context.new_users_last_30_count }}</td>
+                        <td><strong>New Users Growth Rate</strong></td>
+                        <td>{{ context.new_users_growth_rate }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="at-a-glance-message">
+            <h4>MESSAGES</h4>
+            <table class="pure-table pure-table-bordered">
+                <tbody>
+                    <td><strong>Total Messages</strong></td>
+                    <td>{{ context.message_count }}</td>
+                    <td><strong>Unsent </strong></td>
+                    <td>{{ context.message_count }}</td>
+                </tbody>
+            </table>
+        </div>
+
+        <table class="pure-table pure-table-bordered">
+
+        </table>
+    </div>
+{% endblock %}

@@ -4,17 +4,50 @@ import re
 from lib import usps
 from services import address_inferrence_service
 from phantom_mask import db
-from models import UserMessageInfo
+from models import UserMessageInfo, AdminUser, User, db_first_or_create
 import datetime
 
-class MessageForm(Form):
+class MyBaseForm(Form):
 
     def __init__(self, formdata, post_action_url, **kwargs):
-        super(MessageForm, self).__init__(formdata, **kwargs)
+        super(MyBaseForm, self).__init__(formdata, **kwargs)
         self.post_action_url = post_action_url
+
+    def data_dict(self):
+        """
+        Gets data from form in dict with format {field.name: field.data ...}
+
+        @return: dict of data
+        @rtype: dict[str, (str|int|type)]
+        """
+        return {getattr(field, 'name'): getattr(field, 'data') for field in self}
+
+
+class TokenResetForm(MyBaseForm):
+
+    email = StringField('Email', validators=[validators.Email(message='Please enter a valid e-mail address.')])
+
+
+class LoginForm(MyBaseForm):
+
+    username = StringField("Username", validators=[validators.DataRequired()])
+    password = PasswordField("Password", validators=[validators.DataRequired()])
+
+    def validate_credentials(self):
+        if self.validate():
+            admin = AdminUser.query.filter_by(username=self.username.data).first()
+            if admin is not None and admin.check_password(self.password.data):
+                return admin
+        return False
+
+class MessageForm(MyBaseForm):
 
     subject = StringField("Subject", [validators.Length(min=0, max=255)])
     msgbody = TextAreaField("Message", [validators.Length(min=1, max=8000)])
+
+    @property
+    def error_dict(self):
+        return {field.label.text: field.errors for field in self}
 
     def populate_data_from_message(self, msg):
         """
@@ -30,15 +63,11 @@ class MessageForm(Form):
                 continue
 
 
-class RegistrationForm(Form):
-
-    def __init__(self, formdata, post_action_url, **kwargs):
-        super(RegistrationForm, self).__init__(formdata, **kwargs)
-        self.post_action_url = post_action_url
+class RegistrationForm(MyBaseForm):
 
     prefix = SelectField('Prefix',
                          choices=[(x,x) for x in ['Choose...','Mr.','Mrs.','Ms.','Dr.']],
-                         validators=[validators.NoneOf(['Choose...'])])
+                         validators=[validators.NoneOf(['Choose...'], message='Please select a prefix.')])
     first_name = StringField('First name',
                              validators=[validators.DataRequired()])
     last_name = StringField('Last name',
@@ -49,14 +78,19 @@ class RegistrationForm(Form):
     city = StringField('City', [validators.DataRequired()])
     state = SelectField('State',
                         choices=[('Choose...','Choose...')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
-                        validators=[validators.NoneOf(['Choose...'])])
-    email = StringField('E-Mail', [validators.Email()])
-    zip5 = StringField('Zipcode', [validators.Length(min=5, max=5)])
-    zip4 = StringField('Zip 4', [validators.Length(min=4, max=4)])
+                        validators=[validators.NoneOf(['Choose...'], message='Please select a state.')])
+    email = StringField('E-Mail', [validators.Email(message='Please enter a valid e-mail address.')])
+    zip5 = StringField('Zipcode', [validators.Length(min=5, max=5, message='Must be a 5 digit number')])
+    zip4 = StringField('Zip 4', [validators.Length(min=4, max=4, message='must be a 4 digit number.')])
     phone_number = StringField('Phone number',
-                   [validators.Regexp(re.compile('^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'))])
+                   [validators.Regexp(re.compile('^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'),
+                                      message="Please enter a valid phone number.")])
 
     accept_tos = BooleanField('I accept the terms of service and privacy policy', [validators.DataRequired()])
+
+    @property
+    def error_dict(self):
+        return {field.label.text: field.errors for field in self}
 
     def resolve_zip4(self, force=False):
         if force or not self.zip4.data:
@@ -69,23 +103,23 @@ class RegistrationForm(Form):
 
     def validate_and_save_to_db(self, user, msg=None):
         """
-        Validates the form and (if valid) saves the data to the database
+        Validates the form and (if valid) saves the data to the database.
 
         @param user: the user
         @type user: models.User
         @param msg: the message
         @type msg: models.Message
-        @return: True if success, False otherwise
+        @return: True if validation and save is successful, False otherwise
         @rtype: boolean
         """
         if self.validate():
 
             # get user's default info and either create new info or get the same info instance
             first_umi = UserMessageInfo.query.filter_by(user=user, default=True).first()
-            kwargs = {getattr(field, 'name'): getattr(field, 'data') for field in self}
-            umi = first_umi if first_umi.accept_tos is None else UserMessageInfo.first_or_create(user.id, **kwargs)
+            umi = first_umi if (first_umi and first_umi.accept_tos is None) \
+                else UserMessageInfo.first_or_create(user.id, **self.data_dict())
 
-            # check if the new user info differs from the newly submitted info
+            # check if the new user info differs from the newly submitted info and adjust appropriately
             if first_umi.id is not umi.id:
                 first_umi.default = False
                 umi.default = True

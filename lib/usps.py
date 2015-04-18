@@ -1,8 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 
-requests.packages.urllib3.disable_warnings()
-
 CODE_TO_STATE = {
     'WA': 'Washington', 'WI': 'Wisconsin', 'WV': 'West Virginia',
     'FL': 'Florida', 'FM': 'Federated States of Micronesia',

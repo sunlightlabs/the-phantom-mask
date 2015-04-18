@@ -8,19 +8,131 @@ from postmark_inbound import PostmarkInbound
 from lib.usps import CODE_TO_STATE
 import emailer
 import forms
+import flask_login
 from config import settings
 from phantom_mask import db
+from flask.ext.login import login_user, logout_user, login_required, current_user
 from sqlalchemy import func
-from models import Legislator, Message, MessageLegislator, User, UserMessageInfo, db_first_or_create, db_add_and_commit
+from models import Legislator, Message, MessageLegislator, User, AdminUser, UserMessageInfo, db_first_or_create, db_add_and_commit
 from helpers import render_template_wctx, convert_token, url_for_with_prefix
 from scheduler import send_to_phantom_of_the_capitol
+from flask_admin import expose
+import flask_admin as admin
+from flask.ext.login import LoginManager
+from sqlalchemy import and_, not_
+import datetime
+
+login_manager = LoginManager()
+
+class MyAdminIndexView(admin.AdminIndexView):
+
+    @login_manager.user_loader
+    def load_admin(adminid):
+        return AdminUser.query.get(int(adminid))
+
+    def is_accessible(self):
+        return flask_login.current_user.is_authenticated()
+
+    def _handle_view(self, name, **kwargs):
+        if name != 'login' and not self.is_accessible():
+            return redirect(url_for('admin.login', next=request.url))
+
+    @expose('/')
+    def index(self):
+
+
+        user_analytics = User.Analytics()
+
+
+        user_count = user_analytics.total_count()
+        message_count = Message.query.count()
+        message_leg_count = MessageLegislator.query.filter_by(sent=None).count()
+        users_w_districts_count = user_analytics.users_with_verified_districts()
+
+
+        context = {
+            'users_w_districts_percent': '{:.2%}'.format(float(users_w_districts_count) / float(user_count)),
+            'new_users_growth_rate': '{:.2%}'.format(user_analytics.growth_rate(30)),
+            'new_users_last_30_count': user_analytics.new_last_n_days(30),
+            'user_count': user_count,
+            'new_users_today_count': user_analytics.new_today(),
+            'message_count': message_count,
+            'message_leg_count': message_leg_count,
+            'users_w_districts_count': users_w_districts_count,
+            'avg_msg_per_user': float(message_count) / float(user_count),
+            'total_msg_to_legs': MessageLegislator.query.count(),
+            'unsent_msg_to_legs': MessageLegislator.query.filter_by(sent=None).count(),
+            'sent_msg_to_legs': MessageLegislator.query.filter_by(sent=True).count(),
+            'error_msg_to_legs': MessageLegislator.query.filter_by(sent=False).count()
+        }
+
+        return self.render('admin/index.html', context=context)
+        #return super(MyAdminIndexView, self).
+
+    @expose('/login', methods=['GET', 'POST'])
+    def login(self):
+        form = forms.LoginForm(request.form, url_for_with_prefix('.login'))
+        if request.method == 'POST':
+            admin = form.validate_credentials()
+            if admin: login_user(admin)
+            return redirect(url_for_with_prefix('.index'))
+        return render_template_wctx('pages/admin_login.html', context={'form': form})
+
+    @expose('/logout', methods=['GET', 'POST'])
+    def logout(self):
+        logout_user()
+        return redirect(url_for_with_prefix('admin.login'))
+
+
+def redirect_unknown_tokens(viewfunc):
+
+    def token_or_redirect(**kwargs):
+        msg, umi, user = convert_token(kwargs.get('token', ''), request.args.get('email', None))
+        if user is None:
+            return redirect(url_for_with_prefix('app_router.reset_token'))
+        kwargs.update({'msg':msg, 'umi': umi, 'user': user})
+        return viewfunc(**kwargs)
+
+    tur = token_or_redirect
+    tur.__name__ = viewfunc.__name__ # Blueprint in urls.py expects name of original method
+    return token_or_redirect
 
 
 def legislator_index():
-    return render_template_wctx('pages/legislator_index.html', context={'legislators': Legislator.query.all(),
-                                                                        'states': CODE_TO_STATE})
 
-def address_changed(token):
+    context = {
+        'legislators': Legislator.query.all(),
+        'states': CODE_TO_STATE
+    }
+
+    return render_template_wctx('pages/legislator_index.html', context=context)
+
+
+def reset_token():
+    """
+    View to allow user to reset their token if it becomes compromised, they can't find
+    the link in their email, or otherwise.
+    """
+
+    form = forms.TokenResetForm(request.form, url_for_with_prefix('app_router.' + inspect.stack()[0][3]))
+
+    context = {
+        'form': form
+    }
+
+    if form.validate_on_submit():
+        context['success'] = True
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            user.new_address_change_token()
+            emailer.NoReply.token_reset(user, user.address_change_link()).send()
+
+    return render_template_wctx('pages/reset_token.html', context=context)
+
+
+
+def address_changed(token=''):
+
 
     user = User.query.filter_by(address_change_token=token)
 
@@ -32,7 +144,9 @@ def address_changed(token):
     return redirect(url_for_with_prefix('app_router.update_user_address', token=user.address_change_token) +
                              '?' + urllib.urlencode({'email': user.email}))
 
-def confirm_reps(token):
+
+@redirect_unknown_tokens
+def confirm_reps(token='', msg=None, umi=None, user=None):
     """
     Confirm members of congress and submit message (if message present)
 
@@ -42,10 +156,6 @@ def confirm_reps(token):
     @rtype:
     """
 
-    msg, umi, user = convert_token(token, request.args.get('email', None))
-
-    if user is None or umi.accept_tos is None:
-        abort(404)
 
     form = forms.MessageForm(request.form, url_for_with_prefix('app_router.' + inspect.stack()[0][3],
                                                    token=token) + '?email=' + urllib2.quote(user.email))
@@ -59,7 +169,7 @@ def confirm_reps(token):
         'legislators': moc
     }
 
-    if msg is not None and request.method == 'POST':
+    if msg is not None and request.method == 'POST' and form.validate():
         # this message has been sent so invalidate the link
         msg.live_link = False
         db.session.commit()
@@ -74,12 +184,8 @@ def confirm_reps(token):
         return render_template_wctx('pages/confirm_reps.html', context=context)
 
 
-def update_user_address(token):
-
-    msg, umi, user = convert_token(token, request.args.get('email', None))
-
-    if user is None:
-        abort(404)
+@redirect_unknown_tokens
+def update_user_address(token='', msg=None, umi=None, user=None):
 
     # instantiate form and populate with data if it exists
     form = forms.RegistrationForm(request.form, url_for_with_prefix('app_router.' + inspect.stack()[0][3],

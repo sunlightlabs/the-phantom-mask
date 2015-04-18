@@ -4,15 +4,19 @@
 
         <legend>Please fill out the form below.<a class="faq-italic" style="float:right" href="/faq#why_do_we_ask_for_this_information">Why do we ask for this information?</a></legend>
 
+        {% if data.form.error_dict %}
+            <ul class="errors">{% for name, error in data.form.error_dict.iteritems() %}<li>{{ name }} - {{ error }}</li>{% endfor %}</ul>
+        {% endif %}
+
         <div class="pure-g">
 
             <div class="pure-u-5 pure-u-md-1-5">
-                {{ data.form.prefix.label }}{{ data.form.errors.first_name }}
+                {{ data.form.prefix.label }}
                 {{ data.form.prefix(class="pure-u-23-24") }}
             </div>
 
             <div class="pure-u-5 pure-u-md-2-5">
-                {{ data.form.first_name.label }}{{ data.form.errors.first_name }}
+                {{ data.form.first_name.label }}
                 {{ data.form.first_name(class="pure-u-23-24", type="text", placeholder="John") }}
             </div>
 

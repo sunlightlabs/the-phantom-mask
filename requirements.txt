@@ -19,3 +19,6 @@ jellyfish
 fabric
 gunicorn
 psycopg2
+flask-login
+flask-paginate
+flask-admin

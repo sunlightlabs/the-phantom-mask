@@ -10,6 +10,8 @@ from app.phantom_mask import db
 from daily import import_congresspeople
 from monthly import import_topics
 import traceback
+import string
+import random
 
 def reset_database(prompt=True):
     if prompt is True:
@@ -38,7 +40,7 @@ def import_data():
 def create_test_data():
     try:
         from app.models import Topic
-        from tests.factories import user, user_message_info, message
+        from tests.factories import user, user_message_info, message, admin_user
 
         user1 = user(email='rioisk@gmail.com')
         umi1 = user_message_info(user=user1, info={
@@ -70,6 +72,11 @@ def create_test_data():
         msg3 = message(umi=umi3)
 
         print msg3.verification_link()
+
+        for i in range(0,100):
+            user(email=(''.join(random.choice(string.ascii_lowercase) for _ in range(10)))+'@example.com')
+
+        admin1 = admin_user()
 
     except:
         print traceback.format_exc()

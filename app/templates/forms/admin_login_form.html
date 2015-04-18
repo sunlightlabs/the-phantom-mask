@@ -1,0 +1,31 @@
+<form id="address-form" class="pure-form" method="POST" action="{{ form.post_action_url }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+    <div class="pure-form" style="text-align:center">
+
+          {% if form.error_dict %}
+            <ul class="errors">{% for name, error in form.error_dict.iteritems() %}<li>{{ name }} - {{ error }}</li>{% endfor %}</ul>
+        {% endif %}
+
+    <fieldset>
+
+        <legend>Admin Login Form</legend>
+
+           {{ form.username.label }}
+            {{ form.username }}
+
+
+                    {{ form.password.label }}
+                {{ form.password }}
+
+                                    <button type="submit" class="pure-button pure-button-primary">Submit</button>
+
+
+
+
+
+
+    </fieldset>
+
+    </div>
+</form>

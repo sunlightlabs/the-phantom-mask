@@ -25,6 +25,12 @@ def user(email='john@example.com'):
     return models.User(email=email)
 
 @add_and_commit
+def admin_user(username='admin', password='admin'):
+    a = models.AdminUser(username=username)
+    a.set_password(password)
+    return a
+
+@add_and_commit
 def user_message_info(user, info=None):
     if info is None:
         info = {
