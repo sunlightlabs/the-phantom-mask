@@ -9,6 +9,9 @@ def register_with_app(inst_func):
 
     def register(app=None, csrf=None):
         obj = inst_func(app, csrf)
+        if csrf is not None:
+            if type(obj) is Blueprint:
+                csrf.exempt(obj)
         if app is not None:
             if type(obj) is Blueprint:
                 app.register_blueprint(obj)
@@ -45,6 +48,7 @@ def create_app_router(app, csrf):
     app_router.route('/legislator_index', methods=['GET'])(views.legislator_index)
     app_router.route('/ajax/autofill_address', methods=['POST'])(actions.autofill_address)
     app_router.route('/reset_token', methods=['GET', 'POST'])(views.reset_token)
+    app_router.route('/recaptcha/<token>', methods=['GET', 'POST'])(views.confirm_with_recaptcha)
 
     return app_router
 

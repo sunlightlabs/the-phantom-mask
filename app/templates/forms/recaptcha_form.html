@@ -1,0 +1,14 @@
+<form id='recaptcha_form' method="POST" action="{{ form.post_action_url }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+    <p>
+        {% for error in form.recaptcha.errors %}
+            {{ error }}
+        {% endfor %}
+        {{ form.recaptcha }}
+    </p>
+
+    <p>
+        <input type="submit" value="Submit">
+    </p>
+</form>

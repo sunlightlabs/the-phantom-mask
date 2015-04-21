@@ -18,7 +18,7 @@ from flask import url_for
 class phantom_maskTestCase(TestCase):
 
     def create_app(self):
-        app = phantom_mask.config_app(phantom_mask.create_app())
+        app = phantom_mask.config_ext(phantom_mask.create_app())
         app.config['TESTING'] = True
         app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
         return app

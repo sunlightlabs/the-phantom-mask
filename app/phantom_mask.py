@@ -21,11 +21,15 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = settings.DATABASE[env]['uri']
     app.config['BASE_URL'] = settings.BASE_URL
     app.config['SQLALCHEMY_ECHO'] = settings.DATABASE[env]['echo']
+    app.config['RECAPTCHA_PUBLIC_KEY'] = settings.RECAPTCHA_PUBLIC_KEY
+    app.config['RECAPTCHA_PRIVATE_KEY'] = settings.RECAPTCHA_PRIVATE_KEY
+
     app.jinja_options['extensions'].append('jinja2.ext.loopcontrols')
+
     return app
 
 
-def config_app(app):
+def config_ext(app):
     """
     Configures the app with extensions.
 

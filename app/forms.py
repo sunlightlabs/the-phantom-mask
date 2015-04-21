@@ -6,6 +6,7 @@ from services import address_inferrence_service
 from phantom_mask import db
 from models import UserMessageInfo, AdminUser, User, db_first_or_create
 import datetime
+from flask.ext.wtf.recaptcha import RecaptchaField
 
 class MyBaseForm(Form):
 
@@ -26,6 +27,11 @@ class MyBaseForm(Form):
 class TokenResetForm(MyBaseForm):
 
     email = StringField('Email', validators=[validators.Email(message='Please enter a valid e-mail address.')])
+
+
+class RecaptchaForm(MyBaseForm):
+
+    recaptcha = RecaptchaField()
 
 
 class LoginForm(MyBaseForm):

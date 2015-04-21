@@ -1,6 +1,8 @@
 from config import settings
-import models
+from models import Message, User
 from flask import render_template, url_for
+from sqlalchemy import and_, not_
+import urllib
 
 def abs_base_url():
     return settings.BASE_URL + settings.BASE_PREFIX
@@ -8,13 +10,11 @@ def abs_base_url():
 def url_for_with_prefix(endpoint, **values):
     return settings.BASE_PREFIX + url_for(endpoint, **values)
 
+def append_get_params(url, **kwargs):
+    return url + '?' + urllib.urlencode(kwargs)
 
-def get_page_number(request):
-    try:
-        page = int(request.args.get('page', 1))
-    except ValueError:
-        page = 1
-    return page
+def app_router_path(func_name, token, email, **kwargs):
+    return append_get_params(url_for_with_prefix('app_router.' + func_name, token=token), email=email)
 
 
 def render_template_wctx(template_name_or_list, **context):
@@ -52,13 +52,13 @@ def convert_token(token, email_param):
     @rtype: (models.Message, models.UserMessageInfo, models.User)
     """
 
-    msg = models.Message.query.filter_by(verification_token=token, live_link=True).first()
+    msg = Message.query.filter(and_(Message.verification_token==token, not_(Message.link_status.is_(None)))).first()
     if msg is not None and msg.user_message_info.user.email == email_param:
         umi = msg.user_message_info
         user = umi.user
         return msg, umi, user
 
-    user = models.User.query.filter_by(address_change_token=token, email=email_param).first()
+    user = User.query.filter_by(address_change_token=token, email=email_param).first()
     if user is not None and user.email == email_param:
         return None, user.default_info, user
 

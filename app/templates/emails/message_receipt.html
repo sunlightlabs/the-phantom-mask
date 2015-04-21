@@ -6,7 +6,7 @@ test
 
 {% block body %}
 
-    {% if context.rls == 'free' %}
+    {% if context.rls == None %}
 
         {% if context.legislators['contactable'] %}
             <p>Your message is schedule to be sent to the following legislators:</p>

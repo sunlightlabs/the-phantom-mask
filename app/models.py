@@ -20,11 +20,12 @@ from flask import url_for
 import jellyfish
 import sys
 from util import render_without_request
-from helpers import abs_base_url
 from flask.ext.login import UserMixin
 import flask_login
 from flask_admin.contrib.sqla import ModelView
 from flask import jsonify, redirect, request
+from sqlalchemy import func
+
 
 import os
 
@@ -36,12 +37,14 @@ def get_db_session():
         db.session.remove()
 
 
-def set_attributes(model, attrs):
+def set_attributes(model, attrs, commit=False):
     for k, v in attrs:
         try:
             setattr(model, k, v)
         except:
             continue
+    if commit:
+        db.session.commit()
     return model
 
 
@@ -184,6 +187,32 @@ class Legislator(db.Model):
     def __repr__(self):
         return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
 
+    @classmethod
+    def get_leg_buckets_from_emails(self, permitted_legs, emails):
+        legs = {label: [] for label in ['contactable','non_existent','uncontactable','does_not_represent']}
+        inbound_emails = [email_addr for email_addr in emails]
+
+        # user sent to catchall address
+        if settings.CATCH_ALL_MYREPS in inbound_emails:
+            legs['contactable'] = permitted_legs
+            inbound_emails.remove(settings.CATCH_ALL_MYREPS)
+
+        # maximize error messages for users for individual addresses
+        for recip_email in inbound_emails:
+            leg = Legislator.query.filter(func.lower(Legislator.oc_email) == func.lower(recip_email)).first()
+            if leg is None:
+                legs['non_existent'].append(recip_email)  # TODO refer user to index page?
+            elif not leg.contactable:
+                legs['uncontactable'].append(leg)
+            elif leg not in permitted_legs:
+                legs['does_not_represent'].append(leg)
+            elif leg not in legs['contactable']:
+                legs['contactable'].append(leg)
+            else:
+                continue
+
+        return legs
+
     @property
     def json(self):
         return to_json(self, self.__class__)
@@ -258,6 +287,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.now)
     user_infos = db.relationship('UserMessageInfo', backref='user')
     role = db.Column(db.Integer, default=0)
+    # rate_limit_status = db.Column(db.String(10), default='free')
     address_change_token = db.Column(db.String(64), default=uid_creator('User', 'address_change_token'))
 
     ROLES = {
@@ -295,7 +325,17 @@ class User(db.Model):
     def can_skip_rate_limit(self):
         return self.is_admin() or self.is_special()
 
-    def rate_limit_status(self):
+    #def needs_to_solve_captcha(self):
+    #    return self.rate_limit_status in ['captcha', 'g_captcha']
+
+    """
+    def update_rate_limit_status(self, override=None):
+        self.rate_limit_status = override if type(override) is str else self.get_rate_limit_status()
+        db.session.commit()
+        return self.rate_limit_status
+    """
+
+    def get_rate_limit_status(self):
         """
         Determines if a user should be rate limited (or blocked if argument provided
 
@@ -307,7 +347,7 @@ class User(db.Model):
             return 'free'
 
         if User.global_captcha():
-            return 'captcha'
+            return 'g_captcha'
 
         count = self.messages().filter(
             (datetime.datetime.now() - datetime.timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS)
@@ -607,65 +647,10 @@ class Message(db.Model):
     # for follow up email to enter in address information
     verification_token = db.Column(db.String(64), default=uid_creator('Message', 'verification_token'))
     # prevent a message from being sent more than once
-    live_link = db.Column(db.Boolean, default=True)
+    link_status = db.Column(db.String(10), nullable=True, default='free')
 
     def __repr__(self):
         return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
-
-    @property
-    def email(self): return self.user_message_info.user.email
-    @email.setter
-    def email(self, value): self.user_message_info.user.email = value
-
-    @property
-    def prefix(self): return self.user_message_info.prefix
-    @prefix.setter
-    def prefix(self, value): self.user_message_info.prefix = value
-
-    @property
-    def first_name(self): return self.user_message_info.first_name
-    @first_name.setter
-    def first_name(self, value): self.user_message_info.first_name = value
-
-    @property
-    def last_name(self): return self.user_message_info.last_name
-    @last_name.setter
-    def last_name(self, value): self.user_message_info.last_name = value
-
-    @property
-    def street_address(self): return self.user_message_info.street_address
-    @street_address.setter
-    def street_address(self, value): self.user_message_info.street_address = value
-
-    @property
-    def street_address2(self): return self.user_message_info.street_address2
-    @street_address2.setter
-    def street_address2(self, value): self.user_message_info.street_address2 = value
-
-    @property
-    def city(self): return self.user_message_info.city
-    @city.setter
-    def city(self, value): self.user_message_info.city = value
-
-    @property
-    def state(self): return self.user_message_info.state
-    @state.setter
-    def state(self, value): self.user_message_info.state = value
-
-    @property
-    def zip5(self): return self.user_message_info.zip5
-    @zip5.setter
-    def zip5(self, value): self.user_message_info.zip5 = value
-
-    @property
-    def zip4(self): return self.user_message_info.zip4
-    @zip4.setter
-    def zip4(self, value): self.user_message_info.zip4 = value
-
-    @property
-    def phone_number(self): return self.user_message_info.phone_number
-    @phone_number.setter
-    def phone_number(self, value): self.user_message_info.phone_number = value
 
     def verification_link(self, path=None):
         """
@@ -755,6 +740,29 @@ class Message(db.Model):
     def associate_legislators(self, force=False):
         if force or not self.to_legislators:
             self.set_legislators(self.user_message_info.members_of_congress)
+
+    def free_link(self):
+        set_attributes(self, {'link_status': 'free'}.iteritems(), commit=True)
+
+    def kill_link(self):
+        set_attributes(self, {'link_status': None}.iteritems(), commit=True)
+
+    def update_link_status(self):
+        self.link_status = self.user_message_info.user.get_rate_limit_status()
+        db.session.commit()
+
+    def needs_captcha_to_send(self):
+        return self.link_status in ['captcha', 'g_captcha']
+
+    def is_free_to_send(self):
+        return self.link_status == 'free'
+
+    def queue_to_send(self, moc=None):
+        from scheduler import send_to_phantom_of_the_capitol
+        set_attributes(self, {'link_status': None}.iteritems(), commit=True)
+        if moc is not None: self.set_legislators(moc)
+        send_to_phantom_of_the_capitol.delay(self.id)
+        return True
 
     def send(self, fresh=False):
         """

@@ -2,6 +2,7 @@ from postmark import PMMail
 from config import settings
 from util import render_without_request
 from util import DummyEmail
+from helpers import url_for_with_prefix
 
 def apply_admin_filter(func):
     """
@@ -54,7 +55,7 @@ class NoReply():
 
     @classmethod
     @apply_admin_filter
-    def validate_user(cls, user, veri_link):
+    def validate_user(cls, user, msg):
         """
         Handles the case of a first time user or a user who needs to renew this contact infomration.
 
@@ -65,6 +66,10 @@ class NoReply():
         @return: a python representation of a postmark object
         @rtype: PMMail
         """
+
+        veri_link = msg.verification_link(url_for_with_prefix('app_router.update_user_address',
+                                                                token=msg.verification_token))
+
         return PMMail(api_key=settings.POSTMARK_API_KEY,
                       sender=cls.SENDER_EMAIL,
                       to=user.email,
@@ -78,7 +83,7 @@ class NoReply():
 
     @classmethod
     @apply_admin_filter
-    def message_receipt(cls, user, legs, chg_addr_link, rls):
+    def message_receipt(cls, user, legs, msg):
         """
         Handles the follow-up email for every time a user sends an email message.
 
@@ -94,9 +99,13 @@ class NoReply():
         @rtype: PMMail
         """
 
+        rls = msg.link_status
+
         subject = {
+            None: 'Your message to your representatives will be sent.',
             'free': 'Your message to your representatives is schedule to be sent.',
-            'captcha': 'You must complete your message to Congress.',
+            'captcha': "You must solve a captcha to complete your message to congress",
+            'g_captcha': 'You must complete your message to Congress.',
             'block': 'Unable to send your message to congress at this time.'
         }.get(rls)
 
@@ -105,10 +114,10 @@ class NoReply():
                       to=user.email,
                       subject=subject,
                       html_body=render_without_request("emails/message_receipt.html",
-                                                       context={'change_address_link': chg_addr_link,
-                                                                'legislators': legs,
-                                                                'rls': rls,
-                                                                'user': user}),
+                                                       context={'legislators': legs,
+                                                                'msg': msg,
+                                                                'user': user,
+                                                                'rls': rls}),
                       track_opens=True
                       )
 

@@ -12,6 +12,7 @@ from monthly import import_topics
 import traceback
 import string
 import random
+import json
 
 def reset_database(prompt=True):
     if prompt is True:
@@ -113,7 +114,9 @@ def simulate_postmark_message(from_email, to_emails, messageid=None):
         "ToFull": to_emails
     }
     try:
-        req = requests.post(settings.BASE_URL + '/postmark/inbound', json=params)
+        req = requests.post(settings.BASE_URL + '/postmark/inbound',
+                            data=json.dumps(params),
+                            headers={"content-type": "text/javascript"})
         print req.json()
         return req.json()
     except:

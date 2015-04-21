@@ -14,8 +14,7 @@ from phantom_mask import db
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from sqlalchemy import func
 from models import Legislator, Message, MessageLegislator, User, AdminUser, UserMessageInfo, db_first_or_create, db_add_and_commit
-from helpers import render_template_wctx, convert_token, url_for_with_prefix
-from scheduler import send_to_phantom_of_the_capitol
+from helpers import render_template_wctx, convert_token, url_for_with_prefix, append_get_params, app_router_path
 from flask_admin import expose
 import flask_admin as admin
 from flask.ext.login import LoginManager
@@ -67,7 +66,7 @@ class MyAdminIndexView(admin.AdminIndexView):
         }
 
         return self.render('admin/index.html', context=context)
-        #return super(MyAdminIndexView, self).
+
 
     @expose('/login', methods=['GET', 'POST'])
     def login(self):
@@ -78,20 +77,25 @@ class MyAdminIndexView(admin.AdminIndexView):
             return redirect(url_for_with_prefix('.index'))
         return render_template_wctx('pages/admin_login.html', context={'form': form})
 
+
     @expose('/logout', methods=['GET', 'POST'])
     def logout(self):
         logout_user()
         return redirect(url_for_with_prefix('admin.login'))
 
 
-def redirect_unknown_tokens(viewfunc):
+def resolve_tokens(viewfunc):
 
     def token_or_redirect(**kwargs):
         msg, umi, user = convert_token(kwargs.get('token', ''), request.args.get('email', None))
         if user is None:
             return redirect(url_for_with_prefix('app_router.reset_token'))
-        kwargs.update({'msg':msg, 'umi': umi, 'user': user})
-        return viewfunc(**kwargs)
+        elif msg is not None and msg.needs_captcha_to_send() and viewfunc.__name__ != 'confirm_with_recaptcha':
+            return redirect(append_get_params(url_for_with_prefix('app_router.confirm_with_recaptcha', **kwargs),
+                                              email=request.args.get('email', None)))
+        else:
+            kwargs.update({'msg': msg, 'umi': umi, 'user': user})
+            return viewfunc(**kwargs)
 
     tur = token_or_redirect
     tur.__name__ = viewfunc.__name__ # Blueprint in urls.py expects name of original method
@@ -129,10 +133,24 @@ def reset_token():
 
     return render_template_wctx('pages/reset_token.html', context=context)
 
+@resolve_tokens
+def confirm_with_recaptcha(token='', msg=None, umi=None, user=None):
+    form = forms.RecaptchaForm(request.form, app_router_path(inspect.stack()[0][3], token, user.email))
+
+    context = {
+        'form': form
+    }
+
+    if form.validate_on_submit():
+        msg.free_link()
+        process_inbound_message(user, umi, msg, send_email=True)
+        context['legislators'] = umi.members_of_congress
+        return render_template_wctx('pages/message_sent.html', context=context)
+
+    return render_template_wctx('pages/confirm_with_recaptcha.html', context=context)
 
 
 def address_changed(token=''):
-
 
     user = User.query.filter_by(address_change_token=token)
 
@@ -145,7 +163,7 @@ def address_changed(token=''):
                              '?' + urllib.urlencode({'email': user.email}))
 
 
-@redirect_unknown_tokens
+@resolve_tokens
 def confirm_reps(token='', msg=None, umi=None, user=None):
     """
     Confirm members of congress and submit message (if message present)
@@ -156,9 +174,8 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
     @rtype:
     """
 
-
-    form = forms.MessageForm(request.form, url_for_with_prefix('app_router.' + inspect.stack()[0][3],
-                                                   token=token) + '?email=' + urllib2.quote(user.email))
+    form = forms.MessageForm(request.form, append_get_params(url_for_with_prefix('app_router.' + inspect.stack()[0][3],
+                                                   token=token), email=user.email))
 
     moc = umi.members_of_congress
 
@@ -170,12 +187,7 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
     }
 
     if msg is not None and request.method == 'POST' and form.validate():
-        # this message has been sent so invalidate the link
-        msg.live_link = False
-        db.session.commit()
-        # determine which legislator(s) the user wanted to contact
-        msg.set_legislators([moc[i] for i in [v for v in range(0, len(moc)) if request.form.get('legislator_' + str(v))]])
-        send_to_phantom_of_the_capitol.delay(msg.id)
+        msg.queue_to_send([moc[i] for i in [v for v in range(0, len(moc)) if request.form.get('legislator_' + str(v))]])
         return render_template_wctx('pages/message_sent.html', context=context)
     else:
         if msg is not None:
@@ -184,7 +196,7 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
         return render_template_wctx('pages/confirm_reps.html', context=context)
 
 
-@redirect_unknown_tokens
+@resolve_tokens
 def update_user_address(token='', msg=None, umi=None, user=None):
 
     # instantiate form and populate with data if it exists
@@ -208,6 +220,19 @@ def update_user_address(token='', msg=None, umi=None, user=None):
                                 '?' + urllib.urlencode({'email': user.email}))
 
     return render_template_wctx("pages/update_user_address.html", context=context)
+
+def process_inbound_message(user, umi, msg, send_email=False):
+
+    legs = Legislator.get_leg_buckets_from_emails(umi.members_of_congress, json.loads(msg.to_originally))
+    msg.set_legislators(legs['contactable'])
+
+    if msg.is_free_to_send():
+        msg.queue_to_send()
+
+    if send_email:
+        emailer.NoReply.message_receipt(user, legs, msg).send()
+
+    return jsonify({'status': 'success'})
 
 
 def postmark_inbound():
@@ -236,47 +261,13 @@ def postmark_inbound():
 
             # first time user or it has been a long time since they've updated their address info
             if umi.should_update_address_info():
-                emailer.NoReply.validate_user(user,
-                    new_msg.verification_link(url_for_with_prefix('app_router.update_user_address',
-                                                      token=new_msg.verification_token))).send()
+                emailer.NoReply.validate_user(user, new_msg).send()
                 return jsonify({'status': 'user must accept tos / update their address info'})
             else:
-                permitted_legs = umi.members_of_congress
-
-                legs = {label: [] for label in ['contactable','non_existent','uncontactable','does_not_represent']}
-                inbound_emails = [recipient['Email'] for recipient in inbound.to()]
-
-                # user sent to catchall address
-                if settings.CATCH_ALL_MYREPS in inbound_emails:
-                    legs['contactable'] = permitted_legs
-                    inbound_emails.remove(settings.CATCH_ALL_MYREPS)
-
-                # maximize error messages for users for individual addresses
-                for recip_email in inbound_emails:
-                    leg = Legislator.query.filter(func.lower(Legislator.oc_email) == func.lower(recip_email)).first()
-                    if leg is None:
-                        legs['non_existent'].append(recip_email)  # TODO refer user to index page?
-                    elif not leg.contactable:
-                        legs['uncontactable'].append(leg)
-                    elif leg not in permitted_legs:
-                        legs['does_not_represent'].append(leg)
-                    elif leg not in legs['contactable']:
-                        legs['contactable'].append(leg)
-                    else:
-                        continue
-
-                new_msg.set_legislators(legs['contactable'])
-
-                # determine rate limit status for user
-                rls = user.rate_limit_status()
-                if user.rate_limit_status() == 'free':
-                    send_to_phantom_of_the_capitol.delay(new_msg.id)
-
-                emailer.NoReply.message_receipt(user, legs, user.address_change_link(), rls).send()
-
-                return jsonify({'status': 'successfully received postmark message'})
+                new_msg.update_link_status()
+                return process_inbound_message(user, umi, new_msg, send_email=True)
         else:
-            return jsonify({'status': 'message already received, but thanks anyways'})
+            return jsonify({'status': 'message already received'})
     except:
         print traceback.format_exc()
         return "Unable to parse postmark message.", 500

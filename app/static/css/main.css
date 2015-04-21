@@ -69,3 +69,11 @@ div#edit-message-wrapper {
     margin-top: 25px;
 }
 
+
+form#recaptcha_form {
+    text-align:center
+}
+
+div.g-recaptcha {
+    display: inline-block;
+}

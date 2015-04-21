@@ -1,0 +1,25 @@
+{% extends 'root.html' %}
+
+{% block title %}
+    Please solve the Captcha
+{% endblock %}
+
+{% block header %}
+    <h1 class="center-text">Solve the captcha to submit your message.</h1>
+{% endblock %}
+
+{% block content %}
+
+    {% with form=context.form %}
+        {% include 'forms/recaptcha_form.html' %}
+    {% endwith %}
+
+{% endblock %}
+
+{% block footer %}
+    <h1>Thanks!</h1>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}
