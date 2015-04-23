@@ -3,7 +3,7 @@
 
     {% include 'partials/your_reps.html' %}
 
-    {% if data.uncontactable %}
+    {% if data.legs_buckets and data.legs_buckets.uncontactable %}
         {% include 'partials/uncontactable_reps.html' %}
     {% endif %}
 

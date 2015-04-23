@@ -10,9 +10,11 @@
 
         {% endblock %}
         <hr>
-        <footer>
-        Terms & Service ... If your address has changed then <a href="{{ context.user.address_change_link() }}">click here</a>.
-        {# TODO footer text goes here... #}
-        </footer>
+        {% block footer %}
+            <footer>
+            Terms & Service ... If your address has changed then <a href="{{ context.user.address_change_link() }}">click here</a>.
+            {# TODO footer text goes here... #}
+            </footer>
+        {% endblock %}
     </body>
 </html>

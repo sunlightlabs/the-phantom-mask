@@ -1,6 +1,6 @@
 from phantom_mask import db
 from config import settings
-import datetime
+from datetime import datetime, timedelta
 import uuid
 from contextlib import contextmanager
 import urllib
@@ -25,6 +25,10 @@ import flask_login
 from flask_admin.contrib.sqla import ModelView
 from flask import jsonify, redirect, request
 from sqlalchemy import func
+from helpers import app_router_path
+from sqlalchemy_utils.functions import get_class_by_table
+from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import event
 
 
 import os
@@ -47,6 +51,16 @@ def set_attributes(model, attrs, commit=False):
         db.session.commit()
     return model
 
+
+def db_del_and_commit(model, commit=True):
+    try:
+        db.session.delete(model)
+        if commit:
+            db.session.commit()
+        return True
+    except:
+        db.session.rollback()
+        return None
 
 def db_add_and_commit(model, commit=True):
     try:
@@ -127,11 +141,27 @@ class MyModelView(ModelView):
         return flask_login.current_user.is_authenticated()
 
 
+
+
+class MyBaseModel(db.Model):
+
+    __abstract__ = True
+
+    def __repr__(self):
+        return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
+
+    @property
+    def json(self):
+        return to_json(self, self.__class__)
+
+
+
+
 class BaseAnalytics(object):
 
     def __init__(self, model):
         self.model = model
-        self.today = datetime.datetime.today()
+        self.today = datetime.today()
         self.today_start = self.today.replace(hour=0, minute=0, second=0, microsecond=0)
 
     def total_count(self):
@@ -141,11 +171,11 @@ class BaseAnalytics(object):
         return self.new_last_n_days(0)
 
     def new_last_n_days(self, n_days):
-        return self.model.query.filter(self.model.created_at > (self.today_start - datetime.timedelta(days=n_days))).count()
+        return self.model.query.filter(self.model.created_at > (self.today_start - timedelta(days=n_days))).count()
 
     def new_in_range(self, start_days, end_days):
-        return self.model.query.filter(and_(self.model.created_at > (self.today_start - datetime.timedelta(days=start_days)),
-                               self.model.created_at < (self.today_start - datetime.timedelta(days=end_days)))).count()
+        return self.model.query.filter(and_(self.model.created_at > (self.today_start - timedelta(days=start_days)),
+                               self.model.created_at < (self.today_start - timedelta(days=end_days)))).count()
 
     def growth_rate(self, n_days):
         last_n = float(self.new_last_n_days(n_days))
@@ -156,7 +186,7 @@ class BaseAnalytics(object):
 
 
 
-class Legislator(db.Model):
+class Legislator(MyBaseModel):
     """
     Thin model for storing data on current representatives.
     """
@@ -176,16 +206,98 @@ class Legislator(db.Model):
     contact_form = db.Column(db.String(1024), info={'official': True})
     oc_email = db.Column(db.String(256), info={'official': True})
     contactable = db.Column(db.Boolean, default=True)
-
     messages = db.relationship('MessageLegislator', backref='legislator', lazy='dynamic')
+
+    FIPS_CODES = {
+        "AK": "02",
+        "AL": "01",
+        "AR": "05",
+        "AS": "60",
+        "AZ": "04",
+        "CA": "06",
+        "CO": "08",
+        "CT": "09",
+        "DC": "11",
+        "DE": "10",
+        "FL": "12",
+        "GA": "13",
+        "GU": "66",
+        "HI": "15",
+        "IA": "19",
+        "ID": "16",
+        "IL": "17",
+        "IN": "18",
+        "KS": "20",
+        "KY": "21",
+        "LA": "22",
+        "MA": "25",
+        "MD": "24",
+        "ME": "23",
+        "MI": "26",
+        "MN": "27",
+        "MO": "29",
+        "MS": "28",
+        "MT": "30",
+        "NC": "37",
+        "ND": "38",
+        "NE": "31",
+        "NH": "33",
+        "NJ": "34",
+        "NM": "35",
+        "NV": "32",
+        "NY": "36",
+        "OH": "39",
+        "OK": "40",
+        "OR": "41",
+        "PA": "42",
+        "PR": "72",
+        "RI": "44",
+        "SC": "45",
+        "SD": "46",
+        "TN": "47",
+        "TX": "48",
+        "UT": "49",
+        "VA": "51",
+        "VI": "78",
+        "VT": "50",
+        "WA": "53",
+        "WI": "55",
+        "WV": "54",
+        "WY": "56"
+    }
+
+    @staticmethod
+    def humanized_district(state, district):
+        return (ordinal(int(district)) if int(district) > 0 else 'At-Large') + ' Congressional district of ' + usps.CODE_TO_STATE.get(state)
+
+    @staticmethod
+    def get_district_geojson_url(state, district):
+        try:
+            fips = Legislator.FIPS_CODES.get(state)
+            return "http://realtime.influenceexplorer.com/geojson/cd113_geojson/%s%0*d.geojson" % (fips, 2, int(district))
+        except:
+            return None
+
+    @classmethod
+    def members_for_state_and_district(cls, state, district, contactable=None):
+        or_seg = or_(Legislator.district.is_(None), Legislator.district == district)
+        and_seg = [Legislator.state == state, or_seg]
+        if contactable is not None:
+            query = and_(Legislator.contactable.is_(contactable), *and_seg)
+        else:
+            query = and_(*and_seg)
+
+        return Legislator.query.filter(query).all()
+
+        """
+
+        return Legislator.query.filter(and_(Legislator.contactable.is_(True), Legislator.state == self.state,
+                 or_(Legislator.district.is_(None), Legislator.district == self.district))).all()
+        """
 
     @classmethod
     def congress_api_columns(cls):
         return [col.name for col in cls.__table__.columns if 'official' in col.info and col.info['official']]
-
-
-    def __repr__(self):
-        return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
 
     @classmethod
     def get_leg_buckets_from_emails(self, permitted_legs, emails):
@@ -212,10 +324,6 @@ class Legislator(db.Model):
                 continue
 
         return legs
-
-    @property
-    def json(self):
-        return to_json(self, self.__class__)
 
     def full_title(self):
         return {
@@ -245,9 +353,9 @@ class Legislator(db.Model):
         return "https://raw.githubusercontent.com/unitedstates/images/gh-pages/congress/" + \
                dimensions.get(size, dimensions.values()[0]) + "/" + self.bioguide_id + '.jpg'
 
-from werkzeug.security import generate_password_hash, check_password_hash
 
-class AdminUser(db.Model, UserMixin):
+
+class AdminUser(MyBaseModel, UserMixin):
 
     class ModelView(MyModelView):
         column_searchable_list = ['username']
@@ -276,19 +384,88 @@ class AdminUser(db.Model, UserMixin):
         return unicode(self.id)
 
 
+class Token(MyBaseModel):
 
-class User(db.Model):
+    token = db.Column(db.String(64), unique=True, primary_key=True)
+    item_id = db.Column (db.Integer)
+    item_table = db.Column(db.String(16))
+
+    @classmethod
+    def uid_creator(cls, model=None, param='token'):
+        """
+        Creates a potential 64 character string uid, checks for collisions in input class,
+        and returns a uid.
+
+        @return: 64 character alphanumeri c string
+        @rtype: string
+        """
+        model = model if model is not None else cls
+        while True:
+            potential_token = uuid.uuid4().hex + uuid.uuid4().hex
+            if model.query.filter_by(**{param: potential_token}).count() == 0:
+                return potential_token
+
+    @property
+    def item(self):
+        return get_class_by_table(db.Model, db.Model.metadata.tables[self.item_table]).query.filter_by(id=self.item_id).first()
+
+    @item.setter
+    def item(self, item):
+        self.item_id = item.id
+        self.item_table = item.__table__.name
+
+    def __init__(self, item, **kwargs):
+        super(Token, self).__init__(**kwargs)
+        self.token = self.uid_creator()
+        self.item = item
+
+    def reset(self, token=None):
+        self.token = token if token is not None else self.uid_creator()
+        db.session.commit()
+        return self.token
+
+    def link(self):
+        """
+        Gets the url for this token.
+
+        @param path: validation url from view
+        @type path: string
+        @return: URL for confirmation email
+        @rtype: string
+        """
+        return settings.BASE_URL + app_router_path('update_user_address', token=self.token)
+
+class HasTokenMixin(db.Model):
+
+    __abstract__ = True
+
+    __mapper_args__ = {
+        'batch' : False
+    }
+
+    @property
+    def token(self):
+        return Token.query.filter_by(item_id=self.id, item_table=self.__table__.name).first()
+
+    @token.setter
+    def token(self, token):
+        self.token = token
+
+    def verification_link(self):
+        return self.token.link()
+
+
+class User(MyBaseModel, HasTokenMixin):
 
     class ModelView(MyModelView):
-        column_searchable_list = ['email', 'address_change_token']
+        column_searchable_list = ['email', 'tmp_token']
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), unique=True)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     user_infos = db.relationship('UserMessageInfo', backref='user')
     role = db.Column(db.Integer, default=0)
-    # rate_limit_status = db.Column(db.String(10), default='free')
-    address_change_token = db.Column(db.String(64), default=uid_creator('User', 'address_change_token'))
+    tmp_token = db.Column(db.String(64), unique=True)
 
     ROLES = {
         0: 'user',
@@ -296,22 +473,31 @@ class User(db.Model):
         2: 'admin'
     }
 
-    def __repr__(self):
-        return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
+    @classmethod
+    def global_captcha(cls):
+        return Message.query.filter((datetime.now() - timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS)
+                                    < Message.sent_at)).count() > settings.GLOBAL_HOURLY_CAPTCHA_THRESHOLD
 
     def __html__(self):
         return render_without_request('snippets/user.html', user=self)
 
-    @classmethod
-    def global_captcha(cls):
-        return Message.query.filter((datetime.datetime.now() - datetime.timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS)
-                                    < Message.sent_at)).count() > settings.GLOBAL_HOURLY_CAPTCHA_THRESHOLD
+    @property
+    def default_info(self):
+        return UserMessageInfo.query.filter_by(user_id=self.id, default=True).first()
 
-
-    def new_address_change_token(self):
-        self.address_change_token = uid_creator('User', 'address_change_token')()
+    def set_tmp_token(self, token):
+        self.tmp_token = token
         db.session.commit()
-        return self.address_change_token
+        return self.tmp_token
+
+    def create_tmp_token(self):
+        self.set_tmp_token(Token.uid_creator(self, 'tmp_token'))
+
+    def kill_tmp_token(self):
+        self.set_tmp_token(None)
+
+    def tmp_token_link(self):
+        return settings.BASE_URL + app_router_path('new_token', token=self.tmp_token)
 
     def get_role(self):
         return self.ROLES.get(self.role, 'unknown')
@@ -324,16 +510,6 @@ class User(db.Model):
 
     def can_skip_rate_limit(self):
         return self.is_admin() or self.is_special()
-
-    #def needs_to_solve_captcha(self):
-    #    return self.rate_limit_status in ['captcha', 'g_captcha']
-
-    """
-    def update_rate_limit_status(self, override=None):
-        self.rate_limit_status = override if type(override) is str else self.get_rate_limit_status()
-        db.session.commit()
-        return self.rate_limit_status
-    """
 
     def get_rate_limit_status(self):
         """
@@ -349,9 +525,7 @@ class User(db.Model):
         if User.global_captcha():
             return 'g_captcha'
 
-        count = self.messages().filter(
-            (datetime.datetime.now() - datetime.timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS)
-                < Message.sent_at)).count()
+        count = self.messages().filter((datetime.now() - timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS) < Message.sent_at)).count()
         if count > settings.USER_MESSAGE_LIMIT_BLOCK_COUNT:
             return 'block'
         elif count > settings.USER_MESSAGE_LIMIT_CAPTCHA_COUNT:
@@ -365,25 +539,8 @@ class User(db.Model):
     def last_message(self):
         return self.messages()[-1]
 
-    def address_change_link(self, path=None):
-        """
-        Gets the url for this user to change their address.
-
-        @param path: validation url from view
-        @type path: string
-        @return: URL for confirmation email
-        @rtype: string
-        """
-        return settings.BASE_URL + (path if path is not None else '/validate/' + self.address_change_token) + \
-            '?' + urllib.urlencode({'email': self.email})
-
-    @property
-    def default_info(self):
-        return UserMessageInfo.query.filter_by(user_id=self.id, default=True).first()
-
-    @property
-    def json(self):
-        return to_json(self, self.__class__)
+    def address_change_link(self):
+        return self.token.link()
 
     class Analytics(BaseAnalytics):
 
@@ -394,7 +551,8 @@ class User(db.Model):
             return UserMessageInfo.query.join(User).filter(
                 and_(UserMessageInfo.default.is_(True), not_(UserMessageInfo.district.is_(None)))).count()
 
-class UserMessageInfo(db.Model):
+
+class UserMessageInfo(MyBaseModel):
 
     class ModelView(MyModelView):
         column_searchable_list = ['first_name', 'last_name', 'street_address', 'street_address2', 'city', 'state',
@@ -403,7 +561,7 @@ class UserMessageInfo(db.Model):
     # meta data
     id = db.Column(db.Integer, primary_key=True)
     default = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     # input by user
     prefix = db.Column(db.String(32), default='', info={'user_input': True})
@@ -427,11 +585,8 @@ class UserMessageInfo(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     messages = db.relationship('Message', backref='user_message_info')
 
-    def __repr__(self):
-        return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
-
     @classmethod
-    def first_or_create(cls, user_id, created_at=datetime.datetime.now, **kwargs):
+    def first_or_create(cls, user_id, created_at=datetime.now, **kwargs):
         user = User.query.filter_by(id=user_id).first()
         if user is not None:
             sanitize_keys(kwargs, cls.user_input_columns())
@@ -448,8 +603,7 @@ class UserMessageInfo(db.Model):
         return [col.name for col in cls.__table__.columns if 'user_input' in col.info and col.info['user_input']]
 
     def humanized_district(self):
-        return (ordinal(self.district) if self.district > 0 else 'At-Large') + \
-            ' Congressional district of ' + usps.CODE_TO_STATE.get(self.state)
+        return Legislator.humanized_district(self.state, self.district)
 
     def should_update_address_info(self):
         """
@@ -458,7 +612,7 @@ class UserMessageInfo(db.Model):
         @return: True if they need to update, False otherwise
         @rtype: boolean
         """
-        return self.accept_tos is None or (datetime.datetime.now() - self.accept_tos).days >= settings.ADDRESS_DAYS_VALID
+        return self.accept_tos is None or (datetime.now() - self.accept_tos).days >= settings.ADDRESS_DAYS_VALID
 
     def mailing_address(self):
         return self.street_address + ' ' + self.street_address2 + ', '\
@@ -500,6 +654,9 @@ class UserMessageInfo(db.Model):
             except:
                 return None, None
 
+    def get_district_geojson_url(self):
+        return Legislator.get_district_geojson_url(self.state, self.district)
+
     def determine_district(self, force=False):
         """
         Determines the district of information associated with this address.
@@ -539,7 +696,7 @@ class UserMessageInfo(db.Model):
         return to_json(self, self.__class__)
 
 
-class Topic(db.Model):
+class Topic(MyBaseModel):
 
     class ModelView(MyModelView):
         column_searchable_list = ['name']
@@ -548,9 +705,6 @@ class Topic(db.Model):
     name = db.Column(db.String(512), unique=True)
     wikipedia_parent = db.Column(db.Integer, db.ForeignKey('topic.id'))
     msg_legs = db.relationship('MessageLegislator', backref='topic')
-
-    def __repr__(self):
-        return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
 
     @staticmethod
     def topic_for_message(choices, message):
@@ -607,10 +761,10 @@ class Topic(db.Model):
     def json(self):
         return to_json(self, self.__class__)
 
-class Message(db.Model):
+class Message(MyBaseModel, HasTokenMixin):
 
     class ModelView(MyModelView):
-        column_searchable_list = ['to_originally', 'subject', 'msgbody', 'verification_token']
+        column_searchable_list = ['to_originally', 'subject', 'msgbody']
 
         def scaffold_form(self):
             from wtforms import SelectMultipleField
@@ -632,37 +786,19 @@ class Message(db.Model):
                 return True
 
     id = db.Column(db.Integer, primary_key=True)
-    sent_at = db.Column(db.DateTime, default=datetime.datetime.now)
-    # original recipients from email as json list
-    to_originally = db.Column(db.String(8000))
+    sent_at = db.Column(db.DateTime, default=datetime.now)
+    to_originally = db.Column(db.String(8000)) # original recipients from email as json list
     subject = db.Column(db.String(500))
     msgbody = db.Column(db.String(8000))
 
-    # relations
     user_message_info_id = db.Column(db.Integer, db.ForeignKey('user_message_info.id'))
     to_legislators = db.relationship('MessageLegislator', backref='message')
 
     # email uid from postmark
     email_uid = db.Column(db.String(1000))
-    # for follow up email to enter in address information
-    verification_token = db.Column(db.String(64), default=uid_creator('Message', 'verification_token'))
-    # prevent a message from being sent more than once
-    link_status = db.Column(db.String(10), nullable=True, default='free')
+    # None = sent, free = able to be sent, (g_)captcha = must solve captcha to send, block = can't send
+    status = db.Column(db.String(10), nullable=True, default='free')
 
-    def __repr__(self):
-        return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
-
-    def verification_link(self, path=None):
-        """
-        Gets the verification link URI string for this message.
-
-        @param path: validation url from view
-        @type path: string
-        @return: URL for confirmation email
-        @rtype: string
-        """
-        return settings.BASE_URL + (path if path is not None else '/validate/' + self.verification_token) + \
-            '?' + urllib.urlencode({'email': self.user_message_info.user.email})
 
     def set_legislators(self, legislators):
         """
@@ -742,24 +878,24 @@ class Message(db.Model):
             self.set_legislators(self.user_message_info.members_of_congress)
 
     def free_link(self):
-        set_attributes(self, {'link_status': 'free'}.iteritems(), commit=True)
+        set_attributes(self, {'status': 'free'}.iteritems(), commit=True)
 
     def kill_link(self):
-        set_attributes(self, {'link_status': None}.iteritems(), commit=True)
+        set_attributes(self, {'status': None}.iteritems(), commit=True)
 
-    def update_link_status(self):
-        self.link_status = self.user_message_info.user.get_rate_limit_status()
+    def update_status(self):
+        self.status = self.user_message_info.user.get_rate_limit_status()
         db.session.commit()
 
     def needs_captcha_to_send(self):
-        return self.link_status in ['captcha', 'g_captcha']
+        return self.status in ['captcha', 'g_captcha']
 
     def is_free_to_send(self):
-        return self.link_status == 'free'
+        return self.status == 'free'
 
     def queue_to_send(self, moc=None):
         from scheduler import send_to_phantom_of_the_capitol
-        set_attributes(self, {'link_status': None}.iteritems(), commit=True)
+        set_attributes(self, {'status': None}.iteritems(), commit=True)
         if moc is not None: self.set_legislators(moc)
         send_to_phantom_of_the_capitol.delay(self.id)
         return True
@@ -809,32 +945,10 @@ class Message(db.Model):
     class Analytics():
 
         def __init__(self):
-            self.today = datetime.datetime.today()
-            self.today_start = self.today.replace(hour=0, minute=0, second=0, microsecond=0)
+            super(Message.Analytics, self).__init__(Message)
 
-        def total_messages(self):
-            return Message.query.count()
 
-        def new_messages_today(self):
-            return self.new_users_last_n_days(0)
-
-        def new_messages_last_n_days(self, n_days):
-            return User.query.filter(User.created_at > (self.today_start - datetime.timedelta(days=n_days))).count()
-
-        def new_users_range(self, start_days, end_days):
-            return User.query.filter(and_(User.created_at > (self.today_start - datetime.timedelta(days=start_days)),
-                                   User.created_at < (self.today_start - datetime.timedelta(days=end_days)))).count()
-
-        def growth_rate(self, n_days):
-            last_n = float(self.new_users_last_n_days(n_days))
-            prev_last_n = float(self.new_users_range(n_days*2, n_days))
-            return (last_n - prev_last_n) / last_n
-
-        def users_with_verified_districts(self):
-            return UserMessageInfo.query.join(User).filter(
-                and_(UserMessageInfo.default.is_(True), not_(UserMessageInfo.district.is_(None)))).count()
-
-class MessageLegislator(db.Model):
+class MessageLegislator(MyBaseModel):
 
     class ModelView(MyModelView):
         column_searchable_list = ['send_status']
@@ -845,9 +959,6 @@ class MessageLegislator(db.Model):
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'))
     send_status = db.Column(db.String(4096), default='{"status": "unsent"}') # stringified JSON
     sent = db.Column(db.Boolean, nullable=True, default=None)
-
-    def __repr__(self):
-        return str([(col.name, getattr(self,col.name)) for col in self.__table__.columns])
 
     def is_sent(self):
         return self.sent
@@ -914,3 +1025,14 @@ class MessageLegislator(db.Model):
     @property
     def json(self):
         return to_json(self, self.__class__)
+
+
+for cls in HasTokenMixin.__subclasses__():
+
+    @event.listens_for(cls, 'after_insert')
+    def receive_after_insert(mapper, connection, target):
+        db.session.add(Token(item=target))
+
+    @event.listens_for(cls, 'after_delete')
+    def receive_after_delete(mapper, connection, target):
+        db.session.delete(target.token)

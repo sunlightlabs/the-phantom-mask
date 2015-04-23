@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, g, request
 from flask_admin import Admin
 
 import views
@@ -42,13 +42,24 @@ def create_admin(app, csrf):
 def create_app_router(app, csrf):
 
     app_router = Blueprint('app_router', __name__, template_folder='templates')
+
+    app_router.route('/legislator_index', methods=['GET'])(views.legislator_index)
+    app_router.route('/district/<state>/<district>', methods=['GET'])(views.district)
+
     app_router.route('/validate/<token>', methods=['GET', 'POST'])(views.update_user_address)
     app_router.route('/confirm_reps/<token>', methods=['GET', 'POST'])(views.confirm_reps)
-    app_router.route('/address_changed/<token>', methods=['GET'])(views.address_changed)
-    app_router.route('/legislator_index', methods=['GET'])(views.legislator_index)
-    app_router.route('/ajax/autofill_address', methods=['POST'])(actions.autofill_address)
+    app_router.route('/new_token/<token>', methods=['GET'])(views.new_token)
     app_router.route('/reset_token', methods=['GET', 'POST'])(views.reset_token)
     app_router.route('/recaptcha/<token>', methods=['GET', 'POST'])(views.confirm_with_recaptcha)
+
+    app_router.route('/ajax/autofill_address', methods=['POST'])(actions.autofill_address)
+
+
+    @app.after_request
+    def call_after_request_callbacks(response):
+        for callback in getattr(g, 'after_request_callbacks', ()):
+            callback(response)
+        return response
 
     return app_router
 

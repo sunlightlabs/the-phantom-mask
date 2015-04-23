@@ -1,6 +1,6 @@
 <div id="district_with_reps">
-    <h2>The address you've provided indicates that you're in the <a href="link/to/district/map" style="color:blue">{{ context.umi.humanized_district() }}</a>.</h2>
-    <div id="district_map">
-        {# TODO include map w/ district? a la http://ziplook.house.gov/htbin/findrep?ZIP=27948&Submit=FIND+YOUR+REP+BY+ZIP #}
-    </div>
+    {% if context.user %}
+        {% include 'snippets/address_district_header.html' %}
+    {% endif %}
+    {% include 'snippets/district_map.html' %}
 </div>

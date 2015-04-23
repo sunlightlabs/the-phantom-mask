@@ -3,7 +3,7 @@ import json
 import urllib2
 import urllib
 import inspect
-from flask import jsonify, redirect, request, url_for, abort
+from flask import jsonify, redirect, request, url_for, abort, g
 from postmark_inbound import PostmarkInbound
 from lib.usps import CODE_TO_STATE
 import emailer
@@ -19,6 +19,7 @@ from flask_admin import expose
 import flask_admin as admin
 from flask.ext.login import LoginManager
 from sqlalchemy import and_, not_
+from functools import wraps
 import datetime
 
 login_manager = LoginManager()
@@ -39,9 +40,7 @@ class MyAdminIndexView(admin.AdminIndexView):
     @expose('/')
     def index(self):
 
-
         user_analytics = User.Analytics()
-
 
         user_count = user_analytics.total_count()
         message_count = Message.query.count()
@@ -84,25 +83,40 @@ class MyAdminIndexView(admin.AdminIndexView):
         return redirect(url_for_with_prefix('admin.login'))
 
 
-def resolve_tokens(viewfunc):
+def after_this_request(f):
+    if not hasattr(g, 'after_request_callbacks'):
+        g.after_request_callbacks = []
+    g.after_request_callbacks.append(f)
+    return f
 
+def resolve_token(viewfunc):
+
+    @wraps(viewfunc)
     def token_or_redirect(**kwargs):
-        msg, umi, user = convert_token(kwargs.get('token', ''), request.args.get('email', None))
+        msg, umi, user = convert_token(kwargs.get('token', ''))
         if user is None:
             return redirect(url_for_with_prefix('app_router.reset_token'))
-        elif msg is not None and msg.needs_captcha_to_send() and viewfunc.__name__ != 'confirm_with_recaptcha':
-            return redirect(append_get_params(url_for_with_prefix('app_router.confirm_with_recaptcha', **kwargs),
-                                              email=request.args.get('email', None)))
+        elif msg is not None and msg.needs_captcha_to_send() and viewfunc.__name__ is not 'confirm_with_recaptcha':
+            return redirect(append_get_params(url_for_with_prefix('app_router.confirm_with_recaptcha', **kwargs)))
         else:
             kwargs.update({'msg': msg, 'umi': umi, 'user': user})
             return viewfunc(**kwargs)
 
-    tur = token_or_redirect
-    tur.__name__ = viewfunc.__name__ # Blueprint in urls.py expects name of original method
     return token_or_redirect
 
 
-def legislator_index():
+def district(state, district):
+    legs = Legislator.members_for_state_and_district(state, district)
+
+    context = {
+        'legislators': legs,
+        'humanized_district': Legislator.humanized_district(state, district),
+        'geojson_url': Legislator.get_district_geojson_url(state, district)
+    }
+
+    return render_template_wctx('pages/congressional_district.html', context=context)
+
+def legislator_index(**kwargs):
 
     context = {
         'legislators': Legislator.query.all(),
@@ -128,14 +142,14 @@ def reset_token():
         context['success'] = True
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            user.new_address_change_token()
-            emailer.NoReply.token_reset(user, user.address_change_link()).send()
+            user.create_tmp_token()
+            emailer.NoReply.token_reset(user).send()
 
     return render_template_wctx('pages/reset_token.html', context=context)
 
-@resolve_tokens
+@resolve_token
 def confirm_with_recaptcha(token='', msg=None, umi=None, user=None):
-    form = forms.RecaptchaForm(request.form, app_router_path(inspect.stack()[0][3], token, user.email))
+    form = forms.RecaptchaForm(request.form, app_router_path(inspect.stack()[0][3], token=token))
 
     context = {
         'form': form
@@ -150,20 +164,20 @@ def confirm_with_recaptcha(token='', msg=None, umi=None, user=None):
     return render_template_wctx('pages/confirm_with_recaptcha.html', context=context)
 
 
-def address_changed(token=''):
+def new_token(token=''):
 
-    user = User.query.filter_by(address_change_token=token)
+    user = User.query.filter_by(tmp_token=token).first()
 
     if user is not None:
-        user.new_address_change_token()
+        user.create_tmp_token()
+        token = user.token.reset()
+        emailer.NoReply.successfully_reset_token(user).send()
+        return redirect(url_for_with_prefix('app_router.update_user_address', token=token))
     else:
         return 'No user exists for specified token.'
 
-    return redirect(url_for_with_prefix('app_router.update_user_address', token=user.address_change_token) +
-                             '?' + urllib.urlencode({'email': user.email}))
 
-
-@resolve_tokens
+@resolve_token
 def confirm_reps(token='', msg=None, umi=None, user=None):
     """
     Confirm members of congress and submit message (if message present)
@@ -174,14 +188,14 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
     @rtype:
     """
 
-    form = forms.MessageForm(request.form, append_get_params(url_for_with_prefix('app_router.' + inspect.stack()[0][3],
-                                                   token=token), email=user.email))
+    form = forms.MessageForm(request.form, append_get_params(url_for_with_prefix('app_router.' + inspect.stack()[0][3], token=token)))
 
     moc = umi.members_of_congress
 
     context = {
         'form': form,
         'message': msg,
+        'user': user,
         'umi': umi,
         'legislators': moc
     }
@@ -192,16 +206,14 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
     else:
         if msg is not None:
             form.populate_data_from_message(msg)
-            context['uncontactable'] = [i for i in json.loads(msg.to_originally) if i not in [p.oc_email.lower() for p in moc]]
+            context['legs_buckets'] = Legislator.get_leg_buckets_from_emails(umi.members_of_congress, json.loads(msg.to_originally))
         return render_template_wctx('pages/confirm_reps.html', context=context)
 
 
-@resolve_tokens
+@resolve_token
 def update_user_address(token='', msg=None, umi=None, user=None):
 
-    # instantiate form and populate with data if it exists
-    form = forms.RegistrationForm(request.form, url_for_with_prefix('app_router.' + inspect.stack()[0][3],
-                                                        token=token) + '?' + urllib.urlencode({'email': user.email}))
+    form = forms.RegistrationForm(request.form, app_router_path(inspect.stack()[0][3], token=token))
 
     context = {
         'form': form,
@@ -211,13 +223,15 @@ def update_user_address(token='', msg=None, umi=None, user=None):
 
     if request.method == 'POST':
         # get zip4 so user doesn't have to look it up
+        form.autocomplete_address()
         form.resolve_zip4()
         if form.validate_and_save_to_db(user, msg=msg):
             district = umi.determine_district(force=True)
             if district is None: context['district_error'] = True
             else:
-                return redirect(url_for_with_prefix('app_router.confirm_reps', token=token) +
-                                '?' + urllib.urlencode({'email': user.email}))
+                if msg is None:
+                    emailer.NoReply.address_changed(user).send()
+                return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
 
     return render_template_wctx("pages/update_user_address.html", context=context)
 
@@ -264,7 +278,7 @@ def postmark_inbound():
                 emailer.NoReply.validate_user(user, new_msg).send()
                 return jsonify({'status': 'user must accept tos / update their address info'})
             else:
-                new_msg.update_link_status()
+                new_msg.update_status()
                 return process_inbound_message(user, umi, new_msg, send_email=True)
         else:
             return jsonify({'status': 'message already received'})

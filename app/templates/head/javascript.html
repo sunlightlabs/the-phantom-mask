@@ -1,6 +1,8 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
 <script type="text/javascript">
-    var csrftoken = "{{ csrf_token()}}";
+    var csrftoken = "{{ csrf_token() }}";
 
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {

@@ -22,3 +22,4 @@ psycopg2
 flask-login
 flask-paginate
 flask-admin
+sqlalchemy-utils

@@ -10,8 +10,8 @@ from app import models
 
 
 def add_and_commit(factory):
-    def create_model(**kwargs):
-        new = factory(**kwargs)
+    def create_model(*args, **kwargs):
+        new = factory(*args, **kwargs)
         try:
             models.db.session.add(new)
             models.db.session.commit()
@@ -23,6 +23,10 @@ def add_and_commit(factory):
 @add_and_commit
 def user(email='john@example.com'):
     return models.User(email=email)
+
+@add_and_commit
+def message_legislator(msg, leg, send_status='{"status": "unsent"}', sent=None):
+    return models.MessageLegislator(message=msg, legislator=leg, send_status=send_status, sent=sent)
 
 @add_and_commit
 def admin_user(username='admin', password='admin'):

@@ -98,6 +98,15 @@ class RegistrationForm(MyBaseForm):
     def error_dict(self):
         return {field.label.text: field.errors for field in self}
 
+    def autocomplete_address(self):
+        address = address_inferrence_service.address_lookup(
+            street_address=self.street_address.data, city=self.city.data,
+            state=self.state.data, zip5=self.zip5.data)
+        #
+        print address
+
+
+
     def resolve_zip4(self, force=False):
         if force or not self.zip4.data:
             self.zip4.data = address_inferrence_service.zip4_lookup(self.street_address.data,
@@ -122,6 +131,8 @@ class RegistrationForm(MyBaseForm):
 
             # get user's default info and either create new info or get the same info instance
             first_umi = UserMessageInfo.query.filter_by(user=user, default=True).first()
+            print "wtff????"
+            print user
             umi = first_umi if (first_umi and first_umi.accept_tos is None) \
                 else UserMessageInfo.first_or_create(user.id, **self.data_dict())
 

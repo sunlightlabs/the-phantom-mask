@@ -59,20 +59,16 @@ def create_test_data():
         msg1_1 = message(umi=umi1)
         msg1_2 = message(umi=umi1)
 
-        print msg1_1.verification_link()
-        print msg1_2.verification_link()
 
         user2 = user(email='ocheng@sunlightfoundation.com')
         umi2 = user_message_info(user=user2)
         msg2 = message(umi=umi2)
 
-        print msg2.verification_link()
 
         user3 = user(email='cdunwell@sunlightfoundation.com')
         umi3 = user_message_info(user=user3)
         msg3 = message(umi=umi3)
 
-        print msg3.verification_link()
 
         for i in range(0,100):
             user(email=(''.join(random.choice(string.ascii_lowercase) for _ in range(10)))+'@example.com')

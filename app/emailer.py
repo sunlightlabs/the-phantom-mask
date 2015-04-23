@@ -19,9 +19,7 @@ def apply_admin_filter(func):
             return pmmail
         else:
             print 'Debug mode and user not in list of admin emails'
-            #print "***Debug Mode*** Message below WILL NOT be sent to: " + args[1]
-            #print pmmail.html_body
-            return DummyEmail()
+            return DummyEmail(pmmail)
     return check_for_admin_email
 
 
@@ -31,23 +29,19 @@ class NoReply():
 
     @classmethod
     @apply_admin_filter
-    def token_reset(cls, user, veri_link):
+    def token_reset(cls, user):
         """
-        Handles the case of a first time user or a user who needs to renew this contact infomration.
 
-        @param user: the user to send the email to
-        @type user: models.User
-        @param veri_link: the verification link to enter in their information
-        @type veri_link: string
+
         @return: a python representation of a postmark object
         @rtype: PMMail
         """
         return PMMail(api_key=settings.POSTMARK_API_KEY,
                       sender=cls.SENDER_EMAIL,
                       to=user.email,
-                      subject="Your OpenCongress Email Token has been reset.",
-                      html_body=render_without_request("emails/reset_token.html",
-                                                        context={'verification_link': veri_link,
+                      subject="You've requested to reset your OpenCongress token.",
+                      html_body=render_without_request("emails/token_reset.html",
+                                                        context={'verification_link': user.tmp_token_link(),
                                                                  'user': user}),
                       track_opens=True
                       )
@@ -67,8 +61,7 @@ class NoReply():
         @rtype: PMMail
         """
 
-        veri_link = msg.verification_link(url_for_with_prefix('app_router.update_user_address',
-                                                                token=msg.verification_token))
+        veri_link = msg.verification_link()
 
         return PMMail(api_key=settings.POSTMARK_API_KEY,
                       sender=cls.SENDER_EMAIL,
@@ -99,7 +92,7 @@ class NoReply():
         @rtype: PMMail
         """
 
-        rls = msg.link_status
+        rls = msg.status
 
         subject = {
             None: 'Your message to your representatives will be sent.',
@@ -156,10 +149,33 @@ class NoReply():
                       track_opens=True
                       )
 
+    @classmethod
+    @apply_admin_filter
+    def successfully_reset_token(cls, user):
+        """
+        Handles the case of notifying a user when they've changed their address information.
+
+        @param user: the user to send the email to
+        @type user: models.User
+        @param umi: user message information instance
+        @type umi: models.UserMessageInfo
+        @return: a python representation of a postmark object
+        @rtype: PMMail
+        """
+        link = user.token.link()
+
+        return PMMail(api_key=settings.POSTMARK_API_KEY,
+                      sender=cls.SENDER_EMAIL,
+                      to=user.email,
+                      subject='Your OpenCongress email token has been successfully reset.',
+                      html_body=render_without_request('emails/successfully_reset_token.html',
+                                                       context={'user': user, 'link': link})
+                      )
+
 
     @classmethod
     @apply_admin_filter
-    def address_changed(cls, user, umi):
+    def address_changed(cls, user):
         """
         Handles the case of notifying a user when they've changed their address information.
 
@@ -176,6 +192,6 @@ class NoReply():
                       to=user.email,
                       subject='Your OpenCongress contact information has changed.',
                       html_body=render_without_request('emails/address_changed.html',
-                                                       context={'umi': umi,
+                                                       context={'link': user.tmp_token_link(),
                                                                 'user': user})
                       )

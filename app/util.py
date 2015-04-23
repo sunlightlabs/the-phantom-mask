@@ -4,7 +4,6 @@ import os
 import jinja2
 
 
-
 def abs_file_directory(file):
     dirname(realpath(file))
 
@@ -29,6 +28,17 @@ def render_without_request(template_name, **template_vars):
 
 
 class DummyEmail(object):
+
+    def __init__(self, pmmail):
+        self.pmmail = pmmail
+
+    @property
+    def subject(self):
+        return self.pmmail.subject
+
+    @property
+    def html_body(self):
+        return self.pmmail.html_body
 
     def send(self):
         return None
