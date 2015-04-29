@@ -9,11 +9,11 @@ def abs_base_url():
 def url_for_with_prefix(endpoint, **values):
     return settings.BASE_PREFIX + url_for(endpoint, **values)
 
-def append_get_params(url, **kwargs):
+def append_get_params(u, **kwargs):
     if len(kwargs) > 0:
-        return url + '?' + urllib.urlencode(kwargs)
+        return u + '?' + urllib.urlencode(kwargs)
     else:
-        return url
+        return u
 
 def app_router_path(func_name, **kwargs):
     return append_get_params(url_for_with_prefix('app_router.' + func_name, **kwargs))
