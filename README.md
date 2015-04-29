@@ -16,4 +16,4 @@ This project is still a work in progress so the README will be updated as it fin
 7. `python run.py` to run app locally for development. 
 8. Check out `bin/deploy.sh` and `fabfile.py` for deploying to a production environment
 
-To process emails, you'll need to point your postmark server inbound webhook to "\<your server\>/postmark/inbound". Note that this isn't secure unless you have server authentication set up. Since it's not feasible to test locally with postmark, you can simulate an inbound email using `python tasks/admin.py simulate_postmark_message <from_email> <messageid>`.
+To process emails, you'll need to point your postmark server inbound webhook to "\<your server\>/postmark/inbound". Note that this isn't secure unless you have server authentication set up. Since it's not feasible to test locally with postmark, you can simulate an inbound email using `python tasks/admin.py simulate_postmark_message <from_email> <to_oc_email>`.
