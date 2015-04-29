@@ -83,7 +83,7 @@ def setup_test_environment():
     reset_database(False)
     create_test_data()
 
-def simulate_postmark_message(from_email, to_emails, messageid=None):
+def simulate_postmark_message(from_email, to_emails=None, messageid=None):
 
     if from_email not in settings.ADMIN_EMAILS:
         return from_email + " not in admin emails: " + str(settings.ADMIN_EMAILS)

@@ -10,25 +10,27 @@ import random
 from dateutil import parser
 import pytz
 from lib.int_ext import ordinal
-from services import determine_district_service
-from services import address_inferrence_service
-from services import geolocation_service
-from lib.dict_ext import remove_keys
+from services import determine_district_service, address_inferrence_service, geolocation_service
 from lib.dict_ext import sanitize_keys
 from sqlalchemy import or_, and_, not_
-from flask import url_for
+from flask import url_for, flash
 import jellyfish
 import sys
-from util import render_without_request
 from flask.ext.login import UserMixin
 import flask_login
 from flask_admin.contrib.sqla import ModelView
+from jinja2 import Markup
 from flask import jsonify, redirect, request
 from sqlalchemy import func
 from helpers import app_router_path
 from sqlalchemy_utils.functions import get_class_by_table
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import event
+from flask_admin import expose
+from util import render_without_request
+from helpers import render_template_wctx, append_get_params
+
+
 
 
 import os
@@ -476,7 +478,7 @@ class User(MyBaseModel, HasTokenMixin):
     @classmethod
     def global_captcha(cls):
         return Message.query.filter((datetime.now() - timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS)
-                                    < Message.sent_at)).count() > settings.GLOBAL_HOURLY_CAPTCHA_THRESHOLD
+                                    < Message.created_at)).count() > settings.GLOBAL_HOURLY_CAPTCHA_THRESHOLD
 
     def __html__(self):
         return render_without_request('snippets/user.html', user=self)
@@ -525,7 +527,7 @@ class User(MyBaseModel, HasTokenMixin):
         if User.global_captcha():
             return 'g_captcha'
 
-        count = self.messages().filter((datetime.now() - timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS) < Message.sent_at)).count()
+        count = self.messages().filter((datetime.now() - timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS) < Message.created_at)).count()
         if count > settings.USER_MESSAGE_LIMIT_BLOCK_COUNT:
             return 'block'
         elif count > settings.USER_MESSAGE_LIMIT_CAPTCHA_COUNT:
@@ -764,12 +766,14 @@ class Topic(MyBaseModel):
 class Message(MyBaseModel, HasTokenMixin):
 
     class ModelView(MyModelView):
+
+        column_list = ('created_at', 'subject', 'user_message_info', 'to_legislators', 'status')
         column_searchable_list = ['to_originally', 'subject', 'msgbody']
 
         def scaffold_form(self):
             from wtforms import SelectMultipleField
             form_class = super(Message.ModelView, self).scaffold_form()
-            form_class.legislators = SelectMultipleField('Add Legislators', choices=[(x.bioguide_id,x.bioguide_id) for x in Legislator.query.all()])
+            form_class.legislators = SelectMultipleField('Add Legislators', choices=[(x.bioguide_id, x.bioguide_id) for x in Legislator.query.all()])
             return form_class
 
         def update_model(self, form, model):
@@ -786,7 +790,7 @@ class Message(MyBaseModel, HasTokenMixin):
                 return True
 
     id = db.Column(db.Integer, primary_key=True)
-    sent_at = db.Column(db.DateTime, default=datetime.now)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     to_originally = db.Column(db.String(8000)) # original recipients from email as json list
     subject = db.Column(db.String(500))
     msgbody = db.Column(db.String(8000))
@@ -952,6 +956,32 @@ class MessageLegislator(MyBaseModel):
 
     class ModelView(MyModelView):
         column_searchable_list = ['send_status']
+
+        column_list = ('id', 'sent', 'send_status', 'topic', 'legislator', 'message', 'message.user_message_info')
+
+        @expose('/sent/', methods=['GET', 'POST'])
+        def sent_view(self):
+            model = self.get_one(request.args.get('id', None))
+            if model is None or model.sent:
+                return redirect(self.get_url('.index_view'))
+            from scheduler import send_to_phantom_of_the_capitol
+            send_to_phantom_of_the_capitol.delay(msgleg_id=model.id)
+            flash('Message %s will attempt to be resent' % str(model.id))
+            return redirect(self.get_url('.index_view'))
+
+        def _sent_formatter(view, context, model, name):
+            if not model.sent:
+                ctx = {'msgleg-id': str(model.id)}
+                get_paramss = {'url': view.url, 'id': ctx['msgleg-id']}
+                ctx['post_url'] = append_get_params(view.url + '/' + name + '/', **get_paramss)
+                return Markup(render_template_wctx('admin/resend_button.html', context=ctx))
+            else:
+                return model.sent
+
+        column_formatters = {
+            'sent': _sent_formatter
+        }
+
 
     id = db.Column(db.Integer, primary_key=True)
     message_id = db.Column(db.Integer, db.ForeignKey('message.id'))

@@ -265,7 +265,7 @@ def postmark_inbound():
 
         # check if message exists already first
         if Message.query.filter_by(email_uid=inbound.message_id()).first() is None:
-            new_msg = Message(sent_at=inbound.send_date(),
+            new_msg = Message(created_at=inbound.send_date(),
                               to_originally=json.dumps([r['Email'].lower() for r in inbound.to()]),
                               subject=inbound.subject(),
                               msgbody=inbound.text_body(),
