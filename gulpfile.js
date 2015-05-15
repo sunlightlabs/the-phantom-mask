@@ -6,7 +6,7 @@ var gulp      = require('gulp'),
     uglify    = require('gulp-uglifyjs');
 
 gulp.task('sass', function () {
-  gulp.src('./app/static/**/*.scss')
+  gulp.src('./app/static/**/all.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(concat('./app/static/css/style.css'))
     .pipe(minifyCSS())
@@ -21,6 +21,6 @@ gulp.task('scripts', function() {
 });
  
 gulp.task('watch', function () {
-  gulp.watch('./app/static/**/*.js', ['scripts']);
-  gulp.watch('./app/static/**/*.scss', ['sass']);
+  gulp.watch('./app/static/js/**', ['scripts']);
+  gulp.watch('./app/static/sass/**', ['sass']);
 });
