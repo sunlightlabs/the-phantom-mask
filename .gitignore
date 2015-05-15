@@ -3,3 +3,4 @@
 .env
 *.pid
 config/settings.py
+node_modules
