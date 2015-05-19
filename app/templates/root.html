@@ -7,10 +7,12 @@
 </head>
 <body>
     <header>
-        {% block header %}{% endblock %}
+        {% block header %}
+            {% include 'snippets/header_logo.html' %}
+        {% endblock %}
     </header>
 
-    <div id="content">
+    <div class="content">
         {% block content %}{% endblock %}
     </div>
 

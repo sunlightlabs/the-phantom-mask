@@ -1,0 +1,32 @@
+{
+  "name": "the-phantom-mask",
+  "version": "1.0.0",
+  "description": "\"Lightweight web app to courier email messages to phantom-of-the-capitol using postmark.\"",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sunlightlabs/the-phantom-mask.git"
+  },
+  "author": "Sunlight Labs",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sunlightlabs/the-phantom-mask/issues"
+  },
+  "homepage": "https://github.com/sunlightlabs/the-phantom-mask",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-concat": "^2.5.2",
+    "gulp-sass": "^2.0.1",
+    "gulp-uglifyjs": "^0.6.2"
+  },
+  "dependencies": {
+    "gulp-minify-css": "^1.1.1",
+    "gulp-rename": "^1.2.2"
+  }
+}

@@ -4,9 +4,6 @@
     Verify your contact information to send your e-mail.
 {% endblock %}
 
-{% block header %}
-    <h1 class="center-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1>
-{% endblock %}
 
 {% block content %}
     {% include 'partials/explainer.html' %}
@@ -17,9 +14,7 @@
     {% endif %}
 
     {% with data = context %}
-        <div style="float:left">
-            {% include 'forms/address_form.html' %}
-        </div>
+        {% include 'forms/address_form.html' %}
     {% endwith %}
     <div style="clear:both"></div>
 

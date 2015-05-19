@@ -1,0 +1,22 @@
+
+header {
+  background: $blue;
+}
+
+form {
+  @extend .form-inline;
+  input[type="text"]{
+    color: $green;
+  }
+}
+
+.content {
+  background: $light-gray;
+}
+
+
+.foo {
+  @extend .btn;
+  background: $green;
+  color: $white;
+}
