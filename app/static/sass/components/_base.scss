@@ -4,7 +4,7 @@ header {
 }
 
 form {
-  margin: 0 auto;
+  @extend .form-inline;
   input[type="text"]{
     color: $green;
   }
@@ -14,7 +14,9 @@ form {
   background: $light-gray;
 }
 
+
 .foo {
   @extend .btn;
-  @extend .btn-success;
+  background: $green;
+  color: $white;
 }
