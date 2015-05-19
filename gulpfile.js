@@ -6,7 +6,7 @@ var gulp      = require('gulp'),
     uglify    = require('gulp-uglifyjs');
 
 gulp.task('sass', function () {
-  gulp.src('./app/static/**/all.scss')
+  gulp.src('./app/static/sass/*.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(concat('./app/static/css/style.css'))
     .pipe(minifyCSS())

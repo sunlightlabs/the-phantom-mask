@@ -1,0 +1,20 @@
+
+header {
+  background: $blue;
+}
+
+form {
+  margin: 0 auto;
+  input[type="text"]{
+    color: $green;
+  }
+}
+
+.content {
+  background: $light-gray;
+}
+
+.foo {
+  @extend .btn;
+  @extend .btn-success;
+}
