@@ -1,0 +1,4 @@
+<form method=POST id="msgleg-{{ context['msgleg-id'] }}" action="{{ context.post_url }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <input type=submit value="Resend" />
+</form>
