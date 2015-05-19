@@ -3,17 +3,29 @@ header {
   background: $blue;
 }
 
-form {
-  @extend .form-inline;
-  input[type="text"]{
-    color: $green;
+.sub_header {
+  background: $white;
+  position: relative;
+  text-align: center;
+  padding: 16px;
+
+  &-cell {
+    display: inline-block;
+    width: 30%;
+  }
+
+  &:after {
+    content:'';
+    position: absolute;
+    top: 100%;
+    @include triangle(24px, $white); 
   }
 }
 
 .content {
   background: $light-gray;
+  padding: 56px;
 }
-
 
 .foo {
   @extend .btn;

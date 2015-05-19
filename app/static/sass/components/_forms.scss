@@ -1,0 +1,14 @@
+form {
+  @extend .form-inline;
+  
+  button, input, select, textarea {
+    border: none;
+    padding: 7px;
+    margin: 5px;
+    border: none;
+  }
+
+  select {
+    -webkit-appearance: none;
+  }
+}
