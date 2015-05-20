@@ -1,34 +1,47 @@
 <form id="address-form" class="pure-form pure-form-stacked" method="POST" action="{{ data.form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    <div class="form_group">
-        <div class="col-md-2">
-            {{ data.form.prefix }}
+    <div class="form_fields">
+        <div class="form_group">
+            <div class="col-md-2">
+                {{ data.form.prefix }}
+            </div>
+            <div class="col-md-5">
+                {{ data.form.first_name(class="", type="text", placeholder="First Name") }}
+            </div>
+            <div class="col-md-5">
+                {{ data.form.last_name(class="",type="text", placeholder="Last Name") }}
+            </div>
         </div>
-        <div class="col-md-5">
-            {{ data.form.first_name(class="", type="text", placeholder="First Name") }}
+        <div class="form_group">
+            <div class="col-md-9">
+                {{ data.form.street_address(class="",type="text", placeholder="Address") }}
+            </div>
+            <div class="col-md-3">
+                {{ data.form.street_address2(class="",type="text", placeholder="Apt/Suite") }}
+            </div>
+            <div class="col-sm-12">
+                {{ data.form.zip5(class="",type="text", placeholder="Zipcode") }}
+            </div>
         </div>
-        <div class="col-md-5">
-            {{ data.form.last_name(class="",type="text", placeholder="Last Name") }}
+        <div class="form_group">
+            <div class="col-sm-12">
+                {{ data.form.phone_number(class="pure-u-24-24",type="text", placeholder="Phone Number") }}
+             </div>
         </div>
+        <br>
+        <p class="form_disclaimer">By using this service, I agree to the <a href="#">terms of service</a> and the <a href="#">privacy policy</a></p>
+        <br>
+        <button type="submit">Submit up and send my message</button>
     </div>
-    <div class="form_group">
-        <div class="col-md-9">
-            {{ data.form.street_address(class="",type="text", placeholder="Address") }}
-        </div>
-        <div class="col-md-3">
-            {{ data.form.street_address2(class="",type="text", placeholder="Apt/Suite") }}
-        </div>
-        <div class="col-sm-12">
-            {{ data.form.zip5(class="",type="text", placeholder="Zipcode") }}
-        </div>
+    <div>
+        <p>
+            <strong>Members of Congress don't have official emails.</strong> This service makes navigating their required web forms as easy as emailing them.
+        </p>
+        <p>
+            If you don't want to use this service and would like an alternative method to communicate with Congress, follow <a href="#">this guide</a> provided by usa.gov.
+        </p>
+        <p>
+            This service is offered by the Sunlight Foundation and is <strong>not</strong> affiliated with Congress.
+        </p>
     </div>
-    <div class="form_group">
-        <div class="col-sm-12">
-            {{ data.form.phone_number(class="pure-u-24-24",type="text", placeholder="Phone Number") }}
-         </div>
-    </div>
-
-    <br>
-
-    <button type="submit" class="foo">Submit</button>
 </form>

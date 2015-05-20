@@ -1,20 +1,31 @@
 form {
+  background: $white;
+  margin: 0 auto;
+  width: 100%;
+  padding: 88px 48px 16px 48px;
+  
+  @include breakpoint(768px){
+    width: 50%;
+  }
   
   position: relative;  
   
+  .form_fields {
+    padding-bottom: 56px;
+    border-bottom: 1px dashed $dark-gray; 
+  }
+
   .form_group {
     @include make-row(0);
     [class*="col-"] {
       padding-left: 4px;
       padding-right: 4px;
     }
+    @include breakpoint(994px){
+      margin-bottom: 16px;
+    }
   }
 
-  background: $white;
-  margin: 0 auto;
-  width: 50%;
-  padding: 88px 24px 16px 24px;
-  
 
   &:before {
     @include triangle(16px, $light-blue);
@@ -36,21 +47,28 @@ form {
     box-shadow: 0px 1px 0px $dark-gray;
   }
 
-  select{
+  select {
     border: 0;
     border-radius: 0;
     background: url('/static/images/arrow_drop_down.svg') no-repeat right $light-gray;
     -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     background-position-x: 100%;
   }
 
   button {
     @include button-variant($white, $green, $green);
     display: block;
-    margin: 0 auto;
+    margin: 16px auto;
     width: 100%;
     @include breakpoint(994px){
       width: 70%;
     }
+  }
+
+  .form_disclaimer {
+    text-align: center;
+    margin-bottom: 16px;
   } 
 }
