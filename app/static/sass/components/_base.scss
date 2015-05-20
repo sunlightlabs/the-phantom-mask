@@ -1,34 +1,21 @@
+* {
+  box-sizing: border-box;
+}
+
+html{
+  height: 100%;
+}
+body {
+  min-height: 100%;
+  background: $light-blue;
+}
 
 header {
-  background: $blue;
-}
-
-.sub_header {
   background: $white;
-  position: relative;
-  text-align: center;
-  padding: 16px;
-
-  &-cell {
-    display: inline-block;
-    width: 30%;
-  }
-
-  &:after {
-    content:'';
-    position: absolute;
-    top: 100%;
-    @include triangle(24px, $white); 
-  }
 }
 
-.content {
-  background: $light-gray;
-  padding: 56px;
+button {
+  border: none;
+  padding: 12px;
 }
 
-.foo {
-  @extend .btn;
-  background: $green;
-  color: $white;
-}

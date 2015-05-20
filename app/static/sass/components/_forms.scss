@@ -1,14 +1,56 @@
 form {
-  @extend .form-inline;
   
-  button, input, select, textarea {
-    border: none;
-    padding: 7px;
-    margin: 5px;
-    border: none;
+  position: relative;  
+  
+  .form_group {
+    @include make-row(0);
+    [class*="col-"] {
+      padding-left: 4px;
+      padding-right: 4px;
+    }
   }
 
-  select {
-    -webkit-appearance: none;
+  background: $white;
+  margin: 0 auto;
+  width: 50%;
+  padding: 88px 24px 16px 24px;
+  
+
+  &:before {
+    @include triangle(16px, $light-blue);
+    content: ''; 
+    position: absolute;
+    top: 0;
+    left: 48%;
   }
+
+  input,textarea, select{
+    border: none;
+    padding: 12px 6px;
+    width: 100%;
+    margin-bottom: 16px;
+    outline:none;
+    border: none;
+    color: $dark-gray;
+    background-color: $light-gray;
+    box-shadow: 0px 1px 0px $dark-gray;
+  }
+
+  select{
+    border: 0;
+    border-radius: 0;
+    background: url('/static/images/arrow_drop_down.svg') no-repeat right $light-gray;
+    -webkit-appearance: none;
+    background-position-x: 100%;
+  }
+
+  button {
+    @include button-variant($white, $green, $green);
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    @include breakpoint(994px){
+      width: 70%;
+    }
+  } 
 }

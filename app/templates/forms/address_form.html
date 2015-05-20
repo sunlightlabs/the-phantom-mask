@@ -1,63 +1,34 @@
 <form id="address-form" class="pure-form pure-form-stacked" method="POST" action="{{ data.form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-
-        <div class="pure-u-5 pure-u-md-1-5">
-            {{ data.form.prefix.label }}
-            {{ data.form.prefix(class="pure-u-23-24") }}
+    <div class="form_group">
+        <div class="col-md-2">
+            {{ data.form.prefix }}
         </div>
-
-        <div class="pure-u-5 pure-u-md-2-5">
-            {{ data.form.first_name.label }}
-            {{ data.form.first_name(class="pure-u-23-24", type="text", placeholder="John") }}
+        <div class="col-md-5">
+            {{ data.form.first_name(class="", type="text", placeholder="First Name") }}
         </div>
-
-        <div class="pure-u-5 pure-u-md-2-5">
-            {{ data.form.last_name.label }}
-            {{ data.form.last_name(class="pure-u-24-24",type="text", placeholder="Smith") }}
+        <div class="col-md-5">
+            {{ data.form.last_name(class="",type="text", placeholder="Last Name") }}
         </div>
-
-        <div class="pure-u-1 pure-u-md-1-1">
-            {{ data.form.street_address.label }}
-            {{ data.form.street_address(class="pure-u-24-24",type="text", placeholder="123 Maple Rd") }}
+    </div>
+    <div class="form_group">
+        <div class="col-md-9">
+            {{ data.form.street_address(class="",type="text", placeholder="Address") }}
         </div>
-
-        <div class="pure-u-1 pure-u-md-1-1">
-            {{ data.form.street_address2.label }}
-            {{ data.form.street_address2(class="pure-u-24-24",type="text", placeholder="Apt 213") }}
+        <div class="col-md-3">
+            {{ data.form.street_address2(class="",type="text", placeholder="Apt/Suite") }}
         </div>
-
-        <div class="pure-u-5 pure-u-md-3-5">
-            {{ data.form.city.label }}
-            {{ data.form.city(class="pure-u-23-24", type="text", placeholder="Springfield") }}
+        <div class="col-sm-12">
+            {{ data.form.zip5(class="",type="text", placeholder="Zipcode") }}
         </div>
+    </div>
+    <div class="form_group">
+        <div class="col-sm-12">
+            {{ data.form.phone_number(class="pure-u-24-24",type="text", placeholder="Phone Number") }}
+         </div>
+    </div>
 
-        <div class="pure-u-5 pure-u-md-1-5">
-            {{ data.form.state.label }}
-            {{ data.form.state(class="pure-u-23-24") }}
-        </div>
+    <br>
 
-        <div class="pure-u-5 pure-u-md-1-5">
-            {{ data.form.zip5.label }}
-            {{ data.form.zip5(class="pure-u-24-24",type="text", placeholder="12345") }}
-        </div>
-
-        <div class="pure-u-2 pure-u-md-1-2">
-            {{ data.form.phone_number.label }}
-            {{ data.form.phone_number(class="pure-u-24-24",type="text", placeholder="2025551234") }}
-        </div>
-
-        <div class="pure-u-2 pure-u-md-1-2">
-            {{ data.form.email.label }}
-            <input class="pure-u-24-24" id="email" name="email" readonly type="email" value="{{ data.msg_email }}">
-        </div>
-
-        <br>
-
-        <label for="accept_tos" class="pure-checkbox">
-            <input id="accept_tos" name="accept_tos" type="checkbox" value="y">  I've read the <a class="faq-italic" href="/terms_and_conditions">terms and conditions</a>
-        </label>
-
-        <button type="submit" class="foo">Submit</button>
-
-    </fieldset>
+    <button type="submit" class="foo">Submit</button>
 </form>

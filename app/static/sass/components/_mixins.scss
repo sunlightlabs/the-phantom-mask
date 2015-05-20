@@ -1,6 +1,4 @@
 @mixin triangle($size, $color) {
-  left: 0;
-  right: 0;
   margin: 0 auto;
   width: 0;
   border-top: solid $size $color;
