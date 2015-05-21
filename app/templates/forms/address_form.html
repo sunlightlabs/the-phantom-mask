@@ -2,8 +2,10 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class="form_fields">
         <div class="form_group">
-            <div class="col-md-2">
-                {{ data.form.prefix }}
+            <div class="col-md-2 clearfix">
+                <div class="select-style">
+                    {{ data.form.prefix }}
+                </div>
             </div>
             <div class="col-md-5">
                 {{ data.form.first_name(class="", type="text", placeholder="First Name") }}
