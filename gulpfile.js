@@ -16,11 +16,13 @@ gulp.task('sass', function () {
 
 gulp.task('scripts', function() {
   return gulp.src("./app/static/**/*.js")
-    .pipe(uglify('phantom-mask.min.js'))
-    .pipe(gulp.dest('./app/static/js/'))
+    .pipe(concat('./app/static/js/build/phantom-mask.js'))
+    .pipe(uglify())
+    .pipe(rename('phantom-mask.min.js'))
+    .pipe(gulp.dest('./app/static/js/build/'))
 });
  
 gulp.task('watch', function () {
-  gulp.watch('./app/static/js/**', ['scripts']);
+  gulp.watch('./app/static/js/*.js', ['scripts']);
   gulp.watch('./app/static/sass/**', ['sass']);
 });

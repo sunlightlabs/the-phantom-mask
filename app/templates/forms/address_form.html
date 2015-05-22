@@ -8,26 +8,34 @@
                 </div>
             </div>
             <div class="col-md-5">
-                {{ data.form.first_name(class="", type="text", placeholder="First Name") }}
+                {{ data.form.first_name(class="", type="text") }}
+                {{ data.form.first_name.label }}
             </div>
             <div class="col-md-5">
-                {{ data.form.last_name(class="",type="text", placeholder="Last Name") }}
+                {{ data.form.last_name(class="",type="text") }}
+                {{ data.form.last_name.label }}
             </div>
         </div>
         <div class="form_group">
             <div class="col-md-9">
-                {{ data.form.street_address(class="",type="text", placeholder="Address") }}
+                {{ data.form.street_address(class="",type="text") }}
+                {{ data.form.street_address.label }}
             </div>
             <div class="col-md-3">
-                {{ data.form.street_address2(class="",type="text", placeholder="Apt/Suite") }}
-            </div>
-            <div class="col-sm-12">
-                {{ data.form.zip5(class="",type="text", placeholder="Zipcode") }}
+                {{ data.form.street_address2(class="",type="text") }}
+                {{ data.form.street_address2.label }}
             </div>
         </div>
         <div class="form_group">
             <div class="col-sm-12">
-                {{ data.form.phone_number(class="pure-u-24-24",type="text", placeholder="Phone Number") }}
+                {{ data.form.zip5(class="",type="text") }}
+                {{ data.form.zip5.label }}
+            </div>
+        </div>
+        <div class="form_group">
+            <div class="col-sm-12">
+                {{ data.form.phone_number(class="pure-u-24-24",type="text") }}
+                {{ data.form.phone_number.label }}
              </div>
         </div>
         <br>
@@ -47,3 +55,4 @@
         </p>
     </div>
 </form>
+<script type="text/javascript" src="/static/js/build/form.js"></script>

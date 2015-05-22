@@ -80,7 +80,7 @@ class RegistrationForm(MyBaseForm):
                             validators=[validators.DataRequired()])
     street_address = StringField('Street address',
                                  validators=[validators.DataRequired()])
-    street_address2 = StringField('Street address 2')
+    street_address2 = StringField('Apt/Suite')
     city = StringField('City', [validators.DataRequired()])
     state = SelectField('State',
                         choices=[('Choose...','Choose...')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],

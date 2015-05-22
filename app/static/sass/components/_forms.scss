@@ -3,12 +3,11 @@ form {
   margin: 0 auto;
   width: 100%;
   padding: 88px 48px 16px 48px;
+  position: relative;  
   
   @include breakpoint(768px){
     width: 40%;
   }
-  
-  position: relative;  
   
   .form_fields {
     padding-bottom: 56px;
@@ -24,6 +23,26 @@ form {
     @include breakpoint(994px){
       margin-bottom: 16px;
     }
+    > div {
+      position: relative;
+    }
+
+    input, textarea {
+    padding: 12px 12px 12px 12px; 
+  }
+  // TEST
+    label {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      font-weight: 500;
+    }
+    input:focus + label, textarea:focus + label {
+      top: -55%;
+      // margin-top: -16px;
+    }
+  // END TEST
   }
 
 
@@ -35,17 +54,44 @@ form {
     left: 48%;
   }
 
-  input,textarea {
+  input, textarea {
     border: none;
     padding: 12px 6px;
     width: 100%;
     margin-bottom: 16px;
     outline:none;
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    outline: 0;
     border: none;
     color: $dark-gray;
     background-color: $light-gray;
     box-shadow: 0px 1px 0px $dark-gray;
+    
+    &:focus + label {
+      background: transparent;
+      font-size: 95%;
+      padding: 12px;
+      z-index: 2;
+    }
   }
+
+  label {
+    transition: // not padding
+      background 0.5s,
+      color 0.5s,
+      top 0.5s,
+      bottom 0.5s,
+      right 0.5s,
+      left 0.5s;
+    position: absolute;
+    color: #999;
+    padding: 12px;
+  }
+
+
   .select-style {
       margin-bottom: 16px;
       width: 100%;
