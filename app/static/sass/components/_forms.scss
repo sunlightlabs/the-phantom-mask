@@ -11,7 +11,7 @@ form {
   
   .form_fields {
     padding-bottom: 56px;
-    border-bottom: 1px dashed $dark-gray; 
+    border-bottom: 1px dashed $gray; 
   }
 
   .form_group {
@@ -47,7 +47,7 @@ form {
 
 
   &:before {
-    @include triangle(16px, $light-blue);
+    @include triangle(16px, $background);
     content: ''; 
     position: absolute;
     top: 0;
@@ -66,9 +66,9 @@ form {
     z-index: 0;
     outline: 0;
     border: none;
-    color: $dark-gray;
-    background-color: $light-gray;
-    box-shadow: 0px 1px 0px $dark-gray;
+    color: $gray;
+    background-color: $gray-light;
+    box-shadow: 0px 1px 0px $gray;
     
     &:focus + label {
       background: transparent;
@@ -98,9 +98,9 @@ form {
       padding: 12px 4px;
       border-radius: 0;
       overflow: hidden;
-      background:  $light-gray url("/static/images/arrow_drop_down.svg") no-repeat 90% 50%;
-      box-shadow: 0px 1px 0px $dark-gray;
-      color: $dark-gray;
+      background:  $gray-light url("/static/images/arrow_drop_down.svg") no-repeat 90% 50%;
+      box-shadow: 0px 1px 0px $gray;
+      color: $gray;
       float: left;
   }
 
@@ -118,7 +118,7 @@ form {
     }
     &:focus {
       color: rgba(0,0,0,0);
-      text-shadow: 0 0 0 $dark-gray;
+      text-shadow: 0 0 0 $gray;
     }
   }
 

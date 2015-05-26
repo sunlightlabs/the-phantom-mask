@@ -1,5 +1,5 @@
-<svg version="1.1" id="OpenCongress" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-		 y="0px" viewBox="0 0 600 191" enable-background="new 0 0 600 191" xml:space="preserve" style="width: 300px; display: block;margin: 0 auto;">
+<svg version="1.1" class="opencongress-logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+		 y="0px" viewBox="0 0 600 191" enable-background="new 0 0 600 191" xml:space="preserve">
 	<g id="Logomark">
 		<polyline fill-rule="evenodd" clip-rule="evenodd" fill="#6b8797" points="31.293,84.494 27.995,90.48 21.284,91.766 
 			25.956,96.757 25.107,103.535 31.293,100.63 37.479,103.535 36.63,96.757 41.3,91.766 34.59,90.48 31.293,84.494 	"/>

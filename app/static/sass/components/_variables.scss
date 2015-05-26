@@ -1,8 +1,33 @@
 // Colors
-$blue:  #6b8797;
-$light-blue: #f4f6f9;
-$white:  #fff;
-$green:  #19a58a;
+
+$brand: #6a8696;                    // OpenCongress Slate Blue
+
+$blue:  #4fa3ec;
+$green:  #18a489;
 $red:  #e0522b;
-$dark-gray:  #818181;
-$light-gray: #f0f0f0;
+
+$white:  #fff;
+
+$background: #f4f6f9;               // Page Background Color
+$gray-dark: #333;                  // Main Text Color
+$gray: #999;
+$gray-light: #ddd;
+$gray-lighter: #f0f0f0;
+
+
+// Media Query Screen Sizes
+$screen-sm: 375px;
+
+
+// Typography
+
+$alpha: 19px;
+$beta: 16px;
+$gamma: 14px;
+$micro: 12px;
+
+
+%alpha { font-size: $alpha; }
+%beta { font-size: $beta; }
+%gamma { font-size: $gamma; }
+%micro { font-size: $micro; }

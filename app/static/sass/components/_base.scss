@@ -1,27 +1,97 @@
-* {
-  box-sizing: border-box;
-}
-
 html{
-  height: 100%;
-}
-body {
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size: 16px;
-  min-height: 100%;
-  background: $light-blue;
+    height: 100%;
 }
 
-header {
-  background: $white;
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: $gamma;
+    min-height: 100%;
+    background: $background;
+    color: $gray-dark;
 }
+
+.header {
+    background: $white;
+    padding: 10px 0;
+    transition: padding 150ms;
+
+    @include breakpoint($screen-sm){
+        padding: 15px 0;
+    }
+    
+    &__logo {
+        width: 160px;
+        display: block;
+        margin: auto;
+        transition: width 150ms;
+
+        @include breakpoint($screen-sm){
+            width: 200px;
+        }
+    }
+}
+
+
+.footer {
+    text-align: center;
+    margin-top: 75px;
+
+    &__disclaimer {
+        border-bottom: 1px solid $gray-light;
+        color: $gray;
+        padding: 10px 0;
+        margin-bottom: 10px;
+    }
+
+    &__nav {
+        margin: 10px 0 75px;
+
+        &--link { 
+            display: inline-block;
+            padding: 5px;
+            width: 100%;
+
+            @include breakpoint($screen-sm){
+                
+                display: inline-block;
+                margin: 0 25px;
+                padding: 0;
+                width: inherit;
+
+                &:first-child {
+                    margin-left: 0;
+                }
+                
+                &:last-child {
+                    margin-right: 0;
+                }            
+            }
+
+        }
+    }
+}
+
+a:link,
+a:visited  {
+    color: $blue;
+    transition: all 200ms;
+    text-decoration: none;
+    border-bottom: 0px solid transparent;
+
+    &:hover,
+    &:active,
+    &:focus, {
+        color: darken($blue, 20%);
+        border-bottom: 1px solid darken($blue, 20%);
+    }
+}
+
 
 button {
-  border: none;
-  padding: 12px;
+    border: none;
+    padding: 12px;
 }
 
 p {
-  margin: 16px 0;
+    margin: 16px 0;
 }
-
