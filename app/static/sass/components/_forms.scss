@@ -6,7 +6,7 @@ form {
   position: relative;  
   
   @include breakpoint(768px){
-    width: 40%;
+    // width: 40%;
   }
   
   .form_fields {
@@ -28,18 +28,23 @@ form {
     }
 
     input, textarea {
-    padding: 12px 12px 12px 12px; 
-  }
+      padding: 8px;
+    }
   // TEST
     label {
       top: 0;
       bottom: 0;
       left: 0;
       width: 100%;
-      font-weight: 500;
+      font-weight: normal;
+      text-transform: uppercase;
+      z-index: -1;
+      background: red;
     }
     input:focus + label, textarea:focus + label {
       top: -55%;
+      z-index: -1;
+      background: red;
       // margin-top: -16px;
     }
   // END TEST
@@ -55,8 +60,8 @@ form {
   }
 
   input, textarea {
-    border: none;
-    padding: 12px 6px;
+    font-size: $beta;
+    padding: 8px;
     width: 100%;
     margin-bottom: 16px;
     outline:none;
@@ -67,7 +72,7 @@ form {
     outline: 0;
     border: none;
     color: $gray;
-    background-color: $gray-light;
+    background-color: $gray-lighter;
     box-shadow: 0px 1px 0px $gray;
     
     &:focus + label {
@@ -95,10 +100,11 @@ form {
   .select-style {
       margin-bottom: 16px;
       width: 100%;
-      padding: 12px 4px;
+      padding: 8px;
+      font-size: $beta;
       border-radius: 0;
       overflow: hidden;
-      background:  $gray-light url("/static/images/arrow_drop_down.svg") no-repeat 90% 50%;
+      background:  $gray-lighter url("/static/images/arrow_drop_down.svg") no-repeat 90% 50%;
       box-shadow: 0px 1px 0px $gray;
       color: $gray;
       float: left;
@@ -113,9 +119,6 @@ form {
     background: transparent;
     background-image: none;
     -webkit-appearance: none;
-    @include breakpoint(994px){
-      width: 135%;
-    }
     &:focus {
       color: rgba(0,0,0,0);
       text-shadow: 0 0 0 $gray;
@@ -127,8 +130,24 @@ form {
     display: block;
     margin: 16px auto;
     width: 100%;
-    @include breakpoint(994px){
-      width: 70%;
+    border-radius: 3px;
+    width: 100%;
+    padding: 14px;
+    font-weight: normal;
+    transition: background 200ms;
+
+    @include breakpoint($screen-sm){
+        width: 75%;
+    }
+
+    &:hover {
+        background: darken($green, 5%);
+    }
+    &:active {
+        background: $green;
+    }
+    &:focus {
+        outline: none;
     }
   }
 

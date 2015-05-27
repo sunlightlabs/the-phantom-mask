@@ -2,46 +2,47 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class="form_fields">
         <div class="form_group">
-            <div class="col-md-2 clearfix">
+            <div class="col-sm-2 clearfix">
                 <div class="select-style">
                     {{ data.form.prefix }}
                 </div>
             </div>
-            <div class="col-md-5">
-                {{ data.form.first_name(class="", type="text") }}
+            <div class="col-sm-5">
+                {{ data.form.first_name(class="", type="text", placeholder="First Name") }}
                 {{ data.form.first_name.label }}
+                {{ data.form.first_name.error }}
             </div>
-            <div class="col-md-5">
-                {{ data.form.last_name(class="",type="text") }}
+            <div class="col-sm-5">
+                {{ data.form.last_name(class="",type="text", placeholder="Last Name") }}
                 {{ data.form.last_name.label }}
             </div>
         </div>
         <div class="form_group">
-            <div class="col-md-9">
-                {{ data.form.street_address(class="",type="text") }}
+            <div class="col-sm-9">
+                {{ data.form.street_address(class="",type="text", placeholder="Address") }}
                 {{ data.form.street_address.label }}
             </div>
-            <div class="col-md-3">
-                {{ data.form.street_address2(class="",type="text") }}
+            <div class="col-sm-3">
+                {{ data.form.street_address2(class="",type="text", placeholder="Apt/Suite") }}
                 {{ data.form.street_address2.label }}
             </div>
         </div>
         <div class="form_group">
             <div class="col-sm-12">
-                {{ data.form.zip5(class="",type="text") }}
+                {{ data.form.zip5(class="",type="text", placeholder="Zipcode") }}
                 {{ data.form.zip5.label }}
             </div>
         </div>
         <div class="form_group">
             <div class="col-sm-12">
-                {{ data.form.phone_number(class="pure-u-24-24",type="text") }}
+                {{ data.form.phone_number(class="",type="text", placeholder="Phone Number") }}
                 {{ data.form.phone_number.label }}
              </div>
         </div>
         <br>
         <p class="form_disclaimer">By using this service, I agree to the <a href="#">terms of service</a> and <a href="#">privacy policy</a></p>
         <br>
-        <button type="submit">Submit up and send my message</button>
+        <button type="submit">Sign up and send my message</button>
     </div>
     <div>
         <p>

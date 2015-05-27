@@ -3,7 +3,7 @@ html{
 }
 
 body {
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
     font-size: $gamma;
     min-height: 100%;
     background: $background;
@@ -31,8 +31,14 @@ body {
     }
 }
 
+.main {
+    @extend .container;
+    max-width: 600px;
+    padding: 0;
+}
 
 .footer {
+    @extend .container;
     text-align: center;
     margin-top: 75px;
 
