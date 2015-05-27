@@ -671,19 +671,17 @@ class UserMessageInfo(MyBaseModel):
         if not force and self.district is not None:
             return self.district
 
-        district = determine_district_service.determine_district(zip5=self.zip5)
-        if district is None:
+        data = determine_district_service.determine_district(zip5=self.zip5)
+        if data is None:
             self.geolocate_address()
-            district = determine_district_service.determine_district(latitude=self.latitude, longitude=self.longitude)
+            data = determine_district_service.determine_district(latitude=self.latitude, longitude=self.longitude)
 
         try:
-            self.district = district
+            self.district = data.get('district')
             db.session.commit()
             return self.district
         except:
             print "Unable to determine district for " + self.mailing_address()
-            return None
-
 
     @property
     def members_of_congress(self):

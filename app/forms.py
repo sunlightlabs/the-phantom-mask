@@ -72,7 +72,7 @@ class MessageForm(MyBaseForm):
 class RegistrationForm(MyBaseForm):
 
     prefix = SelectField('Prefix',
-                         choices=[(x,x) for x in ['Title','Mr.','Mrs.']],
+                         choices=[(x,x) for x in ['Title','Mr.','Mrs.', 'Miss']],
                          validators=[validators.NoneOf(['Choose...'], message='Please select a prefix.')])
     first_name = StringField('First name',
                              validators=[validators.DataRequired()])
@@ -85,7 +85,7 @@ class RegistrationForm(MyBaseForm):
     state = SelectField('State',
                         choices=[('Choose...','Choose...')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
                         validators=[validators.NoneOf(['Choose...'], message='Please select a state.')])
-    email = StringField('E-Mail', [validators.Email(message='Please enter a valid e-mail address.')])
+    email = StringField('E-Mail', [validators.Email()])
     zip5 = StringField('Zipcode', [validators.Length(min=5, max=5, message='Must be a 5 digit number')])
     zip4 = StringField('Zip 4', [validators.Length(min=4, max=4, message='must be a 4 digit number.')])
     phone_number = StringField('Phone number',
@@ -98,14 +98,27 @@ class RegistrationForm(MyBaseForm):
     def error_dict(self):
         return {field.label.text: field.errors for field in self}
 
-    def autocomplete_address(self):
+    def autocomplete(self, email):
+        self._autocomplete_email(email)
+        self._autocomplete_address()
+        self._autocomplete_tos()
+
+    def _autocomplete_email(self, email):
+        self.email.data = email
+
+    def _autocomplete_address(self):
         address = address_inferrence_service.address_lookup(
             street_address=self.street_address.data, city=self.city.data,
             state=self.state.data, zip5=self.zip5.data)
-        #
-        print address
 
+        self.city.data = address.get('city', '')
+        self.street_address.data = address.get('street_address', '')
+        self.zip5.data = address.get('zip5', '')
+        self.zip4.data = address.get('zip4', '')
+        self.state.data = address.get('state', '')
 
+    def _autocomplete_tos(self):
+        self.accept_tos.data = True
 
     def resolve_zip4(self, force=False):
         if force or not self.zip4.data:
@@ -128,7 +141,7 @@ class RegistrationForm(MyBaseForm):
         @rtype: boolean
         """
         if self.validate():
-
+            print "here323234"
             # get user's default info and either create new info or get the same info instance
             first_umi = UserMessageInfo.query.filter_by(user=user, default=True).first()
             print "wtff????"

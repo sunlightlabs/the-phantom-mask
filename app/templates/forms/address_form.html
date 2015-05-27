@@ -1,6 +1,10 @@
 <form id="address-form" class="" method="POST" action="{{ data.form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class="form_fields">
+
+        {% for error in data.form.errors %}
+            {{ error }}
+        {% endfor %}
         <div class="form_group">
             <div class="col-sm-2 clearfix">
                 <div class="select-style">
