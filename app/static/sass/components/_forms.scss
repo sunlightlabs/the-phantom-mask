@@ -125,32 +125,6 @@ form {
     }
   }
 
-  button {
-    @include button-variant($white, $green, $green);
-    display: block;
-    margin: 16px auto;
-    width: 100%;
-    border-radius: 3px;
-    width: 100%;
-    padding: 14px;
-    font-weight: normal;
-    transition: background 200ms;
-
-    @include breakpoint($screen-sm){
-        width: 75%;
-    }
-
-    &:hover {
-        background: darken($green, 5%);
-    }
-    &:active {
-        background: $green;
-    }
-    &:focus {
-        outline: none;
-    }
-  }
-
   .form_disclaimer {
     text-align: center;
     margin-bottom: 16px;

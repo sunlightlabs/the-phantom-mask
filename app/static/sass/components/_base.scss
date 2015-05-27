@@ -101,9 +101,34 @@ a {
 
 
 button {
-    border: none;
-    padding: 12px;
-}
+    @include button-variant($white, $green, $green);
+    display: block;
+    margin: 16px auto;
+    width: 100%;
+    border: 0;
+    border-radius: 3px;
+    width: 100%;
+    padding: 14px;
+    font-weight: normal;
+    transition: background 200ms;
+
+    @include breakpoint($screen-sm){
+        width: 75%;
+    }
+
+    &:hover {
+        background: darken($green, 5%);
+    }
+
+    &:active {
+        background: $green;
+        transition: background 0ms;
+    }
+
+    &:focus {
+        outline: none;
+    }
+  }
 
 p {
     margin: 16px 0;
