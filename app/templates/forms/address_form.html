@@ -2,9 +2,14 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class="form_fields">
 
-        {% for error in data.form.errors %}
-            {{ error }}
+        <ul>
+        {% for field in data.form.errors %}
+            {% for error in data.form.errors[field] %}
+                <li>{{ error }}</li>
+            {% endfor %}
         {% endfor %}
+        </ul>
+
         <div class="form_group">
             <div class="col-sm-2 clearfix">
                 <div class="select-style">
@@ -14,7 +19,9 @@
             <div class="col-sm-5">
                 {{ data.form.first_name(class="", type="text", placeholder="First Name") }}
                 {{ data.form.first_name.label }}
-                {{ data.form.first_name.error }}
+                {% for error in data.form.first_name.errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
             <div class="col-sm-5">
                 {{ data.form.last_name(class="",type="text", placeholder="Last Name") }}

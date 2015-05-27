@@ -71,9 +71,12 @@ class MessageForm(MyBaseForm):
 
 class RegistrationForm(MyBaseForm):
 
+
+
     prefix = SelectField('Prefix',
-                         choices=[(x,x) for x in ['Title','Mr.','Mrs.', 'Miss']],
-                         validators=[validators.NoneOf(['Choose...'], message='Please select a prefix.')])
+                         choices=[(x,x) for x in ['Title', 'Mr.', 'Mrs.', 'Miss']],
+                         validators=[validators.DataRequired(),
+                                     validators.NoneOf(['Title'], message='Please select a prefix.')])
     first_name = StringField('First name',
                              validators=[validators.DataRequired()])
     last_name = StringField('Last name',
@@ -97,6 +100,14 @@ class RegistrationForm(MyBaseForm):
     @property
     def error_dict(self):
         return {field.label.text: field.errors for field in self}
+
+    def initial_validate(self):
+        self._errors = None
+        success = True
+        for field in ['prefix', 'first_name', 'last_name', 'street_address', 'zip5', 'phone_number']:
+            if not getattr(self, field).validate(self):
+                success = False
+        return success
 
     def autocomplete(self, email):
         self._autocomplete_email(email)
