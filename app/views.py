@@ -223,11 +223,11 @@ def update_user_address(token='', msg=None, umi=None, user=None):
 
     if request.method == 'POST':
         # get zip4 so user doesn't have to look it up
-        form.autocomplete_address()
-        form.resolve_zip4()
+        form.autocomplete(user.email)
         if form.validate_and_save_to_db(user, msg=msg):
             district = umi.determine_district(force=True)
-            if district is None: context['district_error'] = True
+            if district is None:
+                context['district_error'] = True
             else:
                 if msg is None:
                     emailer.NoReply.address_changed(user).send()
