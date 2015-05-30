@@ -78,7 +78,7 @@ class RegistrationForm(MyBaseForm):
                          validators=[validators.DataRequired(),
                                      validators.NoneOf(['Title'], message='Please select a prefix.')])
     first_name = StringField('First name',
-                             validators=[validators.DataRequired()])
+                             validators=[validators.DataRequired(message="This field is required yo yo")])
     last_name = StringField('Last name',
                             validators=[validators.DataRequired()])
     street_address = StringField('Street address',

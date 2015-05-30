@@ -38,9 +38,9 @@ body {
 }
 
 .footer {
-    @extend .container;
     text-align: center;
     margin-top: 75px;
+    padding: 0 50px;
 
     &__disclaimer {
         border-bottom: 1px solid $gray-light;
@@ -102,15 +102,15 @@ a {
 
 button {
     @include button-variant($white, $green, $green);
-    display: block;
-    margin: 16px auto;
-    width: 100%;
     border: 0;
     border-radius: 3px;
-    width: 100%;
-    padding: 14px;
+    display: block;
+    font-size: $beta;
     font-weight: normal;
+    margin: 16px auto;
+    padding: 14px;
     transition: background 200ms;
+    width: 100%;
 
     @include breakpoint($screen-sm){
         width: 75%;
