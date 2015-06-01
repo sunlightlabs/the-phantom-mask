@@ -83,6 +83,10 @@ class MyAdminIndexView(admin.AdminIndexView):
         return redirect(url_for_with_prefix('admin.login'))
 
 
+def faq():
+    return render_template_wctx('pages/static/faq.html', context={})
+
+
 def after_this_request(f):
     if not hasattr(g, 'after_request_callbacks'):
         g.after_request_callbacks = []

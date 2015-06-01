@@ -54,6 +54,8 @@ def create_app_router(app, csrf):
 
     app_router.route('/ajax/autofill_address', methods=['POST'])(actions.autofill_address)
 
+    app_router.route('/faq', methods=['GET'])(views.faq)
+
 
     @app.after_request
     def call_after_request_callbacks(response):
