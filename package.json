@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/sunlightlabs/the-phantom-mask",
   "devDependencies": {
+    "grunt": "^0.4.5",
     "gulp": "^3.8.11",
     "gulp-concat": "^2.5.2",
     "gulp-sass": "^2.0.1",

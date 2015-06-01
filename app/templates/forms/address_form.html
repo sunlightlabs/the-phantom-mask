@@ -13,24 +13,24 @@
         <div class="form_group">
             <div class="col-sm-2 clearfix">
                 <div class="select-style">
-                    {{ data.form.prefix }}
+                    {{ data.form.prefix(placeholder="Title", required="required", title="Please select a prefix. See the FAQ if you feel this list is confining.") }}
                 </div>
             </div>
             <div class="col-sm-5">
-                {{ data.form.first_name(class="", type="text", placeholder="First Name") }}
+                {{ data.form.first_name(class="", type="text", placeholder="First Name", required="required") }}
                 {{ data.form.first_name.label }}
                 {% for error in data.form.first_name.errors %}
                     {{ error }}
                 {% endfor %}
             </div>
             <div class="col-sm-5">
-                {{ data.form.last_name(class="",type="text", placeholder="Last Name") }}
+                {{ data.form.last_name(class="",type="text", placeholder="Last Name", required="required") }}
                 {{ data.form.last_name.label }}
             </div>
         </div>
         <div class="form_group">
             <div class="col-sm-9">
-                {{ data.form.street_address(class="",type="text", placeholder="Address") }}
+                {{ data.form.street_address(class="",type="text", placeholder="Address", required="required") }}
                 {{ data.form.street_address.label }}
             </div>
             <div class="col-sm-3">
@@ -39,14 +39,30 @@
             </div>
         </div>
         <div class="form_group">
+            <div class="col-sm-5">
+                {{ data.form.city(class="", style="display:none", type="text", placeholder='City', required="required") }}
+                {{ data.form.city.label }}
+            </div>
+            <div class="col-sm-2">
+                {{ data.form.state(class="select-style", style="display:none", required="required", title="Please select a state from the list.") }}
+                {{ data.form.state.label }}
+            </div>
             <div class="col-sm-12">
-                {{ data.form.zip5(class="",type="text", placeholder="Zipcode") }}
+                {{ data.form.zip5(class="", type="text", placeholder="Zipcode", pattern="\d{5}", maxlength="5", title="Please enter five digit zipcode", required="required") }}
                 {{ data.form.zip5.label }}
             </div>
+            <div class="col-sm-2">
+                {{ data.form.zip4(class="", style="display:none", type="text", placeholder="Zip4", pattern="\d{4}", title="Please enter your four digit zipcode.", required="required") }}
+                {{ data.form.zip4.label }}
+            </div>
+            <p id="no-zip4-error" style="display:none;">
+                We're unable to locate a city, state, and ZIP-4 code for given street address and ZIP-5.
+                Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find them.
+            </p>
         </div>
         <div class="form_group">
             <div class="col-sm-12">
-                {{ data.form.phone_number(class="",type="text", placeholder="Phone Number") }}
+                {{ data.form.phone_number(class="",type="text", placeholder="Phone Number", title="Please your phone number XXXXXXXXXX.", required="required") }}
                 {{ data.form.phone_number.label }}
              </div>
         </div>
@@ -67,4 +83,11 @@
         </p>
     </div>
 </form>
-<script type="text/javascript" src="/static/js/build/form.js"></script>
+
+{% block javascript %}
+
+    <script type="text/javascript" src="/static/js/build/form.js"></script>
+    <script type="text/javascript" src="/static/js/autocomplete_address.js"></script>
+
+{% endblock %}
+

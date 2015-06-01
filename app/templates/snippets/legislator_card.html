@@ -1,6 +1,6 @@
 <div class="legislator_card {{ margin_class }}">
     <div class="legislator_card_img">
-        <img src="{{ leg.image_url() }}"/>
+        <img src="{{ leg.image_url() }}" onerror="img_missing(this);"/>
     </div>
     <div class="legislator_card_info">
         <h4>{{ leg.full_title_and_full_name() }}</h4>

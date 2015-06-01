@@ -74,9 +74,9 @@ class RegistrationForm(MyBaseForm):
 
 
     prefix = SelectField('Prefix',
-                         choices=[(x,x) for x in ['Title', 'Mr.', 'Mrs.', 'Miss']],
+                         choices=[(x,x) for x in ['', 'Mr.', 'Mrs.', 'Ms.']],
                          validators=[validators.DataRequired(),
-                                     validators.NoneOf(['Title'], message='Please select a prefix.')])
+                                     validators.NoneOf([''], message='Please select a prefix.')])
     first_name = StringField('First name',
                              validators=[validators.DataRequired()])
     last_name = StringField('Last name',
@@ -86,8 +86,8 @@ class RegistrationForm(MyBaseForm):
     street_address2 = StringField('Apt/Suite')
     city = StringField('City', [validators.DataRequired()])
     state = SelectField('State',
-                        choices=[('Choose...','Choose...')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
-                        validators=[validators.NoneOf(['Choose...'], message='Please select a state.')])
+                        choices=[('', '')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
+                        validators=[validators.NoneOf([''], message='Please select a state.')])
     email = StringField('E-Mail', [validators.Email()])
     zip5 = StringField('Zipcode', [validators.Length(min=5, max=5, message='Must be a 5 digit number')])
     zip4 = StringField('Zip 4', [validators.Length(min=4, max=4, message='must be a 4 digit number.')])
