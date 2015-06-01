@@ -1,4 +1,4 @@
-<form id="address-form" class="" method="POST" action="{{ data.form.post_action_url }}">
+<form id="address-form" class="form" method="POST" action="{{ data.form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class="form_fields">
 
@@ -67,11 +67,11 @@
              </div>
         </div>
         <br>
-        <p class="form_disclaimer">By using this service, I agree to the <a href="#">terms of service</a> and <a href="#">privacy policy</a></p>
+        <p class="form_disclaimer">By using this service, I agree to the <a href="#">terms of service</a> and <a href="#">privacy policy</a>.</p>
         <br>
         <button type="submit">Sign up and send my message</button>
     </div>
-    <div>
+    <div class="form__notes">
         <p>
             <strong>Members of Congress don't have official emails.</strong> This service makes navigating their required web forms as easy as emailing them.
         </p>

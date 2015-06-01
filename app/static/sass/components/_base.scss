@@ -3,11 +3,11 @@ html{
 }
 
 body {
+    background: $background;
+    color: $gray-dark;
     font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
     font-size: $gamma;
     min-height: 100%;
-    background: $background;
-    color: $gray-dark;
 }
 
 .header {
@@ -20,10 +20,10 @@ body {
     }
     
     &__logo {
-        width: 160px;
         display: block;
         margin: auto;
         transition: width 150ms;
+        width: 160px;
 
         @include breakpoint($screen-sm){
             width: 200px;
@@ -38,15 +38,15 @@ body {
 }
 
 .footer {
-    @extend .container;
     text-align: center;
     margin-top: 75px;
+    padding: 0 50px;
 
     &__disclaimer {
         border-bottom: 1px solid $gray-light;
         color: $gray;
-        padding: 10px 0;
         margin-bottom: 10px;
+        padding: 10px 0;
     }
 
     &__nav {
@@ -77,26 +77,58 @@ body {
     }
 }
 
-a:link,
-a:visited  {
-    color: $blue;
-    transition: all 200ms;
-    text-decoration: none;
-    border-bottom: 0px solid transparent;
+a {
+    &:link,
+    &:visited  {
+        border-bottom: 0px solid transparent;
+        color: $blue;
+        text-decoration: none;
+        transition: all 200ms;
+    }
 
     &:hover,
     &:active,
     &:focus, {
-        color: darken($blue, 20%);
         border-bottom: 1px solid darken($blue, 20%);
+        color: darken($blue, 20%);
+    }
+
+    &.link-alt {
+        color: darken($gray, 15%);
+        border-bottom: none;
     }
 }
 
 
 button {
-    border: none;
-    padding: 12px;
-}
+    @include button-variant($white, $green, $green);
+    border: 0;
+    border-radius: 3px;
+    display: block;
+    font-size: $beta;
+    font-weight: normal;
+    margin: 16px auto;
+    padding: 14px;
+    transition: background 200ms;
+    width: 100%;
+
+    @include breakpoint($screen-sm){
+        width: 75%;
+    }
+
+    &:hover {
+        background: darken($green, 5%);
+    }
+
+    &:active {
+        background: $green;
+        transition: background 0ms;
+    }
+
+    &:focus {
+        outline: none;
+    }
+  }
 
 p {
     margin: 16px 0;
