@@ -99,7 +99,6 @@ a {
     }
 }
 
-
 button {
     @include button-variant($white, $green, $green);
     border: 0;
@@ -132,4 +131,8 @@ button {
 
 p {
     margin: 16px 0;
+}
+
+.red_text {
+  color: $red;
 }

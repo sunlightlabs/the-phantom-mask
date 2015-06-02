@@ -225,8 +225,7 @@ def update_user_address(token='', msg=None, umi=None, user=None):
         'msg_email': user.email
     }
 
-    if request.method == 'POST' and form.initial_validate():
-        form.autocomplete(user.email)
+    if request.method == 'POST':
         if form.validate_and_save_to_db(user, msg=msg):
             district = umi.determine_district(force=True)
             if district is None:

@@ -71,8 +71,6 @@ class MessageForm(MyBaseForm):
 
 class RegistrationForm(MyBaseForm):
 
-
-
     prefix = SelectField('Prefix',
                          choices=[(x,x) for x in ['', 'Mr.', 'Mrs.', 'Ms.']],
                          validators=[validators.DataRequired(),
@@ -109,11 +107,6 @@ class RegistrationForm(MyBaseForm):
                 success = False
         return success
 
-    def autocomplete(self, email):
-        self._autocomplete_email(email)
-        self._autocomplete_address()
-        self._autocomplete_tos()
-
     def _autocomplete_email(self, email):
         self.email.data = email
 
@@ -130,6 +123,14 @@ class RegistrationForm(MyBaseForm):
 
     def _autocomplete_tos(self):
         self.accept_tos.data = True
+
+    def _autocomplete_zip(self):
+        zipdata = self.zip5.data.split('-')
+        self.zip5.data = zipdata[0]
+        self.zip4.data = zipdata[1]
+
+    def _autocomplete_phone(self):
+        self.phone_number.data = re.sub("[^0-9]", "", self.phone_number.data)
 
     def resolve_zip4(self, force=False):
         if force or not self.zip4.data:
@@ -151,6 +152,10 @@ class RegistrationForm(MyBaseForm):
         @return: True if validation and save is successful, False otherwise
         @rtype: boolean
         """
+        self._autocomplete_tos()
+        self._autocomplete_email(user.email)
+        self._autocomplete_zip()
+        self._autocomplete_phone()
         if self.validate():
             print "here323234"
             # get user's default info and either create new info or get the same info instance

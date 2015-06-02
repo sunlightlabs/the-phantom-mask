@@ -3,11 +3,14 @@
     margin: 0 auto;
     width: 100%;
     padding: 75px 50px;
-    position: relative;  
-
+    position: relative;
   
     .form_fields {
         padding-bottom: 56px;
+    }
+
+    .form_input_mask_letter_spacing {
+      letter-spacing: 0.5px;
     }
 
     .form_group {
@@ -71,7 +74,7 @@
         z-index: 0;
         outline: 0;
         border: none;
-        color: $gray-dark;
+        color: $green;
         background-color: $gray-lighter;
         box-shadow: 0px 1px 0px $gray;
     
@@ -106,7 +109,7 @@
         overflow: hidden;
         background:  $gray-lighter url("/static/images/arrow_drop_down.svg") no-repeat 90% 50%;
         box-shadow: 0px 1px 0px $gray;
-        color: $gray;
+        color: $green;
         float: left;
     }
 

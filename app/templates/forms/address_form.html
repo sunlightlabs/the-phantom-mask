@@ -39,7 +39,7 @@
             </div>
         </div>
         <div class="form_group">
-            <div class="col-sm-5">
+            <div class="col-sm-7">
                 {{ data.form.city(class="", style="display:none", type="text", placeholder='City', required="required") }}
                 {{ data.form.city.label }}
             </div>
@@ -48,26 +48,22 @@
                 {{ data.form.state.label }}
             </div>
             <div class="col-sm-12">
-                {{ data.form.zip5(class="", type="text", placeholder="Zipcode", pattern="\d{5}", maxlength="5", title="Please enter five digit zipcode", required="required") }}
+                {{ data.form.zip5(class="form_input_mask_letter_spacing", type="text", placeholder="Zipcode", required="required", title="Please enter five digit zipcode", required="required") }}
                 {{ data.form.zip5.label }}
             </div>
-            <div class="col-sm-2">
-                {{ data.form.zip4(class="", style="display:none", type="text", placeholder="Zip4", pattern="\d{4}", title="Please enter your four digit zipcode.", required="required") }}
-                {{ data.form.zip4.label }}
-            </div>
-            <p id="no-zip4-error" style="display:none;">
+            <p id="no-zip4-error" class="red_text" style="display:none;">
                 We're unable to locate a city, state, and ZIP-4 code for given street address and ZIP-5.
                 Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find them.
             </p>
         </div>
         <div class="form_group">
             <div class="col-sm-12">
-                {{ data.form.phone_number(class="",type="text", placeholder="Phone Number", title="Please your phone number XXXXXXXXXX.", required="required") }}
+                {{ data.form.phone_number(class="form_input_mask_letter_spacing",type="text", placeholder="Phone Number", title="Please your phone number XXXXXXXXXX.", required="required") }}
                 {{ data.form.phone_number.label }}
              </div>
         </div>
         <br>
-        <p class="form_disclaimer">By using this service, I agree to the <a href="#">terms of service</a> and <a href="#">privacy policy</a>.</p>
+        <p class="form_disclaimer">By using this service, I agree to the <a href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
         <br>
         <button type="submit">Sign up and send my message</button>
     </div>
