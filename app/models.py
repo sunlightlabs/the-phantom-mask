@@ -682,6 +682,7 @@ class UserMessageInfo(MyBaseModel):
             return self.district
         except:
             print "Unable to determine district for " + self.mailing_address()
+            return None
 
     @property
     def members_of_congress(self):

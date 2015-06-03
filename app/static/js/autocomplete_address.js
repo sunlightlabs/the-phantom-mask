@@ -6,29 +6,40 @@
     var $state = $('#state');
     var $street_address = $('#street_address');
     var $phone_number = $('#phone_number');
-    var $no_zip4_error = $('#no-zip4-error')
+    var $no_zip4_error = $('#no-zip4-error');
+    var $no_district_error = $('#no-district-error');
 
-    console.log($zip5.val());
-    console.log($zip5.val().length);
-    if ($zip5.val().length > 5)
     {
-        $zip5.inputmask("99999-9999");
-        zipcode_css_switch(true);
-    }
-    else
-    {
-        $zip5.inputmask("99999");
+        ($zip5.val().length > 0) ? zipcode_css_switch(true) : $zip5.inputmask("99999");
+        $phone_number.inputmask('(999) 999-9999');
+        create_question_icon($street_address);
+        create_question_icon($phone_number);
+        $('#street_address_explainer_modal').modal('hide');
+        $('#phone_number_explainer_modal').modal('hide');
     }
 
-    $phone_number.inputmask('(999) 999-9999');
+    function create_question_icon(selector)
+    {
+        var id = selector.attr('id') + '_explainer';
+        var $newEle = $('<img id="'+id+'"width=40 src="/static/images/question_mark_circle.png" style="position:absolute;" />');
+        selector.parent().append($newEle);
+        var offset = selector.offset();
+        offset.left = offset.left - 45;
+        $newEle.offset(offset);
+        $newEle.click(function(evt) {
+            $('#'+id+'_modal').modal('show');
+        });
+    }
 
     function zipcode_css_switch(show)
     {
         if (show) {
+            $zip5.inputmask("99999-9999");
             $zip5.parent().switchClass('col-sm-12', 'col-sm-3');
             $city.show('slide', {'direction': 'left'});
             $state.show('slide', {'direction': 'left'});
             $no_zip4_error.hide();
+            $no_district_error.hide()
         } else {
             $zip5.parent().switchClass('col-sm-3', 'col-sm-12');
             $city.hide(); $state.hide();
@@ -39,9 +50,8 @@
     }
 
     function autocomplete_address_values(city, state, zip4, zip5) {
-        $zip5.inputmask("99999-9999");
-        $city.val(city); $state.val(state); $zip5.val(zip5 + zip4);
         zipcode_css_switch(true);
+        $city.val(city); $state.val(state); $zip5.val(zip5 + zip4);
     }
 
     function autocomplete_address(street_address, zip5) {
@@ -80,18 +90,5 @@
 
     $zip5.typeWatch( options );
     $street_address.typeWatch( options );
-
-    /*
-    $zip5.on('keyup change', function(evt) {
-        if ($zip5.val().length == 0) {
-            zipcode_css_switch(false);
-        } else if ($zip5.val().length == 5 && $street_address.val().length > 0) {
-            autocomplete_address($street_address.val(), $zip5.val());
-        }
-    });
-    */
-
-
-
 
 })();

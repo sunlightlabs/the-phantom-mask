@@ -133,6 +133,44 @@ p {
     margin: 16px 0;
 }
 
+
 .red_text {
   color: $red;
+}
+
+.faq__div--header {
+
+  padding: 50px;
+
+  h2 {
+    text-align: center;
+  }
+
+  p {
+    text-align: center;
+    font-size: $alpha;
+  }
+
+}
+
+.faq__div--main {
+
+  position:relative;
+
+  &:before {
+      @include triangle(16px, $background);
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 48%;
+  }
+
+  background-color: $white;
+  width: 100%;
+  padding: 50px;
+}
+
+.faq__div--answer {
+  margin-top: 50px;
+  margin-bottom: 50px;
 }

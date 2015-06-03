@@ -14,6 +14,9 @@
             <div class="col-sm-2 clearfix">
                 <div class="select-style">
                     {{ data.form.prefix(placeholder="Title", required="required", title="Please select a prefix. See the FAQ if you feel this list is confining.") }}
+                    {% for error in data.form.prefix.errors %}
+                        {{ error }}
+                    {% endfor %}
                 </div>
             </div>
             <div class="col-sm-5">
@@ -55,6 +58,13 @@
                 We're unable to locate a city, state, and ZIP-4 code for given street address and ZIP-5.
                 Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find them.
             </p>
+            {% if 'district_error' in context %}
+            <p id="no-district-error" class="red_text">
+                Sorry! We were not able to identify a congressional district associated with this address. Double
+                check your address information or try using <a href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a>
+                provided by the government.
+            </p>
+            {% endif %}
         </div>
         <div class="form_group">
             <div class="col-sm-12">
@@ -72,18 +82,10 @@
             <strong>Members of Congress don't have official emails.</strong> This service makes navigating their required web forms as easy as emailing them.
         </p>
         <p>
-            If you don't want to use this service and would like an alternative method to communicate with Congress, follow <a href="#">this guide</a> provided by usa.gov.
+            If you don't want to use this service and would like an alternative method to communicate with Congress, follow <a href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a> provided by usa.gov.
         </p>
         <p>
             This service is offered by the Sunlight Foundation and is <strong>not</strong> affiliated with Congress.
         </p>
     </div>
 </form>
-
-{% block javascript %}
-
-    <script type="text/javascript" src="/static/js/build/form.js"></script>
-    <script type="text/javascript" src="/static/js/autocomplete_address.js"></script>
-
-{% endblock %}
-

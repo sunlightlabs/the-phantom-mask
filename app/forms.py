@@ -73,7 +73,7 @@ class RegistrationForm(MyBaseForm):
 
     prefix = SelectField('Prefix',
                          choices=[(x,x) for x in ['', 'Mr.', 'Mrs.', 'Ms.']],
-                         validators=[validators.DataRequired(),
+                         validators=[validators.DataRequired('Congressional offices require a title in order to accept any message.'),
                                      validators.NoneOf([''], message='Please select a prefix.')])
     first_name = StringField('First name',
                              validators=[validators.DataRequired(message="This field is required yo yo")])
@@ -87,8 +87,8 @@ class RegistrationForm(MyBaseForm):
                         choices=[('', '')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
                         validators=[validators.NoneOf([''], message='Please select a state.')])
     email = StringField('E-Mail', [validators.Email()])
-    zip5 = StringField('Zipcode', [validators.Length(min=5, max=5, message='Must be a 5 digit number')])
-    zip4 = StringField('Zip 4', [validators.Length(min=4, max=4, message='must be a 4 digit number.')])
+    zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Must be a 5 digit number.')])
+    zip4 = StringField('Zip 4', [validators.Regexp(re.compile('^\d{4}$'), message='Must be a 4 digit number.')])
     phone_number = StringField('Phone number',
                    [validators.Regexp(re.compile('^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'),
                                       message="Please enter a valid phone number.")])
@@ -126,8 +126,14 @@ class RegistrationForm(MyBaseForm):
 
     def _autocomplete_zip(self):
         zipdata = self.zip5.data.split('-')
-        self.zip5.data = zipdata[0]
-        self.zip4.data = zipdata[1]
+        try:
+            self.zip5.data = zipdata[0]
+        except:
+            self.zip5.data = ''
+        try:
+            self.zip4.data = zipdata[1]
+        except:
+            self.zip4.data = ''
 
     def _autocomplete_phone(self):
         self.phone_number.data = re.sub("[^0-9]", "", self.phone_number.data)
