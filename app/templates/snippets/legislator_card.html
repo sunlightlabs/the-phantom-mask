@@ -1,13 +1,14 @@
-<div class="legislator_card {{ margin_class }}">
+<div class="legislator_card">
     <div class="legislator_card_img">
         <img src="{{ leg.image_url() }}" onerror="img_missing(this);"/>
     </div>
     <div class="legislator_card_info">
-        <h4>{{ leg.full_title_and_full_name() }}</h4>
-        <h4>{{ leg.state }}{% if leg.district != None %}-{{ leg.district }}{% endif %}</h4>
-        <h6><a href="mailto:{{ leg.oc_email.lower() }}">{{ leg.oc_email.lower() }}</a></h6>
+        <h5>{{ leg.full_title() }}</h5>
+        <h5>{{ leg.full_name() }}</h5>
     </div>
-    {% if context.message %}
-        Email this person? <input type="checkbox" name="legislator_{{ loop.index0 }}" value="True" checked>
+    {% if context.msg %}
+        <div class="legislator_card_checkbox">
+            <input type="checkbox" name="legislator_{{ loop.index0 }}" value="True" checked>
+        </div>
     {% endif %}
 </div>

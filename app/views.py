@@ -13,7 +13,7 @@ from config import settings
 from phantom_mask import db
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from sqlalchemy import func
-from models import Legislator, Message, MessageLegislator, User, AdminUser, UserMessageInfo, db_first_or_create, db_add_and_commit
+from models import Legislator, Message, MessageLegislator, Token, User, AdminUser, UserMessageInfo, db_first_or_create, db_add_and_commit
 from helpers import render_template_wctx, convert_token, url_for_with_prefix, append_get_params, app_router_path
 from flask_admin import expose
 import flask_admin as admin
@@ -93,16 +93,18 @@ def after_this_request(f):
     g.after_request_callbacks.append(f)
     return f
 
+
 def resolve_token(viewfunc):
 
     @wraps(viewfunc)
     def token_or_redirect(**kwargs):
-        msg, umi, user = convert_token(kwargs.get('token', ''))
+        token = kwargs.get('token', '')
+        msg, umi, user = Token.convert_token(token)
         if user is None:
             return redirect(url_for_with_prefix('app_router.reset_token'))
-        elif msg is not None and msg.needs_captcha_to_send() and viewfunc.__name__ is not 'confirm_with_recaptcha':
-            return redirect(append_get_params(url_for_with_prefix('app_router.confirm_with_recaptcha', **kwargs)))
         else:
+            if msg is not None and msg.is_already_sent() and viewfunc.__name__ is not 'message_sent':
+                return redirect(url_for_with_prefix('app_router.message_sent', token=token))
             kwargs.update({'msg': msg, 'umi': umi, 'user': user})
             return viewfunc(**kwargs)
 
@@ -180,6 +182,16 @@ def new_token(token=''):
     else:
         return 'No user exists for specified token.'
 
+@resolve_token
+def message_sent(token='', msg=None, umi=None, user=None):
+
+    context = {
+        'umi': umi,
+        'legislators': umi.members_of_congress,
+        'msg': msg
+    }
+
+    return render_template_wctx('pages/message_sent.html', context=context)
 
 @resolve_token
 def confirm_reps(token='', msg=None, umi=None, user=None):
@@ -198,7 +210,7 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
 
     context = {
         'form': form,
-        'message': msg,
+        'msg': msg,
         'user': user,
         'umi': umi,
         'legislators': moc
@@ -206,7 +218,7 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
 
     if msg is not None and request.method == 'POST' and form.validate():
         msg.queue_to_send([moc[i] for i in [v for v in range(0, len(moc)) if request.form.get('legislator_' + str(v))]])
-        return render_template_wctx('pages/message_sent.html', context=context)
+        return redirect(url_for_with_prefix('app_router.message_sent', token=token))
     else:
         if msg is not None:
             form.populate_data_from_message(msg)

@@ -9,32 +9,28 @@
     var $no_zip4_error = $('#no-zip4-error');
     var $no_district_error = $('#no-district-error');
 
-    {
-        ($zip5.val().length > 0) ? zipcode_css_switch(true) : $zip5.inputmask("99999");
-        $phone_number.inputmask('(999) 999-9999');
+    $(document).ready(function(){
+        ($zip5.val().length > 0) ? zipcode_css_switch(true) : $zip5.inputmask("99999", { showMaskOnHover: false });
+        $phone_number.inputmask('(999) 999-9999', { showMaskOnHover: false });
         create_question_icon($street_address);
         create_question_icon($phone_number);
-        $('#street_address_explainer_modal').modal('hide');
-        $('#phone_number_explainer_modal').modal('hide');
-    }
+        $('.tooltipster').tooltipster({position: 'top-left'});
+    });
 
     function create_question_icon(selector)
     {
-        var id = selector.attr('id') + '_explainer';
-        var $newEle = $('<img id="'+id+'"width=40 src="/static/images/question_mark_circle.png" style="position:absolute;" />');
-        selector.parent().append($newEle);
+        var id = selector.attr('id') + '_tooltip';
+        var $tooltip = $('#' + id).detach();
+        selector.parent().append($tooltip);
         var offset = selector.offset();
-        offset.left = offset.left - 45;
-        $newEle.offset(offset);
-        $newEle.click(function(evt) {
-            $('#'+id+'_modal').modal('show');
-        });
+        offset.left = offset.left - $tooltip.width();
+        $tooltip.offset(offset);
     }
 
     function zipcode_css_switch(show)
     {
         if (show) {
-            $zip5.inputmask("99999-9999");
+            $zip5.inputmask("99999-9999", { showMaskOnHover: false });
             $zip5.parent().switchClass('col-sm-12', 'col-sm-3');
             $city.show('slide', {'direction': 'left'});
             $state.show('slide', {'direction': 'left'});
@@ -43,7 +39,7 @@
         } else {
             $zip5.parent().switchClass('col-sm-3', 'col-sm-12');
             $city.hide(); $state.hide();
-            $zip5.inputmask("99999");
+            $zip5.inputmask("99999", { showMaskOnHover: false });
             $no_zip4_error.hide();
         }
 

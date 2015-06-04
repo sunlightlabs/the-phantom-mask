@@ -1,24 +1,25 @@
 <div id="your_reps_container">
-    <h2>Here are your Senators and Representative.</h2>
     <div id="your_reps">
         {% for leg in context.legislators %}
-            {% with leg=leg %}
-                {% if loop.length == 3 %}
-                    {% with %}
-                        {% if loop.first %}{% set margin_class='legislator_card_left' %}
-                        {% elif loop.last %}{% set margin_class='legislator_card_right' %}
-                        {% else %}{% set margin_class='legislator_card_middle' %}
-                        {% endif %}
-                        {% include 'snippets/legislator_card.html' %}
-                    {% endwith %}
-                {% elif loop.length == 2 %}
-                      {% include 'snippets/legislator_card.html' %}
-                {% elif loop.length == 1 %}
-                      {% include 'snippets/legislator_card.html' %}
-                {% else %}
-
+            <div class="{% if context.msg.is_already_sent() %}legislator_card_horizontal{% endif %} col-xs-12 col-sm-4 legislator_card">
+                <div class="legislator_card_img">
+                    <img src="{{ leg.image_url() }}" onerror="img_missing(this);"/>
+                </div>
+                <div class="legislator_card_info">
+                    <div>
+                        <h5>{{ leg.full_title() }}</h5>
+                        <h5>{{ leg.full_name() }}</h5>
+                    </div>
+                    {% if context.msg.is_already_sent() %}
+                    <h5><a href="mailto:{{ leg.oc_email }}">{{ leg.oc_email }}</a></h5>
+                    {% endif %}
+                </div>
+                {% if context.msg %}
+                    <div class="legislator_card_checkbox">
+                        <input type="checkbox" name="legislator_{{ loop.index0 }}" value="True" checked>
+                    </div>
                 {% endif %}
-            {% endwith %}
+            </div>
         {% endfor %}
         <div class="clearfix"></div>
     </div>

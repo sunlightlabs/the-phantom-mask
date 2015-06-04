@@ -273,6 +273,10 @@ class Legislator(MyBaseModel):
         return (ordinal(int(district)) if int(district) > 0 else 'At-Large') + ' Congressional district of ' + usps.CODE_TO_STATE.get(state)
 
     @staticmethod
+    def humanized_state(state):
+        return usps.CODE_TO_STATE.get(state)
+
+    @staticmethod
     def get_district_geojson_url(state, district):
         try:
             fips = Legislator.FIPS_CODES.get(state)
@@ -391,6 +395,22 @@ class Token(MyBaseModel):
     token = db.Column(db.String(64), unique=True, primary_key=True)
     item_id = db.Column (db.Integer)
     item_table = db.Column(db.String(16))
+
+    @classmethod
+    def convert_token(cls, token):
+        msg, umi, user = None, None, None
+        token = cls.query.filter_by(token=token).first()
+        if token is not None:
+            item = token.item
+            if type(item) is User:
+                user = item
+                umi = user.default_info
+            elif type(item) is Message:
+                msg = item
+                umi = msg.user_message_info
+                user = umi.user
+
+        return msg, umi, user
 
     @classmethod
     def uid_creator(cls, model=None, param='token'):
@@ -607,6 +627,9 @@ class UserMessageInfo(MyBaseModel):
     def humanized_district(self):
         return Legislator.humanized_district(self.state, self.district)
 
+    def humanized_state(self):
+        return Legislator.humanized_state(self.state)
+
     def should_update_address_info(self):
         """
         Determines if user needs to update their address information.
@@ -678,6 +701,7 @@ class UserMessageInfo(MyBaseModel):
 
         try:
             self.district = data.get('district')
+            self.state = data.get('state')
             db.session.commit()
             return self.district
         except:
@@ -895,6 +919,9 @@ class Message(MyBaseModel, HasTokenMixin):
 
     def is_free_to_send(self):
         return self.status == 'free'
+
+    def is_already_sent(self):
+        return self.status is None
 
     def queue_to_send(self, moc=None):
         from scheduler import send_to_phantom_of_the_capitol
