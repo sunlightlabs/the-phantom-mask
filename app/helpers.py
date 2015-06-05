@@ -63,7 +63,7 @@ def convert_token(token):
         if type(item) is User:
             user = item
             umi = user.default_info
-        elif type(item) is Message and item.status is not None:
+        elif type(item) is Message:
             msg = item
             umi = msg.user_message_info
             user = umi.user

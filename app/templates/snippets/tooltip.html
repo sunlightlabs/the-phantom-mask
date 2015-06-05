@@ -1,0 +1,11 @@
+{%- macro tooltip(element, id, class, title, ariahaspopup="true", dataoptions="") -%}
+
+    <{{ element }} data-tooltip aria-haspopup="{{ ariahaspopup }}" id="{{ id }}" class="{{ class }}" data-options="{{ dataoptions }}" title="{{ title }}"></{{ element }}>
+
+{%- endmacro %}
+
+{%- macro tooltip_img(src, id, title, style="", class='tooltipster') -%}
+
+    <img src="{{ src }}" id="{{ id }}" class="{{ class }}" title="{{ title }}" style="{{ style }}" />
+
+{%- endmacro %}

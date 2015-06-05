@@ -135,6 +135,60 @@
 }
 
 
+.message_form {
+
+  button {
+    width: 100%;
+  }
+
+  .col-sm-12, .col-sm-9, .col-xs-12, .col-sm-3 {
+    padding: 0;
+  }
+
+  .col-sm-3 {
+
+    padding-right: 15px;
+
+    @media (max-width: $screen-md) {
+        padding-right: 0;
+    }
+
+  }
+
+  .red-button {
+    color: $red;
+    border: 2px $red solid;
+    background-color: $white;
+  }
+
+  input[type='text'],
+    textarea {
+        font-size: $beta;
+        padding: 8px;
+        width: 100%;
+        margin-bottom: 16px;
+        outline:none;
+        position: relative;
+        top: 0;
+        left: 0;
+        z-index: 0;
+        outline: 0;
+        border: none;
+        color: $gray-dark;
+        background-color: $gray-lighter;
+        box-shadow: 0px 1px 0px $gray;
+        resize: none;
+
+        &:focus + label {
+            background: transparent;
+            font-size: 95%;
+            padding: 12px;
+            z-index: 2;
+        }
+    }
+}
+
+
 // Placeholder text
 
 ::-webkit-input-placeholder {

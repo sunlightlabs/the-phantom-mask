@@ -1,6 +1,6 @@
 {% extends 'root.html' %}
 
-{% import 'snippets/modal.html' as modal %}
+{% import 'snippets/tooltip.html' as tooltip %}
 
 {% block title %}
     Verify your contact information to send your e-mail.
@@ -14,14 +14,8 @@
     {% endwith %}
     <div style="clear:both"></div>
 
-    {{ modal.explainer_modal("street_address_explainer_modal",
-        "Why do you need my address?",
-        "We ask for your address and ZIP code because congressional offices require them to send a message.")
-    }}
-    {{ modal.explainer_modal("phone_number_explainer_modal",
-        "Why do you need my phone number?",
-        "We ask for your phone number because congressional offices require them to send a message.")
-    }}
+    {{ tooltip.tooltip_img('/static/images/question_mark_circle.png', 'street_address_tooltip', "We ask for your address and ZIP code because congressional offices require them to send a message.", "position:absolute;" ) }}
+    {{ tooltip.tooltip_img('/static/images/question_mark_circle.png', 'phone_number_tooltip', "We ask for your phone number because congressional offices requires one to send a message.", "position:absolute;" ) }}
 
 {% endblock %}
 

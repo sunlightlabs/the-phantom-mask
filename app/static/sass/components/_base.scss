@@ -181,3 +181,91 @@ a {
     margin-top: 50px;
     margin-bottom: 50px;
 }
+
+.clearfix {
+  clear: both;
+}
+
+.legislator_card {
+  float:left;
+  width:155px;
+  text-align:center;
+  padding:0;
+  margin-left:5px;
+  margin-right:5px;
+  border: 1px solid $gray-light;
+
+  &_horizontal {
+    width: 100%;
+    .legislator_card_img {
+      float:left;
+      padding: 10px;
+      margin-top: 0;
+      img {
+        border-radius:100px;
+        width: 50px;
+      }
+    }
+
+    .legislator_card_info {
+      margin-top: 15px;
+      float: left;
+      text-align:left;
+      h5 {
+        font-size: $micro;
+      }
+    }
+
+    .legislator_card_checkbox {
+      float: right;
+      margin-right: 10%;
+      margin-top: 25px;
+    }
+  }
+
+  @media (max-width: $screen-md) {
+    width: 100%;
+  }
+
+  &_img {
+    margin-top: 25px;
+    img {
+      width:100px;
+      border-radius:100px;
+    }
+    @media (max-width: $screen-md) {
+      margin-top: 0;
+      float: left;
+      padding: 10px;
+      img {
+        width: 50px;
+      }
+    }
+  }
+
+  &_info {
+    margin-top: 15px;
+    @media (max-width: $screen-md) {
+      float: left;
+      text-align:left;
+      h5 {
+        font-size: $micro;
+      }
+    }
+  }
+
+  &_checkbox {
+    @media (max-width: $screen-md) {
+      float: right;
+      margin-right: 10%;
+      margin-top: 25px;
+    }
+  }
+
+  h4, h5 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+}
