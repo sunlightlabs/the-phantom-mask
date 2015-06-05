@@ -1,6 +1,8 @@
 #!/bin/bash
 
-PROJECT_DIR=$HOME/the-phantom-mask
+if [ -z "${PROJECT_DIR-}" ]; then
+    PROJECT_DIR=$HOME/the-phantom-mask
+fi
 
 function activate_virtualenv()
 {
