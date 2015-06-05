@@ -1,58 +1,17 @@
+// Form Components
+
 .form {
     background: $white;
     margin: 0 auto;
     width: 100%;
-    padding: 75px 50px;
+    padding: 75px 25px;
     position: relative;
-
-    .form_fields {
-        padding-bottom: 56px;
+    transition: padding 200ms;
+    
+    @include breakpoint($screen-sm){
+        padding: 75px 50px;
     }
-
-    .form_input_mask_letter_spacing {
-      letter-spacing: 0.5px;
-    }
-
-    .form_group {
-        @include make-row(0);
-        [class*="col-"] {
-            padding-left: 4px;
-            padding-right: 4px;
-        }
-        @include breakpoint(994px){
-            margin-bottom: 16px;
-        }
-        > div {
-            position: relative;
-        }
-
-        input,
-        textarea {
-            padding: 8px;
-        }
-  // TEST
-        label {
-            top: 0;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            font-weight: normal;
-            text-transform: uppercase;
-            z-index: -1;
-            background: red;
-        }
-        
-        input:focus + label,
-        textarea:focus + label {
-            top: -55%;
-            z-index: -1;
-            background: red;
-            // margin-top: -16px;
-        }
-  // END TEST
-    }
-
-
+  
     &:before {
         @include triangle(16px, $background);
         content: ''; 
@@ -61,84 +20,120 @@
         left: 48%;
     }
 
-    input,
-    textarea {
-        font-size: $beta;
-        padding: 8px;
-        width: 100%;
-        margin-bottom: 16px;
-        outline:none;
-        position: relative;
-        top: 0;
-        left: 0;
-        z-index: 0;
-        outline: 0;
-        border: none;
-        color: $green;
-        background-color: $gray-lighter;
-        box-shadow: 0px 1px 0px $gray;
-    
-        &:focus + label {
-            background: transparent;
-            font-size: 95%;
-            padding: 12px;
-            z-index: 2;
+    &__group {
+        @include make-row(0);
+        [class*="col-"] {
+            padding-left: 4px;
+            padding-right: 4px;
         }
     }
 
-    label {
-        transition: // not padding
-        background 0.5s,
-        color 0.5s,
-        top 0.5s,
-        bottom 0.5s,
-        right 0.5s,
-        left 0.5s;
-        position: absolute;
-        color: #999;
-        padding: 12px;
-    }
-
-
-    .select-style {
-        margin-bottom: 16px;
-        width: 100%;
-        padding: 8px;
-        font-size: $beta;
-        border-radius: 0;
-        overflow: hidden;
-        background:  $gray-lighter url("/static/images/arrow_drop_down.svg") no-repeat 90% 50%;
-        box-shadow: 0px 1px 0px $gray;
-        color: $green;
-        float: left;
-    }
-
-    select {
-        // padding: 5px 8px;
-        outline:none;
-        width: 108%;
-        border: none;
-        box-shadow: none;
-        background: transparent;
-        background-image: none;
-        -webkit-appearance: none;
-        
-        &:focus {
-            color: rgba(0,0,0,0);
-            text-shadow: 0 0 0 $gray;
-        }
-    }
-
-    .form_disclaimer {
+    &__disclaimer {
+        display: inline-block;
+        margin: 25px 0;
         text-align: center;
-        margin-bottom: 16px;
+        width: 100%;
     }
 
     &__notes {
         border-top: 1px dashed $gray-light;
-        padding-top: 25px;
-    } 
+        margin-top: 75px;
+        padding-top: 50px;
+    }
+
+    &__error {
+        @extend %red;
+        @extend %micro;
+        margin: 10px;
+        position: relative;
+        top: -12px;
+    }
+
+    // Form Input Components
+
+    &__input {
+        background-color: lighten($gray-lighter, 3%);
+        border: none;
+        box-shadow: 0px 1px 0px $gray-light;
+        color: $gray-dark;
+        font-size: $beta;
+        margin-bottom: 24px;
+        outline: 0;
+        padding: 8px;
+        position: relative;
+        width: 100%;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        
+        &:focus {
+            box-shadow: 0px 1px 0px $gray-dark;
+        }
+
+        // &:invalid {
+        //     box-shadow: 0px 1px 0px $red;
+        // }
+
+        &:focus + .form__label {
+            padding: 12px;
+            z-index: 2;
+            top: -30px;
+            color: $gray-dark;
+        }
+    }
+    
+    .form__input--masked {
+        @extend .form__input;
+        letter-spacing: 1px;
+    }
+
+    &__label {
+        color: transparent;
+        font-size: 12px;
+        font-weight: normal;
+        padding: 12px;
+        position: absolute;
+        text-transform: uppercase;
+        transition: all 200ms;
+        width: 100%;
+        z-index: -1;
+        bottom: 0;
+        top: -15px;
+        left: 0;
+    }
+
+    &__select {
+        // overrides browser defaults
+        outline: none;
+        width: 100%;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+
+        background: lighten($gray-lighter, 3%) url("/static/images/arrow_drop_down.svg") no-repeat 90% 70%;
+        box-shadow: 0px 1px 0px $gray-light;
+        color: $gray-dark;
+        font-size: $beta;
+        margin-bottom: 24px;
+        overflow: hidden;
+        padding: 8px;
+        width: 100%;
+
+        &:focus {
+            box-shadow: 0px 1px 0px $gray-dark;
+        }
+
+        @include breakpoint($screen-sm){
+            background: lighten($gray-lighter, 3%) url("/static/images/arrow_drop_down.svg") no-repeat 98% 70%;
+        }
+
+    }
+
 }
+
 
 .message_form {
 
@@ -193,15 +188,22 @@
     }
 }
 
+
+// Placeholder text
+
 ::-webkit-input-placeholder {
     color: $gray;
+    letter-spacing: 0px;
 }
 ::-moz-placeholder { /* Firefox 19+ */
     color: $gray;
+    letter-spacing: 0px;
 }
 :-ms-input-placeholder {
     color: $gray;
+    letter-spacing: 0px;
 }
 :-moz-placeholder { /* Firefox 18- */
     color: $gray;
+    letter-spacing: 0px;
 }

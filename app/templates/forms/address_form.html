@@ -1,82 +1,82 @@
 <form id="address-form" class="form" method="POST" action="{{ data.form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    <div class="form_fields">
 
-        <ul>
-        {% for field in data.form.errors %}
-            {% for error in data.form.errors[field] %}
-                <li>{{ error }}</li>
-            {% endfor %}
+    <ul>
+    {% for field in data.form.errors %}
+        {% for error in data.form.errors[field] %}
+            <li>{{ error }}</li>
         {% endfor %}
-        </ul>
+    {% endfor %}
+    </ul>
 
-        <div class="form_group">
-            <div class="col-sm-2 clearfix">
-                <div class="select-style">
-                    {{ data.form.prefix(placeholder="Title", required="required", title="Please select a prefix. See the FAQ if you feel this list is confining.") }}
-                    {% for error in data.form.prefix.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="col-sm-5">
-                {{ data.form.first_name(class="", type="text", placeholder="First Name", required="required") }}
-                {{ data.form.first_name.label }}
-                {% for error in data.form.first_name.errors %}
-                    {{ error }}
-                {% endfor %}
-            </div>
-            <div class="col-sm-5">
-                {{ data.form.last_name(class="",type="text", placeholder="Last Name", required="required") }}
-                {{ data.form.last_name.label }}
-            </div>
+    <div class="form__group">
+        <div class="col-sm-2 clearfix">
+            {{ data.form.prefix(class="form__select", placeholder="Title", required="required", title="Please select a prefix. See the FAQ if you feel this list is confining.") }}
+            {% for error in data.form.prefix.errors %}
+                {{ error }}
+            {% endfor %}
         </div>
-        <div class="form_group">
-            <div class="col-sm-9">
-                {{ data.form.street_address(class="",type="text", placeholder="Address", required="required") }}
-                {{ data.form.street_address.label }}
-            </div>
-            <div class="col-sm-3">
-                {{ data.form.street_address2(class="",type="text", placeholder="Apt/Suite") }}
-                {{ data.form.street_address2.label }}
-            </div>
+        <div class="col-sm-5">
+            {{ data.form.first_name(class="form__input", type="text", placeholder="First Name", pattern="[A-Za-z0-9]{1,20}", required="required") }}
+            {{ data.form.first_name.label (class="form__label") }}
+            {% for error in data.form.first_name.errors %}
+                {{ error }}
+            {% endfor %}
         </div>
-        <div class="form_group">
-            <div class="col-sm-7">
-                {{ data.form.city(class="", style="display:none", type="text", placeholder='City', required="required") }}
-                {{ data.form.city.label }}
-            </div>
-            <div class="col-sm-2">
-                {{ data.form.state(class="select-style", style="display:none", required="required", title="Please select a state from the list.") }}
-                {{ data.form.state.label }}
-            </div>
-            <div class="col-sm-12">
-                {{ data.form.zip5(class="form_input_mask_letter_spacing", type="text", placeholder="Zipcode", required="required", title="Please enter five digit zipcode", required="required") }}
-                {{ data.form.zip5.label }}
-            </div>
-            <p id="no-zip4-error" class="red_text" style="display:none;">
-                We're unable to locate a city, state, and ZIP-4 code for given street address and ZIP-5.
-                Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find them.
-            </p>
-            {% if 'district_error' in context %}
-            <p id="no-district-error" class="red_text">
-                Sorry! We were not able to identify a congressional district associated with this address. Double
-                check your address information or try using <a href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a>
-                provided by the government.
-            </p>
-            {% endif %}
+        <div class="col-sm-5">
+            {{ data.form.last_name(class="form__input",type="text", placeholder="Last Name", required="required") }}
+            {{ data.form.last_name.label (class="form__label") }}
         </div>
-        <div class="form_group">
-            <div class="col-sm-12">
-                {{ data.form.phone_number(class="form_input_mask_letter_spacing",type="text", placeholder="Phone Number", title="Please your phone number XXXXXXXXXX.", required="required") }}
-                {{ data.form.phone_number.label }}
-             </div>
-        </div>
-        <br>
-        <p class="form_disclaimer">By using this service, I agree to the <a href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
-        <br>
-        <button type="submit">Sign up and send my message</button>
     </div>
+
+    <div class="form__group">
+        <div class="col-sm-9">
+            {{ data.form.street_address(class="form__input",type="text", placeholder="Street Address", required="required") }}
+            {{ data.form.street_address.label (class="form__label") }}
+        </div>
+        <div class="col-sm-3">
+            {{ data.form.street_address2(class="form__input",type="text", placeholder="Apt/Suite") }}
+            {{ data.form.street_address2.label (class="form__label") }}
+        </div>
+    </div>
+
+    <div class="form__group">
+        <div class="col-sm-7">
+            {{ data.form.city(class="form__input", style="display:none", type="text", placeholder='City', required="required") }}
+            {{ data.form.city.label (class="form__label") }}
+        </div>
+        <div class="col-sm-2">
+            {{ data.form.state(class="form__select", style="display:none", required="required", title="Please select a state from the list.") }}
+            {{ data.form.state.label (class="form__label") }}
+        </div>
+        <div class="col-sm-12">
+            {{ data.form.zip5(class="form__input--masked", type="text", placeholder="Zipcode", required="required", title="Please enter five digit zipcode", required="required") }}
+            {{ data.form.zip5.label (class="form__label") }}
+        </div>
+        <p id="no-zip4-error" class="form__error" style="display:none;">
+            We're unable to locate a city, state, and ZIP-4 code for given street address and ZIP-5.
+            Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find them.
+        </p>
+        {% if 'district_error' in context %}
+        <p id="no-district-error" class="form__error">
+            Sorry! We were not able to identify a congressional district associated with this address. Double
+            check your address information or try using <a href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a>
+            provided by the government.
+        </p>
+        {% endif %}
+    </div>
+    
+    <div class="form__group">
+        <div class="col-sm-12">
+            {{ data.form.phone_number(class="form__input--masked",type="text", placeholder="Phone Number", title="Please your phone number XXXXXXXXXX.", required="required") }}
+            {{ data.form.phone_number.label (class="form__label") }}
+         </div>
+    </div>
+
+    <p class="form__disclaimer">By using this service, I agree to the <a href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
+
+    <button class="button" type="submit">Sign up and send my message</button>
+
     <div class="form__notes">
         <p>
             <strong>Members of Congress don't have official emails.</strong> This service makes navigating their required web forms as easy as emailing them.
@@ -85,7 +85,7 @@
             If you don't want to use this service and would like an alternative method to communicate with Congress, follow <a href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a> provided by usa.gov.
         </p>
         <p>
-            This service is offered by the Sunlight Foundation and is <strong>not</strong> affiliated with Congress.
+            This service is offered by the Sunlight Foundation and is not affiliated with Congress.
         </p>
     </div>
 </form>

@@ -9,9 +9,9 @@ $red:  #e0522b;
 $white:  #fff;
 
 $background: #f4f6f9;               // Page Background Color
-$gray-dark: #333;                  // Main Text Color
+$gray-dark: #222;                   // Main Text Color
 $gray: #999;
-$gray-light: #ddd;
+$gray-light: #ccc;
 $gray-lighter: #f0f0f0;
 
 
@@ -26,9 +26,3 @@ $alpha: 19px;
 $beta: 16px;
 $gamma: 14px;
 $micro: 12px;
-
-
-%alpha { font-size: $alpha; }
-%beta { font-size: $beta; }
-%gamma { font-size: $gamma; }
-%micro { font-size: $micro; }

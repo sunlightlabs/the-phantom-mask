@@ -1,3 +1,17 @@
+//  Utility Classes
+
+%alpha { font-size: $alpha; }
+%beta { font-size: $beta; }
+%gamma { font-size: $gamma; }
+%micro { font-size: $micro; }
+
+%red { color: $red; }
+
+%is-hidden { display: none; }
+
+
+// Layout
+
 html{
     height: 100%;
 }
@@ -77,6 +91,10 @@ body {
     }
 }
 
+p {
+    margin: 0 0 1em;
+}
+
 a {
     &:link,
     &:visited  {
@@ -99,7 +117,7 @@ a {
     }
 }
 
-button {
+.button {
     @include button-variant($white, $green, $green);
     border: 0;
     border-radius: 3px;
@@ -108,7 +126,7 @@ button {
     font-weight: normal;
     margin: 16px auto;
     padding: 14px;
-    transition: background 200ms;
+    transition: background 200ms, width 200ms;
     width: 100%;
 
     @include breakpoint($screen-sm){
@@ -127,52 +145,41 @@ button {
     &:focus {
         outline: none;
     }
-  }
-
-p {
-    margin: 16px 0;
 }
 
-
-.red_text {
-  color: $red;
-}
 
 .faq__div--header {
 
-  padding: 50px;
+    padding: 50px;
 
-  h2 {
-    text-align: center;
-  }
+    h2 {
+        text-align: center;
+    }
 
-  p {
-    text-align: center;
-    font-size: $alpha;
-  }
-
+    p {
+        text-align: center;
+        font-size: $alpha;
+    }
 }
 
 .faq__div--main {
+    position:relative;
+    background-color: $white;
+    width: 100%;
+    padding: 50px;
 
-  position:relative;
-
-  &:before {
-      @include triangle(16px, $background);
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 48%;
-  }
-
-  background-color: $white;
-  width: 100%;
-  padding: 50px;
+    &:before {
+        @include triangle(16px, $background);
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 48%;
+    }
 }
 
 .faq__div--answer {
-  margin-top: 50px;
-  margin-bottom: 50px;
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 .clearfix {
