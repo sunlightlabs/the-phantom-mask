@@ -2,6 +2,7 @@ import os
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CsrfProtect
 from config import settings
+import jinja2
 
 env = os.environ.get('PHANTOM_ENVIRONMENT', 'dev' if settings.APP_DEBUG else 'prod')
 
@@ -25,6 +26,11 @@ def create_app():
     app.config['RECAPTCHA_PRIVATE_KEY'] = settings.RECAPTCHA_PRIVATE_KEY
 
     app.jinja_options['extensions'].append('jinja2.ext.loopcontrols')
+    my_loader = jinja2.ChoiceLoader([
+        app.jinja_loader,
+        jinja2.FileSystemLoader([os.path.dirname(os.path.abspath(__file__)) + '/static']),
+    ])
+    app.jinja_loader = my_loader
 
     return app
 
