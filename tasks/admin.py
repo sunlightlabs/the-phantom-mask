@@ -14,6 +14,7 @@ import string
 import random
 import json
 
+
 def reset_database(prompt=True):
     if prompt is True:
         decision = raw_input("This will delete everything in the database. Are you sure you want to do this? [Y,n] ")
@@ -32,11 +33,13 @@ def reset_database(prompt=True):
     else:
         print "Aborting resetting database."
 
+
 def import_data():
     print 'Importing congresspeople...'
     import_congresspeople(from_cache=True)
     print "Importing topics. This may take a while..."
     import_topics(from_cache=True)
+
 
 def create_test_data():
     try:
@@ -83,6 +86,7 @@ def setup_test_environment():
     reset_database(False)
     create_test_data()
 
+
 def simulate_postmark_message(from_email, to_emails=None, messageid=None):
 
     if from_email not in settings.ADMIN_EMAILS:
@@ -118,12 +122,25 @@ def simulate_postmark_message(from_email, to_emails=None, messageid=None):
     except:
         print 'Request to postmark inbound url failed'
 
+
+def reset_tos(from_email):
+    from app.models import User
+    try:
+        u = User.query.filter_by(email=from_email).first()
+        u.accept_tos = None
+        map(lambda msg: setattr(msg, 'status', 'free'), u.messages().all())
+        db.session.commit()
+    except:
+        print 'User with email ' + from_email + ' does not exist.'
+
+
 if __name__ == '__main__':
     tasks = {
         'reset_database': reset_database,
         'create_test_data': create_test_data,
         'setup_test_environment': setup_test_environment,
         'simulate_postmark_message': simulate_postmark_message,
+        'reset_tos': reset_tos
     }
 
     if len(sys.argv) > 1:

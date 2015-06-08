@@ -1,10 +1,10 @@
 import os
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask_admin import Admin
 from flask_wtf.csrf import CsrfProtect
 from config import settings
 
-env = os.environ.get('PHANTOM_ENVIRONMENT', 'dev')
+env = os.environ.get('PHANTOM_ENVIRONMENT', 'dev' if settings.APP_DEBUG else 'prod')
+
 
 def create_app():
     """
