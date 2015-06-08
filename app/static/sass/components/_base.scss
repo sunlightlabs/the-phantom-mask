@@ -12,7 +12,7 @@
 
 // Layout
 
-html{
+html {
     height: 100%;
 }
 
@@ -147,6 +147,33 @@ a {
     }
 }
 
+.overview {
+    padding: 50px 75px;
+    text-align: center;
+
+    &__heading {
+        @extend %alpha;
+        font-weight: bold;
+        margin: 0;
+        margin-top: 10px;
+
+    }
+
+    &__description {
+        @extend %alpha;
+        margin: 0;
+        margin-top: 20px;
+    }
+
+    .icon {
+        width: 36px;
+        height: 36px;
+
+        path {
+            fill: $green;
+        }
+    }
+}
 
 .faq__div--header {
 
