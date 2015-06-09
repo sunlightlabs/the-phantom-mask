@@ -1,3 +1,5 @@
+<section class="content">
+
 <form id="address-form" class="form" method="POST" action="{{ data.form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
@@ -76,8 +78,9 @@
     <p class="form__disclaimer">By using this service, I agree to the <a href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
 
     <button class="button" type="submit">Sign up and send my message</button>
+</form>
 
-    <div class="form__notes">
+    <div class="content__notes">
         <p>
             <strong>Members of Congress don't have official emails.</strong> This service makes navigating their required web forms as easy as emailing them.
         </p>
@@ -88,4 +91,5 @@
             This service is offered by the Sunlight Foundation and is not affiliated with Congress.
         </p>
     </div>
-</form>
+
+</section>

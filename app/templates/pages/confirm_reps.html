@@ -15,10 +15,10 @@
         </p>
     </section>
 
-    <div class="faq__div--main">
-        <h4 style="margin-bottom:35px;"><strong>Review the representatives</strong> from your congressional district
+    <section class="content">
+        <h3 class="content__header"><strong>Review the representatives</strong> from your congressional district
             in {{ context.umi.humanized_state() }} that you want to send your email to.
-        </h4>
+        </h3>
 
         {% if context.msg %}
             {% with data=context %}
@@ -27,7 +27,7 @@
         {% else %}
             {% include 'partials/your_reps.html' %}
         {% endif %}
-    </div>
+    </section>
 
 {% endblock %}
 
