@@ -1,5 +1,7 @@
+<section class="repcards-section">
 {% for leg in context.legislators %}
-    <div class="{% if context.msg.is_already_sent() %}legislator_card_horizontal{% endif %} repcard">
+
+    <div class="{% if context.msg.is_already_sent() %}legislator_card_horizontal{% endif %}repcard">
         <div class="repcard__photo" style="background-image: url({{ leg.image_url() }});">
         </div>
         <div class="repcard__info">
@@ -18,4 +20,4 @@
         {% endif %}
     </div>
 {% endfor %}
-<div class="clearfix"></div>
+</section>

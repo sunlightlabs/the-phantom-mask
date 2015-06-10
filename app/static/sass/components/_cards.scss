@@ -1,0 +1,177 @@
+.repcards-section {
+    @extend .clearfix;
+    margin-bottom: 50px;
+}
+
+.repcard {
+    border: 1px solid $gray-light;
+    // cursor: pointer;
+    display: inline-block;
+    padding: 15px;
+    position: relative;
+    width: 100%;
+    transition: all 100ms;
+    margin-bottom: 10px;
+    
+    @include breakpoint($screen-md){
+        width: 160px;
+        margin-right: 10px;
+        float: left;
+    }
+
+    &:last-child {
+        margin-bottom: 0;
+
+        @include breakpoint($screen-md){
+            margin-right: 0;
+        }
+    }
+
+    &.is-selected {
+        background: #dff4ee;
+        border-color: #9fccc3;
+        
+        .repcard__photo {
+            -webkit-filter: grayscale(0);
+            filter: grayscale(0);
+        }
+
+        .repcard__info {
+            font-weight: bold;
+        }
+    }
+
+    &__photo {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        overflow: hidden;
+        border-radius: 50%;
+
+        -webkit-filter: grayscale(1);
+        filter: grayscale(1);
+        
+        background-color: #eee;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+
+        vertical-align: middle;
+
+        @include breakpoint($screen-md){
+            display: block;
+            margin: auto;
+            margin-top: 10px;
+            width: 70px;
+            height: 70px;
+        }
+    }
+
+    &__info {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 15px;
+        margin-right: 15px;
+        width: calc(100% - 125px);
+
+        span {
+            display: block;
+        }
+
+        @include breakpoint($screen-md){
+            display: block;
+            margin: auto;
+            margin-top: 10px;
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    &__action {
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+
+        @include breakpoint($screen-md){
+            display: block;
+            margin: auto;
+            margin-top: 10px;
+            width: 22px;
+        }
+    }
+
+    &__checkbox {
+        opacity: 0;
+        cursor: pointer;
+        height: 26px;
+        width: 26px;
+        float: right;
+        position: relative;
+        z-index: 2;
+        padding: 10px;
+
+        &:not(:checked) {
+            
+            ~ .repcard__checkbox--add {
+                opacity: 1;
+            }
+            ~ .repcard__checkbox--check {
+                opacity: 0;
+
+                .icon {
+                    margin: 2px;
+                    width: 18px;
+                    height: 18px;
+                }
+            }
+        }
+
+        &:checked {
+
+            ~ .repcard__checkbox--add {
+                opacity: 0;
+
+                .icon {
+                    margin: 2px;
+                    width: 18px;
+                    height: 18px;
+                }
+            }
+
+            ~ .repcard__checkbox--check {
+                opacity: 1;
+            }
+        }
+
+        &--add, &--check {
+            position: absolute;
+            transition: all 200ms;
+            margin-top: 5px;
+            
+            .icon {
+                width: 22px;
+                height: 22px;
+            }
+
+        }
+
+        &--add .icon path {
+            fill: $gray-light;
+        }
+
+        &--check .icon path {
+            fill: $green;
+        }
+    }
+
+
+    &:hover {
+        background: lighten(#dff4ee, 6%);
+        border-color: #9fccc3;
+
+        .repcard__photo {
+            // -webkit-filter: grayscale(0);
+            // filter: grayscale(0);
+        }
+    }
+}
