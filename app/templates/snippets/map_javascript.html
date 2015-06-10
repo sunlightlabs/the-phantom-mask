@@ -1,9 +1,0 @@
-<script type="text/javascript" src="/static/js/district_map.js"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        initialize_map();
-        $.getJSON("{{ geojson_url }}", function(json){
-            add_shape(json);
-        });
-    });
-</script>

@@ -30,9 +30,3 @@
     </section>
 
 {% endblock %}
-
-{% block javascript %}
-    {% with geojson_url=context.umi.get_district_geojson_url() %}
-        {% include 'snippets/map_javascript.html' %}
-    {% endwith %}
-{% endblock %}
