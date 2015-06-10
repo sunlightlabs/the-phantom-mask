@@ -1,26 +1,21 @@
-<div id="your_reps_container">
-    <div id="your_reps">
-        {% for leg in context.legislators %}
-            <div class="{% if context.msg.is_already_sent() %}legislator_card_horizontal{% endif %} col-xs-12 col-sm-4 legislator_card">
-                <div class="legislator_card_img">
-                    <img src="{{ leg.image_url() }}" onerror="img_missing(this);"/>
-                </div>
-                <div class="legislator_card_info">
-                    <div>
-                        <h5>{{ leg.full_title() }}</h5>
-                        <h5>{{ leg.full_name() }}</h5>
-                    </div>
-                    {% if context.msg.is_already_sent() %}
-                    <h5><a href="mailto:{{ leg.oc_email }}">{{ leg.oc_email }}</a></h5>
-                    {% endif %}
-                </div>
-                {% if context.msg %}
-                    <div class="legislator_card_checkbox">
-                        <input type="checkbox" name="legislator_{{ loop.index0 }}" value="True" checked>
-                    </div>
-                {% endif %}
-            </div>
-        {% endfor %}
-        <div class="clearfix"></div>
+{% for leg in context.legislators %}
+    <div class="{% if context.msg.is_already_sent() %}legislator_card_horizontal{% endif %} repcard">
+        <div class="repcard__photo" style="background-image: url({{ leg.image_url() }});">
+        </div>
+        <div class="repcard__info">
+            <span>{{ leg.full_title() }}</span>
+            <span>{{ leg.full_name() }}</span>
+            {% if context.msg.is_already_sent() %}
+            <h5><a href="mailto:{{ leg.oc_email }}">{{ leg.oc_email }}</a></h5>
+            {% endif %}
+        </div>
+        {% if context.msg %}
+        <div class="repcard__action">
+            <input type="checkbox" class="repcard__checkbox" name="legislator_{{ loop.index0 }}" value="True">
+            <div class="repcard__checkbox--add">{% include '/images/icon_plus.svg' %}</div>
+            <div class="repcard__checkbox--check">{% include '/images/icon_check.svg' %}</div>
+        </div>
+        {% endif %}
     </div>
-</div>
+{% endfor %}
+<div class="clearfix"></div>

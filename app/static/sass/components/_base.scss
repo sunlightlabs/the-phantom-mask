@@ -148,8 +148,12 @@ a {
 }
 
 .overview {
-    padding: 50px 75px;
+    padding: 50px 25px;
     text-align: center;
+    
+    @include breakpoint($screen-md){
+        padding: 50px 75px;
+    }
 
     &__heading {
         @extend %alpha;
@@ -209,42 +213,123 @@ a {
     }
 }
 
-.faq__div--header {
-
-    padding: 50px;
-
-    h2 {
-        text-align: center;
-    }
-
-    p {
-        text-align: center;
-        font-size: $alpha;
-    }
-}
-
-.faq__div--main {
-    position:relative;
-    background-color: $white;
+.repcard {
+    border: 1px solid $gray-light;
+    display: inline-block;
+    padding: 15px;
+    position: relative;
     width: 100%;
-    padding: 50px;
+    transition: all 100ms;
 
-    &:before {
-        @include triangle(16px, $background);
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 48%;
+    &__photo {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        overflow: hidden;
+        border-radius: 50%;
+
+        -webkit-filter: grayscale(1);
+        filter: grayscale(1);
+        
+        background-color: #eee;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+
+        vertical-align: middle;
     }
-}
 
-.faq__div--answer {
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
+    &__info {
+        display: inline-block;
+        vertical-align: middle;
+        width: calc(100% - 140px);
+        margin-left: 15px;
+        span {
+            display: block;
+        }
+    }
 
-.clearfix {
-  clear: both;
+    &__action {
+        display: inline-block;
+        position: absolute;
+        right: 50px;
+        top: 30px;
+    }
+
+    &__checkbox {
+        opacity: 0;
+        cursor: pointer;
+
+        height: 24px;
+        width: 24px;
+        // display:inline-block;
+        float: right;
+        position: relative;
+        z-index: 2;
+        padding: 10px;
+        background: red;
+
+        &:not(:checked) {
+            
+            ~ .repcard__checkbox--add {
+                opacity: 1;
+                transition: all 150ms;
+            }
+            ~ .repcard__checkbox--check {
+                opacity: 0;
+                transition: all 150ms;
+            }
+        }
+
+        &:checked {
+
+            ~ .repcard__checkbox--add {
+                opacity: 0;
+                transition: all 150ms;
+            }
+            ~ .repcard__checkbox--check {
+                opacity: 1;
+                transition: all 150ms;
+            }
+        }
+
+        &--add {
+            position: absolute;
+            
+            .icon path {
+                fill: $gray-light;
+            }
+        }
+
+        &--check {
+            position: absolute;
+
+            .icon path {
+                fill: $green;
+            }
+        }
+    }
+
+
+   
+  //  input[type=checkbox]:checked + label
+  //   {
+  //       background: #0080FF;
+  //       height: 16px;
+  //       width: 16px;
+  //       display:inline-block;
+  //       padding: 0 0 0 0px;
+  //   }
+
+    &:hover {
+        background: #dff4ee;
+        border-color: #9fccc3;
+
+        .repcard__photo {
+            -webkit-filter: grayscale(0);
+            filter: grayscale(0);
+        }
+    }
 }
 
 .legislator_card {
@@ -329,4 +414,10 @@ a {
     font-weight: bold;
   }
 
+}
+
+
+.faq__div--answer {
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
