@@ -1,12 +1,27 @@
 // Form Components
 
 .form {
+    
+    &--readonly {
+        font-size: $gamma;
+    }
 
     &__group {
         @include make-row(0);
+        margin-bottom: 24px;
+
+        &:last-of-type {
+            margin-bottom: 10px;
+        }
+
         [class*="col-"] {
             padding-left: 4px;
             padding-right: 4px;
+
+            &:only-child {
+                padding-left: 0;
+                padding-right: 0;
+            }
         }
     }
 
@@ -22,7 +37,7 @@
         @extend %micro;
         margin: 10px;
         position: relative;
-        top: -12px;
+        top: 5px;
     }
 
     // Form Input Components
@@ -33,7 +48,6 @@
         box-shadow: 0px 1px 0px $gray-light;
         color: $gray-dark;
         font-size: $beta;
-        margin-bottom: 24px;
         outline: 0;
         padding: 8px;
         position: relative;
@@ -41,9 +55,18 @@
         z-index: 1;
         top: 0;
         left: 0;
-        
+
+        &--masked {
+            @extend .form__input;
+            letter-spacing: 1px;
+        }
+
         &:focus {
             box-shadow: 0px 1px 0px $gray-dark;
+        }
+
+        &[readonly] {
+            box-shadow: none;
         }
 
         // &:invalid {
@@ -57,10 +80,14 @@
             color: $gray-dark;
         }
     }
-    
-    .form__input--masked {
+
+    &__textarea {
         @extend .form__input;
-        letter-spacing: 1px;
+        height: 175px;
+        
+        &[readonly] {
+            box-shadow: none;
+        }
     }
 
     &__label {
@@ -88,12 +115,12 @@
         background: none;
         -webkit-appearance: none;
         -moz-appearance: none;
-
+        
+        // custom appearance
         background: lighten($gray-lighter, 3%) url("/static/images/arrow_drop_down.svg") no-repeat 90% 70%;
         box-shadow: 0px 1px 0px $gray-light;
         color: $gray-dark;
         font-size: $beta;
-        margin-bottom: 24px;
         overflow: hidden;
         padding: 8px;
         width: 100%;
@@ -108,60 +135,6 @@
 
     }
 
-}
-
-
-.message_form {
-
-  button {
-    width: 100%;
-  }
-
-  .col-sm-12, .col-sm-9, .col-xs-12, .col-sm-3 {
-    padding: 0;
-  }
-
-  .col-sm-3 {
-
-    padding-right: 15px;
-
-    @media (max-width: $screen-md) {
-        padding-right: 0;
-    }
-
-  }
-
-  .red-button {
-    color: $red;
-    border: 2px $red solid;
-    background-color: $white;
-  }
-
-  input[type='text'],
-    textarea {
-        font-size: $beta;
-        padding: 8px;
-        width: 100%;
-        margin-bottom: 16px;
-        outline:none;
-        position: relative;
-        top: 0;
-        left: 0;
-        z-index: 0;
-        outline: 0;
-        border: none;
-        color: $gray-dark;
-        background-color: $gray-lighter;
-        box-shadow: 0px 1px 0px $gray;
-        resize: none;
-
-        &:focus + label {
-            background: transparent;
-            font-size: 95%;
-            padding: 12px;
-            z-index: 2;
-        }
-    }
 }
 
 

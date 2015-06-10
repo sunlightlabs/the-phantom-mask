@@ -1,4 +1,4 @@
-<form id="message-form" class="message_form" method="POST" action="{{ data.form.post_action_url }}">
+<form id="message-form" class="form" method="POST" action="{{ data.form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
     {% include 'partials/your_reps.html' %}
@@ -7,28 +7,23 @@
         {% include 'partials/uncontactable_reps.html' %}
     {% endif %}
 
-    <div id="edit-message-wrapper">
-        <fieldset>
-            <h3 class="content__header"><strong>Next, look over your email message</strong></h3>
+    <section id="form--readonly">
+        <h3 class="content__header"><strong>Next, look over your email message</strong></h3>
 
-            <div class="form__group">
-                <div class="col-sm-12">
-                    <input readonly id="subject" type="text" name="subject" value="{{ data.msg.subject }}">
-                </div>
-                <div class="col-sm-12">
-                    <textarea readonly style="height:250px" id="msgbody" name="msgbody">{{ data.msg.msgbody }}</textarea>
-                </div>
+        <div class="form__group">
+            <div class="col-sm-12">
+                <input class="form__input" readonly id="subject" type="text" name="subject" value="{{ data.msg.subject }}">
             </div>
-
-            <div class="form__group">
-                <div class="col-xs-12 col-sm-9 pull-right">
-                    <button type="submit">Send this message now</button>
-                </div>
-                <div class="col-xs-12 col-sm-3 pull-left">
-                    <button class="red-button">Don't send</button>
-                </div>
+        </div>
+        <div class="form__group">
+            <div class="col-sm-12">
+                <textarea class="form__textarea" readonly id="msgbody" name="msgbody">{{ data.msg.msgbody }}</textarea>
             </div>
+        </div>
+    </section>
 
-        </fieldset>
-    </div>
+    <button class="button__primary" type="submit">Send this message now</button>
+    <button class="button__secondary--red">Don't send</button>
+
+
 </form>

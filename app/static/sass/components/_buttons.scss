@@ -1,0 +1,76 @@
+// Buttons
+
+.button {
+    @include button-variant($white, $green, $green);
+    border: 0;
+    border-radius: 3px;
+    display: block;
+    font-size: $beta;
+    font-weight: normal;
+    margin: 16px auto;
+    padding: 14px;
+    transition: background 200ms, width 200ms;
+    width: 100%;
+
+    @include breakpoint($screen-sm){
+        width: 75%;
+    }
+
+    &:hover {
+        background: darken($green, 5%);
+    }
+
+    &:active {
+        background: $green;
+        transition: background 0ms;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+
+    // Button Variants
+
+    &__primary {
+        @extend .button;
+        width: 100%;
+
+        @include breakpoint($screen-md){
+            float: right;
+            width: calc(100% - 135px);
+        }
+    }
+
+    &__secondary {
+        @extend .button;
+        width: 100%;
+        color: $green;
+        box-shadow: inset 0 0 0 2px $green;
+        background-color: $white;
+
+        @include breakpoint($screen-md){
+            display: inline-block;
+            width: 120px;
+        }
+        
+        &:hover,
+        &:active,
+        &:focus {
+            background: $white;
+            color: $green;
+        }
+
+        &--red {
+            @extend .button__secondary;
+            color: $red;
+            box-shadow: inset 0 0 0 2px $red;
+            
+            &:hover,
+            &:active,
+            &:focus {
+                color: $red;
+            }
+        }
+    }
+}

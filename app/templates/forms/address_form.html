@@ -12,7 +12,7 @@
     </ul>
 
     <div class="form__group">
-        <div class="col-sm-2 clearfix">
+        <div class="col-sm-2">
             {{ data.form.prefix(class="form__select", placeholder="Title", required="required", title="Please select a prefix. See the FAQ if you feel this list is confining.") }}
             {% for error in data.form.prefix.errors %}
                 {{ error }}
