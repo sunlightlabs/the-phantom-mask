@@ -12,20 +12,7 @@
     $(document).ready(function(){
         ($zip5.val().length > 0) ? zipcode_css_switch(true) : $zip5.inputmask("99999", { showMaskOnHover: false });
         $phone_number.inputmask('(999) 999-9999', { showMaskOnHover: false });
-        create_question_icon($street_address);
-        create_question_icon($phone_number);
-        $('.tooltipster').tooltipster({position: 'top-left'});
     });
-
-    function create_question_icon(selector)
-    {
-        var id = selector.attr('id') + '_tooltip';
-        var $tooltip = $('#' + id).detach();
-        selector.parent().append($tooltip);
-        var offset = selector.offset();
-        offset.left = offset.left - $tooltip.width();
-        $tooltip.offset(offset);
-    }
 
     function zipcode_css_switch(show)
     {

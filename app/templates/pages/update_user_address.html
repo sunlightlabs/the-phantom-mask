@@ -1,7 +1,5 @@
 {% extends 'root.html' %}
 
-{% import 'snippets/tooltip.html' as tooltip %}
-
 {% block title %}
     Verify your contact information to send your e-mail.
 {% endblock %}
@@ -13,9 +11,6 @@
         {% include 'forms/address_form.html' %}
     {% endwith %}
     <div style="clear:both"></div>
-
-    {{ tooltip.tooltip_img('/static/images/question_mark_circle.png', 'street_address_tooltip', "We ask for your address and ZIP code because congressional offices require them to send a message.", "position:absolute;" ) }}
-    {{ tooltip.tooltip_img('/static/images/question_mark_circle.png', 'phone_number_tooltip', "We ask for your phone number because congressional offices requires one to send a message.", "position:absolute;" ) }}
 
 {% endblock %}
 
