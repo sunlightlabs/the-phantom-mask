@@ -14,21 +14,24 @@
         $phone_number.inputmask('(999) 999-9999', { showMaskOnHover: false });
     });
 
-    function zipcode_css_switch(show)
-    {
+    function zipcode_css_switch(show) {
         if (show) {
             $zip5.inputmask("99999-9999", { showMaskOnHover: false });
-            $zip5.parent().switchClass('col-sm-12', 'col-sm-3');
-            $city.show('slide', {'direction': 'left'});
-            $state.show('slide', {'direction': 'left'});
+            $zip5.parent().removeClass('is-fullwidth');
+            
+            $city.parent().removeClass('is-hidden').removeClass('is-concealed');
+            $state.parent().removeClass('is-hidden').removeClass('is-concealed');
+
             $no_zip4_error.hide();
             $no_district_error.hide()
-        } else {
-            $zip5.parent().switchClass('col-sm-3', 'col-sm-12');
-            $city.hide(); $state.hide();
-            $zip5.inputmask("99999", { showMaskOnHover: false });
-            $no_zip4_error.hide();
         }
+        // else {
+        //     $zip5.parent().addClass('is-fullwidth');
+        //     $city.parent().addClass('is-concealed').addClass('is-hidden');
+        //     $state.parent().addClass('is-concealed').addClass('is-hidden');
+        //     $zip5.inputmask("99999", { showMaskOnHover: false });
+        //     $no_zip4_error.hide();
+        // }
 
     }
 

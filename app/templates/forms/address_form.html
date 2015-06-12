@@ -43,15 +43,15 @@
     </div>
 
     <div class="form__group">
-        <div class="col-sm-7">
-            {{ data.form.city(class="form__input", style="display:none", type="text", placeholder='City', required="required") }}
+        <div class="col-sm-7 is-hidden is-concealed city-wrap">
+            {{ data.form.city(class="form__input", type="text", placeholder='City', required="required") }}
             {{ data.form.city.label (class="form__label") }}
         </div>
-        <div class="col-sm-2">
-            {{ data.form.state(class="form__select", style="display:none", required="required", title="Please select a state from the list.") }}
+        <div class="col-sm-2 is-hidden is-concealed state-wrap">
+            {{ data.form.state(class="form__select", required="required", title="Please select a state from the list.") }}
             {{ data.form.state.label (class="form__label") }}
         </div>
-        <div class="col-sm-12">
+        <div class="col-sm-3 is-fullwidth zip-wrap">
             {{ data.form.zip5(class="form__input--masked", type="text", placeholder="Zipcode", required="required", title="Please enter five digit zipcode", required="required") }}
             {{ data.form.zip5.label (class="form__label") }}
         </div>

@@ -72,7 +72,7 @@ class MessageForm(MyBaseForm):
 class RegistrationForm(MyBaseForm):
 
     prefix = SelectField('Prefix',
-                         choices=[(x,x) for x in ['', 'Mr.', 'Mrs.', 'Ms.']],
+                         choices=[(x,x) for x in ['Title', 'Mr.', 'Mrs.', 'Ms.']],
                          validators=[validators.DataRequired('Congressional offices require a title in order to accept any message.'),
                                      validators.NoneOf([''], message='Please select a prefix.')])
     first_name = StringField('First name',

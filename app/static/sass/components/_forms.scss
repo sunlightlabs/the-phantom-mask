@@ -8,19 +8,57 @@
 
     &__group {
         @include make-row(0);
-        margin-bottom: 24px;
+        position: relative;
+        min-height: 38px;
+
+        @include breakpoint(768px){
+            margin-bottom: 24px;
+        }
 
         &:last-of-type {
             margin-bottom: 10px;
         }
 
         [class*="col-"] {
-            padding-left: 4px;
-            padding-right: 4px;
+            padding-left: 0px;
+            padding-right: 0px;
+            transition: width 1000ms;
 
-            &:only-child {
-                padding-left: 0;
-                padding-right: 0;
+            &.is-concealed {
+                @include breakpoint(768px){
+
+                    position: absolute;
+                    width: 0;
+                    opacity: 0;
+
+                    .form__input, .form__select {
+                        position: absolute;
+                    }
+                }
+            }
+
+            &.is-fullwidth {
+                @include breakpoint(768px){
+                    width: 100%;
+                    position: absolute;
+
+                    .form__input, .form__select {
+                        position: absolute;
+                    }
+                }
+            }
+
+            &.zip-wrap {
+                @include breakpoint(768px){
+                    position: absolute;
+                    right: 0;
+                }
+            }
+        }
+        
+        [class*="col-"] + [class*="col-"] {
+            @include breakpoint(768px){
+                padding-left: 4px;
             }
         }
     }
@@ -33,11 +71,15 @@
     }
 
     &__error {
-        @extend %red;
-        @extend %micro;
-        margin: 10px;
+        color: $red;
+        font-size: $micro;
         position: relative;
-        top: 5px;
+        margin: -15px 10px 20px;
+
+        @include breakpoint(768px){
+            top: 40px;
+            margin: 0 10px 40px;
+        }
     }
 
     // Form Input Components
@@ -48,6 +90,7 @@
         box-shadow: 0px 1px 0px $gray-light;
         color: $gray-dark;
         font-size: $beta;
+        margin-bottom: 24px;
         outline: 0;
         padding: 8px;
         position: relative;
@@ -55,6 +98,10 @@
         z-index: 1;
         top: 0;
         left: 0;
+        
+        @include breakpoint(768px){
+            margin-bottom: 0;
+        }
 
         &--masked {
             @extend .form__input;
@@ -121,6 +168,7 @@
         box-shadow: 0px 1px 0px $gray-light;
         color: $gray-dark;
         font-size: $beta;
+        margin-bottom: 24px;
         overflow: hidden;
         padding: 8px;
         width: 100%;
@@ -133,8 +181,10 @@
             background: lighten($gray-lighter, 3%) url("/static/images/arrow_drop_down.svg") no-repeat 98% 70%;
         }
 
+        @include breakpoint(768px){
+            margin-bottom: 0;
+        }
     }
-
 }
 
 
