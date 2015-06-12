@@ -670,10 +670,10 @@ class UserMessageInfo(MyBaseModel):
         """
         if force or (self.latitude is None and self.longitude is None):
             try:
-                self.latitude, self.longitude = geolocation_service.geolocate(self.street_address,
-                                                                              self.city,
-                                                                              self.state,
-                                                                              self.zip5)
+                self.latitude, self.longitude = geolocation_service.geolocate(street_address=self.street_address,
+                                                                              city=self.city,
+                                                                              state=self.state,
+                                                                              zip5=self.zip5)
                 db.session.commit()
                 return self.latitude, self.longitude
             except:

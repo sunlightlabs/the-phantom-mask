@@ -187,7 +187,7 @@ def message_sent(token='', msg=None, umi=None, user=None):
 
     context = {
         'umi': umi,
-        'legislators': umi.members_of_congress,
+        'legislators': msg.get_legislators(),
         'msg': msg
     }
 

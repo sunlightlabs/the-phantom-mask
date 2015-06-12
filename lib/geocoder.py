@@ -57,7 +57,7 @@ class Geocoder():
             try:
                 self.apiKey = opts['apiKey']
                 self.version = opts.get('version','4.01')
-                self.format = opts.get('format','json')
+                self.format = opts.get('format', 'json')
                 self.data = None
             except KeyError:
                 print 'This service requires an apiKey and version.'
