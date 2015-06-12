@@ -4,9 +4,11 @@ import re
 from lib import usps
 from services import address_inferrence_service
 from phantom_mask import db
-from models import UserMessageInfo, AdminUser, User, db_first_or_create
+from models import UserMessageInfo, AdminUser
 import datetime
 from flask.ext.wtf.recaptcha import RecaptchaField
+from wtforms.widgets import html_params, HTMLString
+from cgi import escape
 
 class MyBaseForm(Form):
 
@@ -69,12 +71,26 @@ class MessageForm(MyBaseForm):
                 continue
 
 
+class MyOption(object):
+
+   def __call__(self, field, **kwargs):
+       options = dict(kwargs, value=field._value())
+       if field.checked:
+           options['selected'] = True
+
+       label = field.label.text
+       render_params = (html_params(**options), escape(unicode(label)))
+
+       return HTMLString(u'<option %s>%s</option>' % render_params)
+
+
 class RegistrationForm(MyBaseForm):
 
     prefix = SelectField('Prefix',
                          choices=[(x,x) for x in ['Title', 'Mr.', 'Mrs.', 'Ms.']],
                          validators=[validators.DataRequired('Congressional offices require a title in order to accept any message.'),
-                                     validators.NoneOf([''], message='Please select a prefix.')])
+                                     validators.NoneOf(['Title'], message='Please select a prefix.')],
+                         option_widget=MyOption())
     first_name = StringField('First name',
                              validators=[validators.DataRequired(message="This field is required yo yo")])
     last_name = StringField('Last name',
@@ -84,8 +100,9 @@ class RegistrationForm(MyBaseForm):
     street_address2 = StringField('Apt/Suite')
     city = StringField('City', [validators.DataRequired()])
     state = SelectField('State',
-                        choices=[('', '')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
-                        validators=[validators.NoneOf([''], message='Please select a state.')])
+                        choices=[('State', 'State')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
+                        validators=[validators.NoneOf(['State'], message='Please select a state.')],
+                        option_widget=MyOption())
     email = StringField('E-Mail', [validators.Email()])
     zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Must be a 5 digit number.')])
     zip4 = StringField('Zip 4', [validators.Regexp(re.compile('^\d{4}$'), message='Must be a 4 digit number.')])
