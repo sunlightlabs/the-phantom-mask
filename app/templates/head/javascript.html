@@ -6,9 +6,7 @@
 <script type="text/javascript" src="/static/js/tooltipster/jquery.tooltipster.min.js"></script>
 <!--<script type="text/javascript" src="/static/js/build/phantom-mask.min.js"></script>-->
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-
-<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
 <script type="text/javascript">
     var csrftoken = "{{ csrf_token() }}";
 
@@ -25,4 +23,22 @@
         image.src = "/static/images/missing_member_of_congress.jpg";
         return true;
     }
+
+    function lookup(address) {
+        var service = new google.maps.places.AutocompleteService();
+        service.getPlacePredictions({ input: address}, callback);
+    }
+
+    function callback(predictions, status) {
+        if (status != google.maps.places.PlacesServiceStatus.OK) {
+            alert(status);
+            return;
+        }
+        var s = new google.maps.places.PlacesService(document.createElement('div'));
+        s.getDetails({reference: predictions[0].reference},
+        function(details, status) {
+            console.log(details);
+        });
+    }
+
 </script>
