@@ -59,9 +59,8 @@
             dataType: 'json',
             success: function(result) {
                 if ('error' in result) {
+                    zipcode_css_switch(true);
                     $no_zip4_error.show();
-                    $state.val('');
-                    $city.val('');
                 } else {
                     autocomplete_address_values(result['city'], result['state'], result['zip4'], result['zip5']);
                 }

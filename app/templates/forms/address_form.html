@@ -57,6 +57,17 @@
             {{ data.form.city.label (class="form__label") }}
         </div>
         <div class="col-sm-2">
+            <select name="{{ data.form.state.name }}" class="form__select", required="required" style="display:none">
+               {% for option in data.form.state %}
+                   {% if option.data == 'State' %}
+                       {{ option(disabled=True, selected="selected") }}
+                   {% else %}
+                       {{ option }}
+                   {% endif %}
+               {% endfor %}
+           </select>
+
+
             {{ data.form.state(class="form__select", style="display:none", required="required", title="Please select a state from the list.") }}
             {{ data.form.state.label (class="form__label") }}
         </div>

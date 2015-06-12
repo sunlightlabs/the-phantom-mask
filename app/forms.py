@@ -100,8 +100,9 @@ class RegistrationForm(MyBaseForm):
     street_address2 = StringField('Apt/Suite')
     city = StringField('City', [validators.DataRequired()])
     state = SelectField('State',
-                        choices=[('', '')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
-                        validators=[validators.NoneOf([''], message='Please select a state.')])
+                        choices=[('State', 'State')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
+                        validators=[validators.NoneOf(['State'], message='Please select a state.')],
+                        option_widget=MyOption())
     email = StringField('E-Mail', [validators.Email()])
     zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Must be a 5 digit number.')])
     zip4 = StringField('Zip 4', [validators.Regexp(re.compile('^\d{4}$'), message='Must be a 4 digit number.')])
