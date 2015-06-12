@@ -13,7 +13,7 @@
 
     <div class="form__group">
         <div class="col-sm-2">
-            <select name="{{ data.form.prefix.name }}" class="form__select", required="required">
+            <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select", required="required">
                {% for option in data.form.prefix %}
                    {% if option.data == 'Title' %}
                        {{ option(disabled=True, selected="selected") }}
@@ -22,7 +22,6 @@
                    {% endif %}
                {% endfor %}
            </select>
-
             {% for error in data.form.prefix.errors %}
                 {{ error }}
             {% endfor %}
@@ -58,8 +57,7 @@
         </div>
 
         <div class="col-sm-2 is-hidden is-concealed state-wrap">
-
-            <select name="{{ data.form.state.name }}" class="form__select", required="required" style="display:none">
+            <select name="{{ data.form.state.name }}" id="state" class="form__select" required="required">
                {% for option in data.form.state %}
                    {% if option.data == 'State' %}
                        {{ option(disabled=True, selected="selected") }}

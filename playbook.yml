@@ -1,0 +1,7 @@
+---
+- hosts: phantom-mask
+
+  tasks:
+
+    - action: shell whoami
+      register: whoami

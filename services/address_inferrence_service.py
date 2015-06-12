@@ -2,12 +2,13 @@ from lib import usps
 from geolocation_service import geolocate, reverse_geolocate
 
 def address_lookup(**kwargs):
-    print 'Trying USPS first...'
-    address = usps.usps_address_lookup(**kwargs)
-    if address['city'] is not '' and address['state'] is not '':
-        return address
-    print 'Falling back to geolocation...'
+
     try:
+        print 'Trying USPS first...'
+        address = usps.usps_address_lookup(**kwargs)
+        if address['city'] is not '' and address['state'] is not '':
+            return address
+        print 'Falling back to geolocation...'
         lat, lng = geolocate(**kwargs)
         return reverse_geolocate(lat, lng).address()
     except:

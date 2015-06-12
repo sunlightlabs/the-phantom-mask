@@ -25,6 +25,7 @@ CODE_TO_STATE = {
 
 USPS_BASE_URL = 'https://tools.usps.com/go/ZipLookupResultsAction!input.action'
 
+
 def usps_request(**kwargs):
 
     # construct get parameters string
@@ -42,7 +43,8 @@ def usps_request(**kwargs):
 
     # make request. need to spoof headers or get infinite redirect
     return requests.get(USPS_BASE_URL, params=params, verify=False,
-                        headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.99 Safari/537.36'})
+                        headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.99 Safari/537.36'},
+                        timeout=5)
 
 
 def usps_address_lookup(**kwargs):

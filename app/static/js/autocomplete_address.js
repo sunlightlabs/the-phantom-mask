@@ -47,6 +47,7 @@
             contentType: 'application/json',
             data: JSON.stringify({'street_address': street_address, 'zip5': zip5}),
             dataType: 'json',
+            timeout: 2500,
             success: function(result) {
                 if ('error' in result) {
                     zipcode_css_switch(true);
@@ -55,8 +56,11 @@
                     autocomplete_address_values(result['city'], result['state'], result['zip4'], result['zip5']);
                 }
             },
-            error: function(xhr, ajaxOptions, thrownError) {
-
+            error: function(jqXHR, textStatus, errorThrown) {
+                if(textStatus==="timeout") {
+                    zipcode_css_switch(true);
+                    $no_zip4_error.show();
+                }
             }
         });
     }
