@@ -13,7 +13,16 @@
 
     <div class="form__group">
         <div class="col-sm-2">
-            {{ data.form.prefix(class="form__select", placeholder="Title", required="required", title="Please select a prefix. See the FAQ if you feel this list is confining.") }}
+            <select name="{{ data.form.prefix.name }}" class="form__select", required="required">
+               {% for option in data.form.prefix %}
+                   {% if option.data == 'Title' %}
+                       {{ option(disabled=True, selected="selected") }}
+                   {% else %}
+                       {{ option }}
+                   {% endif %}
+               {% endfor %}
+           </select>
+
             {% for error in data.form.prefix.errors %}
                 {{ error }}
             {% endfor %}
