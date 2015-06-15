@@ -185,6 +185,10 @@
         @include breakpoint(768px){
             margin-bottom: 0;
         }
+
+        &.is-gray {
+            color: $gray;
+        }
     }
 }
 

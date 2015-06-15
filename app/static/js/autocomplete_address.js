@@ -38,6 +38,7 @@
     function autocomplete_address_values(city, state, zip4, zip5) {
         zipcode_css_switch(true);
         $city.val(city); $state.val(state); $zip5.val(zip5 + zip4);
+        $state.removeClass('is-gray');
     }
 
     function autocomplete_address(street_address, zip5) {
