@@ -1,3 +1,3 @@
-{% for leg in legislators %}
+{% for leg in legislators -%}
     {% if loop.last and loop.length > 1 %}and {% endif %}{{ leg.full_title_and_full_name() }}{% if loop.length > 2 and loop.index < loop.length %}, {% endif %}
-{% endfor %}
+{%- endfor %}

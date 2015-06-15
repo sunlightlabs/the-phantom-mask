@@ -4,40 +4,28 @@
     Your message is queued to be sent to your representatives in congress.
 {% endblock %}
 
-{% block header %}
-    <h1 class="center-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1>
-{% endblock %}
-
 {% block content %}
-
-    <div class="faq__div--header">
-        <h2>Message sent!</h2>
-        <p>
-            Your email is now on its way to
-            {% with legislators = context.legislators %}
-                {% include 'snippets/leg_full_title_and_full_name_loop.html' %}
-            {% endwith %}
+    <section class="overview">
+        {% include 'images/icon_check.svg' %}
+        <h2 class="overview__heading">Message sent!</h2>
+        <p class="overview__description">
+            Your email is now on its way to {% with legislators = context.legislators %}{% include 'snippets/leg_full_title_and_full_name_loop.html' %}{% endwith %}!
         </p>
-    </div>
+    </section>
+    <section class="content">
 
     <div class="faq__div--main">
-        <h4 style="margin-bottom:35px;"><strong>What's next?</strong> You can use
+        <h3 class="content__header"><strong>What's next?</strong> You can use
             <a href="mailto:myreps@opencongress.org">myreps@opencongress.org</a> to write to all of your representatives
             at once. Or send individual emails:
-        </h4>
+        </h3>
 
         {% include 'partials/your_reps.html' %}
 
-        <div>
-            <h4 style="margin-top:50px">Tips for emailing Congress next time</h4>
-            <hr>
-            {% include 'partials/faq_tips.html' %}
-        </div>
+        <h3 class="content__header"><strong>Tips for emailing Congress next time</strong></h3>
+        <hr>
+        {% include 'partials/faq_tips.html' %}
 
-    </div>
+    </section>
 
-{% endblock %}
-
-{% block footer %}
-    
 {% endblock %}
