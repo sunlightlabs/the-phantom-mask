@@ -5,7 +5,7 @@
 
 .repcard {
     border: 1px solid $gray-light;
-    // cursor: pointer;
+    cursor: pointer;
     display: inline-block;
     padding: 15px;
     position: relative;
@@ -27,9 +27,19 @@
         }
     }
 
-    &.is-selected {
-        background: #dff4ee;
+    &:hover {
+        background: lighten(#eaf8f4, 3%);
         border-color: #9fccc3;
+    }
+
+    &.is-selected {
+        background: #eaf8f4;
+        border-color: #9fccc3;
+        
+        &:hover {
+            background: #eaf8f4;
+            border-color: #9fccc3;
+        }
         
         .repcard__photo {
             -webkit-filter: grayscale(0);
@@ -37,7 +47,7 @@
         }
 
         .repcard__info {
-            font-weight: bold;
+            font-weight: 600;
         }
     }
 
@@ -165,13 +175,4 @@
     }
 
 
-    &:hover {
-        background: lighten(#dff4ee, 6%);
-        border-color: #9fccc3;
-
-        .repcard__photo {
-            // -webkit-filter: grayscale(0);
-            // filter: grayscale(0);
-        }
-    }
 }
