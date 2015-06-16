@@ -51,7 +51,7 @@ class NoReply():
     @apply_admin_filter
     def validate_user(cls, user, msg):
         """
-        Handles the case of a first time user or a user who needs to renew this contact infomration.
+        Handles the case of a first time user or a user who needs to renew this contact information.
 
         @param user: the user to send the email to
         @type user: models.User

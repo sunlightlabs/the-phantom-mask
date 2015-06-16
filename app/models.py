@@ -455,7 +455,7 @@ class Token(MyBaseModel):
         @return: URL for confirmation email
         @rtype: string
         """
-        return settings.BASE_URL + app_router_path('update_user_address', token=self.token)
+        return app_router_path('update_user_address', token=self.token)
 
 class HasTokenMixin(db.Model):
 
