@@ -1,17 +1,17 @@
 <section class="repcards-section">
 {% for leg in context.legislators %}
 
-    <div class="{% if context.msg.is_already_sent() %}legislator_card_horizontal{% endif %}repcard">
+    <div class="{% if context.msg.is_already_sent() %}repcard--horizontal{% else %}repcard{% endif %}">
         <div class="repcard__photo" style="background-image: url({{ leg.image_url() }});">
         </div>
         <div class="repcard__info">
             <span>{{ leg.full_title() }}</span>
             <span>{{ leg.full_name() }}</span>
             {% if context.msg.is_already_sent() %}
-            <h5><a href="mailto:{{ leg.oc_email }}">{{ leg.oc_email }}</a></h5>
+            <p><a href="mailto:{{ leg.oc_email }}">{{ leg.oc_email }}</a></p>
             {% endif %}
         </div>
-        {% if context.msg %}
+        {% if context.msg and not context.msg.is_already_sent() %}
         <div class="repcard__action">
             <input type="checkbox" class="repcard__checkbox" name="legislator_{{ loop.index0 }}" value="True">
             <div class="repcard__checkbox--add">{% include '/images/icon_plus.svg' %}</div>
