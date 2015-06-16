@@ -69,7 +69,7 @@ def usps_address_lookup(**kwargs):
     except:
         print "Can't find street address"
     try:
-        address['city'] = str(results_content.find('span', class_='city').text).strip()
+        address['city'] = str(results_content.find('span', class_='city').text).strip().title()
     except:
         print "Can't find city"
     try:

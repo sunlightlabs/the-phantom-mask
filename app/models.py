@@ -482,7 +482,7 @@ class HasTokenMixin(db.Model):
 class User(MyBaseModel, HasTokenMixin):
 
     class ModelView(MyModelView):
-        
+
         column_searchable_list = ['email', 'tmp_token']
 
     id = db.Column(db.Integer, primary_key=True)
