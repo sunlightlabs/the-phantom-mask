@@ -522,7 +522,7 @@ class User(MyBaseModel, HasTokenMixin):
         self.set_tmp_token(None)
 
     def tmp_token_link(self):
-        return settings.BASE_URL + app_router_path('new_token', token=self.tmp_token)
+        return app_router_path('new_token', token=self.tmp_token)
 
     def get_role(self):
         return self.ROLES.get(self.role, 'unknown')
