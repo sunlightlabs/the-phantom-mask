@@ -2,18 +2,25 @@ from config import settings
 from flask import render_template, url_for
 from sqlalchemy import and_, not_
 import urllib
+import os
+
 
 def abs_base_url():
     return settings.BASE_URL + settings.BASE_PREFIX
 
+
 def url_for_with_prefix(endpoint, **values):
-    return settings.BASE_PREFIX + url_for(endpoint, **values)
+    env = os.environ.get('PHANTOM_ENVIRONMENT', 'dev' if settings.APP_DEBUG else 'prod')
+    if env == 'prod':
+        values['_scheme'] = 'https'
+    return settings.BASE_PREFIX + url_for(endpoint, _external=True, **values)
 
 def append_get_params(u, **kwargs):
     if len(kwargs) > 0:
         return u + '?' + urllib.urlencode(kwargs)
     else:
         return u
+
 
 def app_router_path(func_name, **kwargs):
     return append_get_params(url_for_with_prefix('app_router.' + func_name, **kwargs))

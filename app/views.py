@@ -35,7 +35,7 @@ class MyAdminIndexView(admin.AdminIndexView):
 
     def _handle_view(self, name, **kwargs):
         if name != 'login' and not self.is_accessible():
-            return redirect(url_for('admin.login', next=request.url))
+            return redirect(url_for_with_prefix('admin.login', next=request.url))
 
     @expose('/')
     def index(self):
@@ -248,6 +248,7 @@ def update_user_address(token='', msg=None, umi=None, user=None):
                 return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
 
     return render_template_wctx("pages/update_user_address.html", context=context)
+
 
 def process_inbound_message(user, umi, msg, send_email=False):
 

@@ -29,7 +29,7 @@ from sqlalchemy import event
 from flask_admin import expose
 from util import render_without_request
 from helpers import render_template_wctx, append_get_params
-
+from flask_wtf import Form
 
 
 
@@ -134,6 +134,8 @@ def uid_creator(cls, *args):
     return create_uid
 
 class MyModelView(ModelView):
+
+    form_base_class = Form
 
     def _handle_view(self, name, **kwargs):
         if name != 'login' and not self.is_accessible():
@@ -455,7 +457,7 @@ class Token(MyBaseModel):
         @return: URL for confirmation email
         @rtype: string
         """
-        return settings.BASE_URL + app_router_path('update_user_address', token=self.token)
+        return app_router_path('update_user_address', token=self.token)
 
 class HasTokenMixin(db.Model):
 
@@ -480,6 +482,7 @@ class HasTokenMixin(db.Model):
 class User(MyBaseModel, HasTokenMixin):
 
     class ModelView(MyModelView):
+
         column_searchable_list = ['email', 'tmp_token']
 
     id = db.Column(db.Integer, primary_key=True)

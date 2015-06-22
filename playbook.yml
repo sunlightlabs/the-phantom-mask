@@ -1,7 +1,31 @@
 ---
 - hosts: phantom-mask
 
+  vars:
+    PROJECT_HOME: "/projects/the-phantom-mask"
+
   tasks:
 
-    - action: shell whoami
-      register: whoami
+    - name: create phantom user
+      user: name=phantom-mask shell=/bin/bash
+      register: create_phantom_user
+      sudo: yes
+
+    - name: get the project from git
+      git: repo=https://github.com/sunlightlabs/the-phantom-mask.git
+           dest=/projects/the-phantom-mask
+      sudo: yes
+
+    - name: change permissions on the-phantom-mask directory
+      file: path=/projects/the-phantom-mask owner=phantom-mask mode=755 recurse=yes
+      sudo: yes
+
+    - name: install pip
+      apt: name=python-pip
+      sudo: yes
+
+    - name: install virtualenvwrapper
+      command: pip install virtualenvwrapper
+      sudo: yes
+
+# may come back to this someday ....

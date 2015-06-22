@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ -z "${PROJECT_DIR-}" ]; then
-    PROJECT_DIR=$HOME/the-phantom-mask
+if [ -z "$PROJECT_DIR" ]; then
+    PROJECT_DIR=/projects/the-phantom-mask
 fi
 
 function activate_virtualenv()
@@ -24,7 +24,7 @@ function stop_gunicorn()
 
 function start_gunicorn()
 {
-    PHANTOM_ENVIRONMENT=prod gunicorn -w 4 run:application --daemon -p gunicorn.pid
+    PHANTOM_ENVIRONMENT=prod gunicorn -w 4 run:application --daemon -p gunicorn.pid -b unix:$PROJECT_DIR/gunicorn.sock
 }
 
 function stop_celery()
