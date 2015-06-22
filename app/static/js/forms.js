@@ -5,7 +5,7 @@ $(document).ready(function () {
         $(this).removeClass('is-gray');
     });
 
-    // Toggle checkbox when repbox is clicked
+    // Toggle checkbox when repcard is clicked
     $('.repcard').on('click', function(e) {
         $(this).toggleClass('is-selected');
         $(this).find('.repcard__checkbox').each(function() {
@@ -15,7 +15,7 @@ $(document).ready(function () {
 
     });
 
-    // Prevent default checkbox from firing
+    // Toggle repcard when checkbox is clicked
     $('.repcard__checkbox').click(function(e) {
         e.stopPropagation();
         $(this).parents('.repcard').toggleClass('is-selected');
