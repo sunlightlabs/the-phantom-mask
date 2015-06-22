@@ -18,4 +18,10 @@ $(document).ready(function () {
         });
     });
 
+    // Prevent default checkbox from firing
+
+    // $('.repcard__checkbox').on('click', function(e) {
+    //     e.preventDefault();
+    //     console.log($(this).prop('checked'));
+    // });
 });
