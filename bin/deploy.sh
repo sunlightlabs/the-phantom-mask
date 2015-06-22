@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z "$PROJECT_DIR" ]; then
-    PROJECT_DIR=/projects/the-phantom-mask
+    export PROJECT_DIR=/projects/the-phantom-mask
 fi
 
 function activate_virtualenv()

@@ -217,7 +217,9 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
     }
 
     if msg is not None and request.method == 'POST' and form.validate():
-        msg.queue_to_send([moc[i] for i in [v for v in range(0, len(moc)) if request.form.get('legislator_' + str(v))]])
+        if not request.form.get('donotsend', False):
+            msg.queue_to_send([moc[i] for i in [v for v in range(0, len(moc)) if request.form.get('legislator_' + str(v))]])
+
         return redirect(url_for_with_prefix('app_router.message_sent', token=token))
     else:
         if msg is not None:
