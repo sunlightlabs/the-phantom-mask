@@ -48,7 +48,7 @@
             contentType: 'application/json',
             data: JSON.stringify({'street_address': street_address, 'zip5': zip5}),
             dataType: 'json',
-            timeout: 2500,
+            timeout: 3000,
             success: function(result) {
                 if ('error' in result) {
                     zipcode_css_switch(true);
