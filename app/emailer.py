@@ -67,14 +67,18 @@ class NoReply():
         return PMMail(api_key=settings.POSTMARK_API_KEY,
                       sender=cls.SENDER_EMAIL,
                       to=user.email,
-                      subject="Complete your email to Congress",
+                      subject=msg.subject,
                       html_body=render_without_request("emails/validate_user.html",
                                                         context={'verification_link': veri_link,
                                                                  'user': user}),
                       text_body=render_without_request('emails/validate_user.txt.html',
                                                        context={'verification_link': veri_link,
                                                                  'user': user}),
-                      track_opens=True
+                      track_opens=True,
+                      custom_headers={
+                          'In-Reply-To': msg.email_uid,
+                          'References': msg.email_uid,
+                        }
                       )
 
 
