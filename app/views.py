@@ -286,7 +286,7 @@ def postmark_inbound():
                               to_originally=json.dumps([r['Email'].lower() for r in inbound.to()]),
                               subject=inbound.subject(),
                               msgbody=inbound.text_body(),
-                              email_uid=inbound.message_id(),
+                              email_uid=inbound.headers('Message-ID'),
                               user_message_info_id=umi.id)
             db_add_and_commit(new_msg)
 
