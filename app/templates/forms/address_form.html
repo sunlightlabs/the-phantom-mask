@@ -50,7 +50,7 @@
         </div>
     </div>
 
-    <div class="form__group">
+    <div class="form__group" id="autofill__group">
         <div class="col-sm-7 is-hidden is-concealed city-wrap">
             {{ data.form.city(class="form__input", type="text", placeholder='City', required="required") }}
             {{ data.form.city.label (class="form__label") }}
@@ -73,8 +73,8 @@
             {{ data.form.zip5.label (class="form__label") }}
         </div>
         <p id="no-zip4-error" class="form__error" style="display:none;">
-            We're unable to locate a city, state, and ZIP-4 code for given street address and ZIP-5.
-            Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find them.
+            We couldn't determine your full zipcode.
+            Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find the last four digits.
         </p>
         {% if 'district_error' in context %}
         <p id="no-district-error" class="form__error">

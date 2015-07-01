@@ -8,6 +8,7 @@
     var $phone_number = $('#phone_number');
     var $no_zip4_error = $('#no-zip4-error');
     var $no_district_error = $('#no-district-error');
+    var $autofill__group = $('#autofill__group');
 
     $(document).ready(function(){
         ($zip5.val().length > 0) ? zipcode_css_switch(true) : $zip5.inputmask("99999", { showMaskOnHover: false });
@@ -53,6 +54,9 @@
                 if ('error' in result) {
                     zipcode_css_switch(true);
                     $no_zip4_error.show();
+                    $autofill__group.addClass('has-error');
+                    console.log('1');
+                    console.log($autofill__group);
                 } else {
                     autocomplete_address_values(result['city'], result['state'], result['zip4'], result['zip5']);
                 }
@@ -61,6 +65,8 @@
                 if(textStatus==="timeout") {
                     zipcode_css_switch(true);
                     $no_zip4_error.show();
+                    $autofill__group.addClass('has-error');
+                    console.log('2');
                 }
             }
         });
