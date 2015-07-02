@@ -14,43 +14,55 @@
         </p>
     </section>
 
-    <div class="faq__div--main">
-        <h3>Frequently Asked Questions</h3>
-
-        <ul>
-            <li><a href="#faq_what_is_this_service">What is this service?</a></li>
-            <li><a href="#faq_is_there_another_way">Is there another way to contact Congress?</a></li>
-            <li><a href="#faq_what_are_some_tips">What are some tips on communicating with Congress?</a></li>
-            <li><a href="#faq_why_can_i_only_select">Why can I only select the three titles: Mr., Mrs. and Ms.?</a></li>
-            <li><a href="#faq_why_is_message">Why isn't my message being sent?</a></li>
-            <li><a href="#faq_who_made_this">Who made this?</a></li>
-            <li><a href="#faq_get_involved">How can I get more involved?</a></li>
+    <section class="content">
+        <ul class="faq__list">
+            <li><a href="#faq_what">What is this service?</a></li>
+            <li><a href="#faq_how">How do I use this service?</a></li>
+            <li><a href="#faq_alternatives">Is there another way to contact Congress?</a></li>
+            <li><a href="#faq_tips">What are some tips on communicating with Congress?</a></li>
+            <li><a href="#faq_titles">Why can I only select the three titles: Mr., Mrs. and Ms.?</a></li>
+            <li><a href="#faq_errors">Why isn't my message being sent?</a></li>
+            <li><a href="#faq_who">Who made this?</a></li>
+            <li><a href="#faq_getinvolved">How can I get involved?</a></li>
         </ul>
 
-        <div class="faq__div--answer">
-            <h4 id="faq_what_is_this_service">What is this service?</h4>
+        <div class="faq__group">
+            <h3 class="faq__header" id="faq_what">What is this service?</h3>
             <p>
-                Members of Congress don’t have official emails. This service makes navigating their required webforms
-                as easy as emailing them and allows you to contact them via email after filling out your information once.
+                Members of Congress don’t have official emails, but they do have forms. This service makes navigating their complex contact forms
+                as easy as emailing them. It allows you to contact them via email after you fill out your information just once.
             </p>
         </div>
 
-        <div class="faq__div--answer">
-            <h4 id="faq_is_there_another_way">Is there another way to contact Congress?</h4>
+        <div class="faq__group">
+            <h3 class="faq__header" id="faq_how">How do I use this service?</h3>
+            <p>
+                Get started simply by sending a message to your representatives to <a href="mailto:myreps@opencongress.org">myreps@opencongress.org</a>.
+            </p>
+            <p>
+                You'll get a confirmation email with a link to sign up.
+                Once you're signed up, we'll send off your first message to your representatives.
+                From then on, you'll be able to continue writing to them by email instead of going through their contact forms.
+            </p>
+            
+        </div>
+
+        <div class="faq__group">
+            <h3 class="faq__header" id="faq_alternatives">Is there another way to contact Congress?</h3>
             <p>
                 Yes! You can call, fax or mail a message and show up to their offices in person to discuss issues that
-                are important to you. Look up their contact information
-                <a href="http://www.usa.gov/Contact/US-Congress.shtml#Contact_Your_Representative_in_the_U.S._Congress">here</a>.
+                are important to you.
+                <a href="https://www.usa.gov/elected-officials#Contact_Your_Representative_in_the_U.S._Congress" target="_new">Look up how to contact them</a> on usa.gov.
             </p>
         </div>
 
-        <div class="faq__div--answer">
-            <h4 id="faq_what_are_some_tips">What are some tips on communicating with Congress?</h4>
+        <div class="faq__group">
+            <h3 class="faq__header" id="faq_tips">What are some tips on communicating with Congress?</h3>
             {% include 'partials/faq_tips.html' %}
         </div>
 
-        <div class="faq__div--answer">
-            <h4 id="faq_why_can_i_only_select">Why can I only select the three titles: Mr., Mrs. and Ms.?</h4>
+        <div class="faq__group">
+            <h3 class="faq__header" id="faq_titles">Why can I only select the three titles: Mr., Mrs. and Ms.?</h3>
             <p>
                 Many congressional webforms require a title, but there is no standard list across offices.
                 Some include honorifics from medical, military and other professional fields, but
@@ -58,14 +70,14 @@
             </p>
         </div>
 
-        <div class="faq__div--answer">
-            <h4 id="faq_why_is_message">Why isn't my message being sent?</h4>
+        <div class="faq__group">
+            <h3 class="faq__header" id="faq_errors">Why isn't my message being sent?</h3>
             <p>
                 Message failures can occur for many reasons, some outside of your or our control.
             </p>
             <p>
                 Messages can fail when there are issues on the congressional webforms we're passing your
-                message through or our system may need to be updated to reflect changes.
+                message through, or our system may need to be updated to reflect changes.
             </p>
             <p>
                 Sometimes errors in the information from the message can cause issues, such as a lengthy message that
@@ -73,28 +85,30 @@
             </p>
             <p>
                 If the address you entered does not fall in the congressional district you're trying to send
-                your message to or is not recognized by the congressional web form it can result in an unsent message.
+                your message to (or is not recognized by the congressional web form), it can result in an unsent message.
             </p>
         </div>
 
-        <div class="faq__div--answer">
-            <h4 id="faq_who_made_this">Who made this?</h4>
+        <div class="faq__group">
+            <h3 class="faq__header" id="faq_who">Who made this?</h3>
             <p>
-                <a href="http://sunlightfoundation.com/">The Sunlight Foundation</a>, a nonpartisan nonprofit dedicated
+                The <a href="http://sunlightfoundation.com/">Sunlight Foundation</a>, a nonpartisan nonprofit dedicated
                 to government transparency and accountability, built this project to help connect citizens to
-                their representatives in Congress. We're not affiliated with government and the open source code
-                for this project is available on <a href="https://github.com/sunlightlabs/the-phantom-mask">GitHub</a>.
+                their representatives in Congress. We're not affiliated with government.
+            </p>
+            <p>
+                The open source code for this project is available on <a href="https://github.com/sunlightlabs/the-phantom-mask">GitHub</a>.
             </p>
         </div>
 
-        <div class="faq__div--answer">
-            <h4 id="faq_get_involved">How can I get more involved?</h4>
+        <div class="faq__group">
+            <h3 class="faq__header" id="faq_getinvolved">How can I get involved?</h3>
             <p>
                 Please join our <a href="http://sunlightfoundation.com/join/">email list</a> to keep up with our latest
-                work and donate <a href="https://sunlightfoundation.com/engage/donate/">here</a>.
+                work. You can also <a href="https://sunlightfoundation.com/engage/donate/">make a donation</a> if you found this tool useful!
             </p>
         </div>
 
-    </div>
+    </section>
 
 {% endblock %}

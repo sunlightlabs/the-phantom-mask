@@ -7,6 +7,8 @@
 
 .is-hidden { display: none; }
 
+.semibold { font-weight: 600; }
+
 
 // Layout
 
@@ -180,10 +182,4 @@ a {
         margin-top: 75px;
         padding-top: 50px;
     }
-}
-
-
-.faq__div--answer {
-    margin-top: 50px;
-    margin-bottom: 50px;
 }
