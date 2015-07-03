@@ -74,7 +74,7 @@ body {
             @include breakpoint($screen-sm){
                 
                 display: inline-block;
-                margin: 0 25px;
+                margin: 0 15px;
                 padding: 0;
                 width: inherit;
 
@@ -87,6 +87,9 @@ body {
                 }            
             }
 
+            @include breakpoint($screen-md){                
+                margin: 0 30px;
+            }
         }
     }
 }
