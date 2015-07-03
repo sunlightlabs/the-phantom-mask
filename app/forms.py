@@ -88,24 +88,24 @@ class RegistrationForm(MyBaseForm):
 
     prefix = SelectField('Prefix',
                          choices=[(x,x) for x in ['Title', 'Mr.', 'Mrs.', 'Ms.']],
-                         validators=[validators.DataRequired('Congressional offices require a title in order to accept any message.'),
+                         validators=[validators.DataRequired('A title prefix is required.'),
                                      validators.NoneOf(['Title'], message='Please select a prefix.')],
                          option_widget=MyOption())
     first_name = StringField('First name',
-                             validators=[validators.DataRequired(message="This field is required yo yo")])
+                             validators=[validators.DataRequired(message="First name is required.")])
     last_name = StringField('Last name',
-                            validators=[validators.DataRequired()])
+                            validators=[validators.DataRequired(message="Last name is required.")])
     street_address = StringField('Street address',
-                                 validators=[validators.DataRequired()])
+                                 validators=[validators.DataRequired(message="Street address is required.")])
     street_address2 = StringField('Apt/Suite')
-    city = StringField('City', [validators.DataRequired()])
+    city = StringField('City', [validators.DataRequired(message="City is required.")])
     state = SelectField('State',
                         choices=[('State', 'State')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
                         validators=[validators.NoneOf(['State'], message='Please select a state.')],
                         option_widget=MyOption())
     email = StringField('E-Mail', [validators.Email()])
-    zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Must be a 5 digit number.')])
-    zip4 = StringField('Zip 4', [validators.Regexp(re.compile('^\d{4}$'), message='Must be a 4 digit number.')])
+    zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Zipcode must be a 5 digit number.')])
+    zip4 = StringField('Zip 4', [validators.Regexp(re.compile('^\d{4}$'), message='Zip + 4 must be a 4 digit number.')])
     phone_number = StringField('Phone number',
                    [validators.Regexp(re.compile('^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'),
                                       message="Please enter a valid phone number.")])

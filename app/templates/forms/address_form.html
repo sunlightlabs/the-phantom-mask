@@ -3,7 +3,8 @@
 <form id="address-form" class="form" method="POST" action="{{ data.form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-    <ul>
+    <ul class="form__errors">
+            <li><strong>Whoops! Please fix these problems with your form.</strong></li>
     {% for field in data.form.errors %}
         {% for error in data.form.errors[field] %}
             <li>{{ error }}</li>
@@ -22,16 +23,10 @@
                    {% endif %}
                {% endfor %}
            </select>
-            {% for error in data.form.prefix.errors %}
-                {{ error }}
-            {% endfor %}
         </div>
         <div class="col-sm-5">
             {{ data.form.first_name(class="form__input", type="text", placeholder="First Name", pattern="[A-Za-z0-9]{1,20}", required="required") }}
             {{ data.form.first_name.label (class="form__label") }}
-            {% for error in data.form.first_name.errors %}
-                {{ error }}
-            {% endfor %}
         </div>
         <div class="col-sm-5">
             {{ data.form.last_name(class="form__input",type="text", placeholder="Last Name", required="required") }}
