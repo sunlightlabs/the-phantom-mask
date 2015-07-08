@@ -47,7 +47,7 @@
             type: 'POST',
             url: '/ajax/autofill_address',
             contentType: 'application/json',
-            data: JSON.stringify({'street_address': street_address, 'zip5': zip5}),
+            data: JSON.stringify({'street_address': street_address, 'zip5': zip5.substring(0,5)}),
             dataType: 'json',
             timeout: 3000,
             success: function(result) {
@@ -55,8 +55,6 @@
                     zipcode_css_switch(true);
                     $no_zip4_error.show();
                     $autofill__group.addClass('has-error');
-                    console.log('1');
-                    console.log($autofill__group);
                 } else {
                     autocomplete_address_values(result['city'], result['state'], result['zip4'], result['zip5']);
                 }
@@ -66,8 +64,10 @@
                     zipcode_css_switch(true);
                     $no_zip4_error.show();
                     $autofill__group.addClass('has-error');
-                    console.log('2');
                 }
+            },
+            complete: function(jqXHR, textStatus) {
+                typeWatch_lock = false;
             }
         });
     }
@@ -76,7 +76,10 @@
         callback: function (value) {
             var zip5_val = $zip5.val().replace(/\D/g, '');
             if (zip5_val.length == 5 && $street_address.val().length > 0) {
-                autocomplete_address($street_address.val(), zip5_val);
+                if (!typeWatch_lock) {
+                    typeWatch_lock = true;
+                    autocomplete_address($street_address.val(), zip5_val);
+                }
             }
         },
         wait: 500,
@@ -84,6 +87,7 @@
         captureLength: 0
     };
 
+    var typeWatch_lock = false;
     $zip5.typeWatch( options );
     $street_address.typeWatch( options );
 

@@ -28,6 +28,7 @@ USPS_BASE_URL = 'https://tools.usps.com/go/ZipLookupResultsAction!input.action'
 
 def usps_request(**kwargs):
 
+    print kwargs
     # construct get parameters string
     params = {
         'resultMode': 0,

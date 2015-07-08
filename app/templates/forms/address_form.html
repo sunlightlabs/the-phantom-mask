@@ -3,18 +3,21 @@
 <form id="address-form" class="form" method="POST" action="{{ data.form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-    <ul class="form__errors">
+    {% if data.form.errors %}
+        <ul class="form__errors">
             <li><strong>Whoops! Please fix these problems with your form.</strong></li>
-    {% for field in data.form.errors %}
-        {% for error in data.form.errors[field] %}
-            <li>{{ error }}</li>
-        {% endfor %}
-    {% endfor %}
-    </ul>
+            {% for field in data.form.ordered_fields %}
+                {% for error in field.errors %}
+                      <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    {% endif %}
 
+    {% with %}
     <div class="form__group">
         <div class="col-sm-2">
-            <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select is-gray", required="required">
+            <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select is-gray {% if data.form.prefix.errors %}is-invalid{% endif %}" required="required">
                {% for option in data.form.prefix %}
                    {% if option.data == 'Title' %}
                        {{ option(disabled=True, selected="selected") }}
@@ -25,34 +28,40 @@
            </select>
         </div>
         <div class="col-sm-5">
-            {{ data.form.first_name(class="form__input", type="text", placeholder="First Name", pattern="[A-Za-z0-9]{1,20}", required="required") }}
+            {% if data.form.first_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+            {{ data.form.first_name(class=classes, type="text", placeholder="First Name", pattern="[A-Za-z0-9]{1,20}", required="required") }}
             {{ data.form.first_name.label (class="form__label") }}
         </div>
         <div class="col-sm-5">
-            {{ data.form.last_name(class="form__input",type="text", placeholder="Last Name", required="required") }}
+            {% if data.form.last_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+            {{ data.form.last_name(class=classes,type="text", placeholder="Last Name", required="required") }}
             {{ data.form.last_name.label (class="form__label") }}
         </div>
     </div>
 
     <div class="form__group">
         <div class="col-sm-9">
-            {{ data.form.street_address(class="form__input",type="text", placeholder="Street Address", required="required") }}
+            {% if data.form.street_address.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+            {{ data.form.street_address(class=classes,type="text", placeholder="Street Address", required="required") }}
             {{ data.form.street_address.label (class="form__label") }}
         </div>
         <div class="col-sm-3">
-            {{ data.form.street_address2(class="form__input",type="text", placeholder="Apt/Suite") }}
+            {% if data.form.street_address2.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+            {{ data.form.street_address2(class=classes,type="text", placeholder="Apt/Suite") }}
             {{ data.form.street_address2.label (class="form__label") }}
         </div>
     </div>
 
     <div class="form__group" id="autofill__group">
-        <div class="col-sm-7 is-hidden is-concealed city-wrap">
-            {{ data.form.city(class="form__input", type="text", placeholder='City', required="required") }}
+
+        <div class="col-sm-7 {% if not data.form.errors %}is-hidden is-concealed{% endif %} city-wrap">
+            {% if data.form.city.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+            {{ data.form.city(class=classes, type="text", placeholder='City', required="required") }}
             {{ data.form.city.label (class="form__label") }}
         </div>
 
-        <div class="col-sm-2 is-hidden is-concealed state-wrap">
-            <select name="{{ data.form.state.name }}" id="state" class="form__select is-gray" required="required">
+        <div class="col-sm-2 {% if not data.form.errors %}is-hidden is-concealed{% endif %} state-wrap">
+            <select name="{{ data.form.state.name }}" id="state" class="form__select is-gray {% if data.form.state.errors %}is-invalid{% endif %}" required="required">
                {% for option in data.form.state %}
                    {% if option.data == 'State' %}
                        {{ option(disabled=True, selected="selected") }}
@@ -63,8 +72,10 @@
            </select>
             {{ data.form.state.label (class="form__label") }}
         </div>
+
         <div class="col-sm-3 is-fullwidth zip-wrap">
-            {{ data.form.zip5(class="form__input--masked", type="text", placeholder="Zipcode", required="required", title="Please enter five digit zipcode", required="required") }}
+            {% if data.form.zip5.errors or data.form.zip4.errors %}{% set classes="form__input--masked is-invalid" %}{% else %}{% set classes="form__input--masked" %}{% endif %}
+            {{ data.form.zip5(class=classes, type="text", placeholder="Zipcode", required="required", title="Please enter five digit zipcode", required="required") }}
             {{ data.form.zip5.label (class="form__label") }}
         </div>
         <p id="no-zip4-error" class="form__error" style="display:none;">
@@ -82,10 +93,13 @@
     
     <div class="form__group">
         <div class="col-sm-12">
-            {{ data.form.phone_number(class="form__input--masked",type="text", placeholder="Phone Number", title="Please your phone number XXXXXXXXXX.", required="required") }}
+            {% if data.form.phone_number.errors %}{% set classes="form__input--masked is-invalid" %}{% else %}{% set classes="form__input--masked" %}{% endif %}
+            {{ data.form.phone_number(class=classes,type="text", placeholder="Phone Number", title="Please your phone number XXXXXXXXXX.", required="required") }}
             {{ data.form.phone_number.label (class="form__label") }}
          </div>
     </div>
+
+    {% endwith %}
 
     <p class="form__disclaimer">By using this service, I agree to the <a href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
 

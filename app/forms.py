@@ -10,6 +10,7 @@ from flask.ext.wtf.recaptcha import RecaptchaField
 from wtforms.widgets import html_params, HTMLString
 from cgi import escape
 
+
 class MyBaseForm(Form):
 
     def __init__(self, formdata, post_action_url, **kwargs):
@@ -48,6 +49,7 @@ class LoginForm(MyBaseForm):
                 return admin
         return False
 
+
 class MessageForm(MyBaseForm):
 
     subject = StringField("Subject", [validators.Length(min=0, max=255)])
@@ -84,11 +86,21 @@ class MyOption(object):
        return HTMLString(u'<option %s>%s</option>' % render_params)
 
 
+class MySelectField(SelectField):
+
+    def pre_validate(self, form):
+        for v, _ in self.choices:
+            if self.data == v:
+                break
+        else:
+            raise ValueError(self.gettext('Please select a ' + self.label.text))
+
+
 class RegistrationForm(MyBaseForm):
 
-    prefix = SelectField('Prefix',
+    prefix = MySelectField('Prefix',
                          choices=[(x,x) for x in ['Title', 'Mr.', 'Mrs.', 'Ms.']],
-                         validators=[validators.DataRequired('A title prefix is required.'),
+                         validators=[validators.DataRequired(message='A title prefix is required.'),
                                      validators.NoneOf(['Title'], message='Please select a prefix.')],
                          option_widget=MyOption())
     first_name = StringField('First name',
@@ -99,7 +111,7 @@ class RegistrationForm(MyBaseForm):
                                  validators=[validators.DataRequired(message="Street address is required.")])
     street_address2 = StringField('Apt/Suite')
     city = StringField('City', [validators.DataRequired(message="City is required.")])
-    state = SelectField('State',
+    state = MySelectField('State',
                         choices=[('State', 'State')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
                         validators=[validators.NoneOf(['State'], message='Please select a state.')],
                         option_widget=MyOption())
@@ -111,6 +123,22 @@ class RegistrationForm(MyBaseForm):
                                       message="Please enter a valid phone number.")])
 
     accept_tos = BooleanField('I accept the terms of service and privacy policy', [validators.DataRequired()])
+
+    @property
+    def ordered_fields(self):
+        return [
+            self.prefix,
+            self.first_name,
+            self.last_name,
+            self.street_address,
+            self.street_address2,
+            self.city,
+            self.state,
+            self.email,
+            self.zip5,
+            self.zip4,
+            self.phone_number
+        ]
 
     @property
     def error_dict(self):
@@ -152,6 +180,8 @@ class RegistrationForm(MyBaseForm):
         except:
             self.zip4.data = ''
 
+
+
     def _autocomplete_phone(self):
         self.phone_number.data = re.sub("[^0-9]", "", self.phone_number.data)
 
@@ -179,12 +209,10 @@ class RegistrationForm(MyBaseForm):
         self._autocomplete_email(user.email)
         self._autocomplete_zip()
         self._autocomplete_phone()
+
         if self.validate():
-            print "here323234"
             # get user's default info and either create new info or get the same info instance
             first_umi = UserMessageInfo.query.filter_by(user=user, default=True).first()
-            print "wtff????"
-            print user
             umi = first_umi if (first_umi and first_umi.accept_tos is None) \
                 else UserMessageInfo.first_or_create(user.id, **self.data_dict())
 
@@ -209,4 +237,5 @@ class RegistrationForm(MyBaseForm):
             db.session.commit()
             return True
         else:
+            self.zip5.data = self.zip5.data + '-' + self.zip4.data
             return False

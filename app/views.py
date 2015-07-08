@@ -187,7 +187,8 @@ def message_sent(token='', msg=None, umi=None, user=None):
 
     context = {
         'umi': umi,
-        'legislators': msg.get_legislators(),
+        'legislators': umi.members_of_congress,
+        'msg_legislators': msg.get_legislators(),
         'msg': msg
     }
 
@@ -219,7 +220,6 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
     if msg is not None and request.method == 'POST' and form.validate():
         if not request.form.get('donotsend', False):
             msg.queue_to_send([moc[i] for i in [v for v in range(0, len(moc)) if request.form.get('legislator_' + str(v))]])
-
         return redirect(url_for_with_prefix('app_router.message_sent', token=token))
     else:
         if msg is not None:
@@ -282,11 +282,17 @@ def postmark_inbound():
 
         # check if message exists already first
         if Message.query.filter_by(email_uid=inbound.message_id()).first() is None:
+
+            if 'Headers' in inbound.source and inbound.headers('Message-ID') is not None:
+                msg_id = inbound.headers('Message-ID')
+            else:
+                msg_id = inbound.message_id()
+
             new_msg = Message(created_at=inbound.send_date(),
                               to_originally=json.dumps([r['Email'].lower() for r in inbound.to()]),
                               subject=inbound.subject(),
                               msgbody=inbound.text_body(),
-                              email_uid=inbound.headers('Message-ID'),
+                              email_uid=msg_id,
                               user_message_info_id=umi.id)
             db_add_and_commit(new_msg)
 

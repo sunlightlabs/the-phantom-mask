@@ -5,7 +5,6 @@
         Message sent!
     {% else %}
         Message not sent
-
     {% endif %}
 {% endblock %}
 
@@ -15,7 +14,7 @@
             {% include 'images/icon_check.svg' %}
             <h2 class="overview__heading">Message sent!</h2>
             <p class="overview__description">
-                Your email is now on its way to {% with legislators = context.legislators %}{% include 'snippets/leg_full_title_and_full_name_loop.html' %}{% endwith %}!
+                Your email is now on its way to {% with legislators = context.msg_legislators %}{% include 'snippets/leg_full_title_and_full_name_loop.html' %}{% endwith %}!
             </p>
         {% else %}
             {% include 'images/icon_xmark.svg' %}
@@ -33,7 +32,9 @@
             at once. Or send individual emails:
         </h3>
 
-        {% include 'partials/your_reps.html' %}
+        {% with complete_not_sent = True %}
+            {% include 'partials/your_reps.html' %}
+        {% endwith %}
 
         <h3 class="content__header"><strong>Tips for emailing Congress next time</strong></h3>
         <hr>
