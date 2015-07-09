@@ -13,11 +13,9 @@
     
     <!-- Latest compiled and minified JavaScript -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-    <script type="text/javascript" src="https://cdn.rawgit.com/dennyferra/TypeWatch/master/jquery.typewatch.js"></script>
-    <script type="text/javascript" src="/static/js/inputmask/jquery.inputmask.bundle.min.js"></script>
-    <script type="text/javascript" src="/static/js/forms.js"></script>
-    <!--<script type="text/javascript" src="/static/js/build/phantom-mask.min.js"></script>-->
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/dennyferra/TypeWatch/master/jquery.typewatch.js"></script>
+    <!--<script type="text/javascript" src="/static/js/forms.js"></script>-->
 
     <script type="text/javascript">
         var csrftoken = "{{ csrf_token() }}";
@@ -53,5 +51,6 @@
         </footer>
     </main>
     <!-- JavaScript -->
+    <script type="text/javascript" src="/static/js/build/phantom-mask.min.js"></script>
     {% block javascript %}{% endblock %}
 </body>

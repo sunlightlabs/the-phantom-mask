@@ -67,7 +67,7 @@ class NoReply():
         return PMMail(api_key=settings.POSTMARK_API_KEY,
                       sender=cls.SENDER_EMAIL,
                       to=user.email,
-                      subject='Complete your message to congress',
+                      subject='Re: ' + msg.subject,
                       html_body=render_without_request("emails/validate_user.html",
                                                         context={'verification_link': veri_link,
                                                                  'user': user}),

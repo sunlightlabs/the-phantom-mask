@@ -15,7 +15,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('scripts', function() {
-  return gulp.src("./app/static/**/*.js")
+  return gulp.src("./app/static/js/*.js")
     .pipe(concat('./app/static/js/build/phantom-mask.js'))
     .pipe(uglify())
     .pipe(rename('phantom-mask.min.js'))

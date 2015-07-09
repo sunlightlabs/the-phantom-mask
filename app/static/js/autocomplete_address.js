@@ -87,6 +87,7 @@
         captureLength: 0
     };
 
+
     var typeWatch_lock = false;
     $zip5.typeWatch( options );
     $street_address.typeWatch( options );
