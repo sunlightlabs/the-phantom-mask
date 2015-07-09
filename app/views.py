@@ -280,13 +280,13 @@ def postmark_inbound():
         user = db_first_or_create(User, email=inbound.sender()['Email'].lower())
         umi = db_first_or_create(UserMessageInfo, user_id=user.id, default=True)
 
+        if 'Headers' in inbound.source and inbound.headers('Message-ID') is not None:
+            msg_id = inbound.headers('Message-ID')
+        else:
+            msg_id = inbound.message_id()
+
         # check if message exists already first
         if Message.query.filter_by(email_uid=inbound.message_id()).first() is None:
-
-            if 'Headers' in inbound.source and inbound.headers('Message-ID') is not None:
-                msg_id = inbound.headers('Message-ID')
-            else:
-                msg_id = inbound.message_id()
 
             new_msg = Message(created_at=inbound.send_date(),
                               to_originally=json.dumps([r['Email'].lower() for r in inbound.to()]),
