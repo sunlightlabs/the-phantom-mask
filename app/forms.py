@@ -116,8 +116,8 @@ class RegistrationForm(MyBaseForm):
                         validators=[validators.NoneOf(['State'], message='Please select a state.')],
                         option_widget=MyOption())
     email = StringField('E-Mail', [validators.Email()])
-    zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Zipcode must be a 5 digit number.')])
-    zip4 = StringField('Zip 4', [validators.Regexp(re.compile('^\d{4}$'), message='Zip + 4 must be a 4 digit number.')])
+    zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Zipcode and Zip+4 must have form XXXXX-XXXX. Lookup up <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">here</a>')])
+    zip4 = StringField('Zip 4', [validators.Regexp(re.compile('^\d{4}$'), message='Zipcode and Zip+4 must have form XXXXX-XXXX. Lookup up <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">here</a>')])
     phone_number = StringField('Phone number',
                    [validators.Regexp(re.compile('^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'),
                                       message="Please enter a valid phone number.")])
@@ -139,6 +139,13 @@ class RegistrationForm(MyBaseForm):
             self.zip4,
             self.phone_number
         ]
+
+    @property
+    def ordered_fields_errors(self):
+        errors = self.ordered_fields
+        if self.zip5.errors and self.zip4.errors:
+            errors.remove(self.zip4)
+        return errors
 
     @property
     def error_dict(self):

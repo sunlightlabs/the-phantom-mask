@@ -10,9 +10,14 @@
     var $no_district_error = $('#no-district-error');
     var $autofill__group = $('#autofill__group');
 
-    $(document).ready(function(){
-        ($zip5.val().length > 0) ? zipcode_css_switch(true) : $zip5.inputmask("99999", { showMaskOnHover: false });
-        $phone_number.inputmask('(999) 999-9999', { showMaskOnHover: false });
+    $(document).ready(function() {
+        try {
+            ($zip5.val().length > 0) ? zipcode_css_switch(true) : $zip5.inputmask("99999", {showMaskOnHover: false});
+            $phone_number.inputmask('(999) 999-9999', {showMaskOnHover: false});
+
+            $zip5.typeWatch(options);
+            $street_address.typeWatch(options);
+        } catch(error) {}
     });
 
     function zipcode_css_switch(show) {
@@ -72,6 +77,7 @@
         });
     }
 
+    var typeWatch_lock = false;
     var options = {
         callback: function (value) {
             var zip5_val = $zip5.val().replace(/\D/g, '');
@@ -86,10 +92,5 @@
         highlight: false,
         captureLength: 0
     };
-
-
-    var typeWatch_lock = false;
-    $zip5.typeWatch( options );
-    $street_address.typeWatch( options );
 
 })();
