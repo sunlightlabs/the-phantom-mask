@@ -1,0 +1,66 @@
+//  Animations
+
+// svg [class^=pipe-] {
+//     fill: orange;
+// }
+
+// svg [class^=cog-] path,
+// svg [class^=cog-] circle {
+//     fill: green;
+// }
+
+// g.capitol path {
+//     fill: blue;
+// }
+
+// g.letter path,
+// g.letter circle {
+//     fill: pink;
+// }
+
+// g.envelope path {
+//     fill: yellow;
+// }
+
+g.cog-1 {
+    animation: rotate 20s infinite;
+    transform-origin: 50% 50%;
+    animation-timing-function: linear;
+}
+
+g.cog-2 {
+    animation: rotate 15s infinite;
+    transform-origin: 50% 50%;
+    animation-timing-function: linear;
+}
+
+.pipe-2 {
+    animation: shake-x 400ms infinite;
+}
+
+.pipe-3,
+.pipe-6 {
+    animation: shake-y 400ms infinite;
+}
+
+.pipe-4 {
+    animation: shake-x 2s infinite;
+}
+
+
+@keyframes rotate {
+    0% { transform: rotate(0deg) }
+    100% { transform: rotate(360deg) }
+}
+
+@keyframes shake-x {
+    0% {}
+    75% { transform: translateX(0px) }
+    100% { transform: translateX(4px) }
+}
+
+@keyframes shake-y {
+    0% {}
+    75% { transform: translateY(0px) }
+    100% { transform: translateY(2px) }
+}
