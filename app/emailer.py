@@ -218,6 +218,6 @@ class NoReply():
                       to=user.email,
                       subject='Your OpenCongress contact information has changed.',
                       html_body=render_without_request('emails/address_changed.html',
-                                                       context={'link': user.tmp_token_link(),
+                                                       context={'link': user.address_change_link(),
                                                                 'user': user})
                       )
