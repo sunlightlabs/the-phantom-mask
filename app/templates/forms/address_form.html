@@ -103,7 +103,11 @@
 
     <p class="form__disclaimer">By using this service, I agree to the <a href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
 
+    {% if context.msg %}
     <button class="button" type="submit">Sign up and send my message</button>
+    {% else %}
+    <button class="button" type="submit">Update my information</button>
+    {% endif %}
 </form>
 
     <div class="content__notes">

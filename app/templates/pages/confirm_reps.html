@@ -7,17 +7,29 @@
 {% block content %}
 
     <section class="overview">
+    {% if context.msg %}
         {% include 'images/icon_check.svg' %}
         <h2 class="overview__heading">Great, you're signed up!</h2>
         <p class="overview__description">
             For just this one time, please review your message and message recipients
             below before you send it off.
         </p>
+    {% else %}
+        {% include 'images/icon_check.svg' %}
+        <h2 class="overview__heading">Great, we updated your information!</h2>
+        <p class="overview__description">
+            You may now continue to message your representatives in Congress via email.
+        </p>
+    {% endif %}
     </section>
 
     <section class="content">
-        <h3 class="content__header"><strong>Review the representatives</strong> from your congressional district
-            in {{ context.umi.humanized_state() }} that you want to send your email to.
+        <h3 class="content__header">
+        {% if context.msg %}
+            <strong>Review the representatives</strong> from your congressional district in {{ context.umi.humanized_state() }} that you want to send your email to.
+        {% else %}
+            <strong>What's next?</strong> You can use <a href="mailto:myreps@opencongress.org">myreps@opencongress.org</a> to write to all of your representatives at once. Or send individual emails:
+        {% endif %}
         </h3>
 
         {% if context.msg %}

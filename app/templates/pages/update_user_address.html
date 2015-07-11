@@ -5,18 +5,26 @@
 {% endblock %}
 
 {% block content %}
+
     <section class="overview">
+    {% if context.msg %}
         {% include 'images/machine.svg' %}
         <h2 class="overview__heading">Let's get your message to Congress.</h2>
         <p class="overview__description">
             Contacting Congress should be as easy as email. We just need some info to make that happen.
         </p>
+    {% else %}
+        {% include 'images/icon_user.svg' %}
+        <h2 class="overview__heading">Let's get your information updated.</h2>
+        <p class="overview__description">
+            This helps us ensure that we're delivering your messages to the right representatives.
+        </p>
+    {% endif %}
     </section>
 
     {% with data = context %}
         {% include 'forms/address_form.html' %}
     {% endwith %}
-    <div style="clear:both"></div>
 
 {% endblock %}
 
