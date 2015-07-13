@@ -112,6 +112,7 @@ a {
     &:focus, {
         border-bottom: 1px solid darken($blue, 20%);
         color: darken($blue, 20%);
+        outline: none;
     }
 
     &.link-alt {
