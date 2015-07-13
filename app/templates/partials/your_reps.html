@@ -20,7 +20,7 @@
         </div>
         {% if context.msg and not context.msg.is_already_sent() and context.legs_buckets%}
         <div class="repcard__action">
-            <input type="checkbox" class="repcard__checkbox" name="legislator_{{ loop.index0 }}" {% if in_original_to %}checked{% endif %}>
+            <input type="checkbox" class="repcard__checkbox" name="legislator_choices[]" value="{{ loop.index0 }}" {% if in_original_to %}checked{% endif %}>
             <div class="repcard__checkbox--add">{% include '/images/icon_plus.svg' %}</div>
             <div class="repcard__checkbox--check">{% include '/images/icon_check.svg' %}</div>
         </div>
