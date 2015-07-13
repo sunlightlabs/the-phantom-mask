@@ -48,11 +48,6 @@
         color: $green;
         box-shadow: inset 0 0 0 2px $green;
         background-color: $white;
-
-        @include breakpoint($screen-md){
-            display: inline-block;
-            width: 120px;
-        }
         
         &:hover,
         &:active,
@@ -71,6 +66,15 @@
             &:focus {
                 color: $red;
             }
+        }
+    }
+
+    &__alt {
+        @extend .button__secondary--red;
+
+        @include breakpoint($screen-md){
+            display: inline-block;
+            width: 120px;
         }
     }
 }
