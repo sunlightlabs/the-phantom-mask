@@ -26,9 +26,16 @@
     <section class="content">
         <h3 class="content__header">
         {% if context.msg %}
-            <strong>Review the representatives</strong> from your congressional district in {{ context.umi.humanized_state() }} that you want to send your email to.
+            <p>
+                <strong>Review the representatives</strong> from your congressional district in {{ context.umi.humanized_state() }} that you want to send your email to.
+            </p>
+            <p>
+                <a class="form__error--link form__tip" href="#" data-toggle="modal" data-target="#modal">Why aren't Sen. Chuck Shumer, Rep. Peter King, Rep. Don Breyer and others listed here?</a>
+            </p>
         {% else %}
-            <strong>What's next?</strong> You can use <a href="mailto:myreps@opencongress.org">myreps@opencongress.org</a> to write to all of your representatives at once. Or send individual emails:
+            <p>
+                <strong>What's next?</strong> You can use <a href="mailto:myreps@opencongress.org">myreps@opencongress.org</a> to write to all of your representatives at once. Or send individual emails:
+            </p>
         {% endif %}
         </h3>
 
@@ -39,6 +46,28 @@
         {% else %}
             {% include 'partials/your_reps.html' %}
         {% endif %}
+
+
+        {% if context.msg %}
+        <!-- Modal -->
+        <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-u-vcenter">
+                <div class="modal-dialog" role="document">
+                    <div class="modal__content">
+                        <div class="modal__body">
+                            {% include 'images/icon_question.svg' %}
+                            <h3 class="content__header"><strong>You can only email your own representatives</strong></h3>
+                            <p>Due to restrictions imposed by Congress, you can only send a message through this system to the members of Congress who represent the address you provided us.</p>
+                            <p>Feel free to ask the members who represent you to forward your message to other members you’d like to contact.</p>
+                        </div>
+                    <div class="modal__footer">
+                    <button type="button" class="button__secondary" data-dismiss="modal">Got it, close this.</button>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
     </section>
+    {% endif %}
 
 {% endblock %}

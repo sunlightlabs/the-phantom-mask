@@ -4,7 +4,7 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
     {% if data.form.errors %}
-        <ul class="form__errors">
+        <ul class="form__errorlist">
             <li><strong>Whoops! Please fix these problems with your form.</strong></li>
             {% for field in data.form.ordered_fields_errors %}
                 {% for error in field.errors %}

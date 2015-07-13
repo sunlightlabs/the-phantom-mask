@@ -75,15 +75,36 @@
     }
 
     &__error {
-        color: $red;
+        color: $red !important;
         font-size: $micro;
         position: relative;
-        margin: -15px 10px 20px;
 
-        @include breakpoint(768px){
+        &--zip {
+            @extend .form__error;
+            margin: -15px 10px 20px;
+
+            @include breakpoint(768px){
+                position: absolute;
+                top: 40px;
+                margin: 0 10px 40px;
+            }
+        }
+        &--link {
+            @extend .form__error;
+            border-color: $red !important;
+        }
+    }
+
+    &__tip {
+        &::before {
+            content: " ";
+            background: url("/static/images/icon_question--red.svg") no-repeat;
+            background-size: cover;
+            height: 16px;
+            width: 16px;
             position: absolute;
-            top: 40px;
-            margin: 0 10px 40px;
+            left: -25px;
+            top: 0;
         }
     }
 
@@ -201,8 +222,7 @@
         }
     }
 
-    &__errors {
-        // color: $red;
+    &__errorlist {
         border: 1px solid $red;
         background: lighten($red, 35%);
         padding: 15px;
