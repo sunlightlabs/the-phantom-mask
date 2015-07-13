@@ -236,7 +236,8 @@ def update_user_address(token='', msg=None, umi=None, user=None):
     context = {
         'form': form,
         'verification_token': token,
-        'msg_email': user.email
+        'msg_email': user.email,
+        'msg': msg
     }
 
     if request.method == 'POST':
