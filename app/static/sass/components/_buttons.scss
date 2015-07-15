@@ -29,6 +29,25 @@
         outline: none;
     }
 
+    &.is-disabled {
+        background-color: #7dccbd;
+        animation-name: shake;
+        animation-duration: 200ms;
+        animation-fill-mode: both;
+        transition: none;
+        
+        .button__text--disabled {
+            display: block;
+        }
+
+        .button__text {
+            display: none;
+        }
+    }
+
+    .button__text--disabled {
+        display: none;
+    }
 
     // Button Variants
 
@@ -77,4 +96,18 @@
             width: 120px;
         }
     }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  25%, 75% {
+    transform: translate3d(-5px, 0, 0);
+  }
+
+  50%, 95% {
+    transform: translate3d(5px, 0, 0);
+  }
 }
