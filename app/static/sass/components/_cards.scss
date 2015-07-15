@@ -27,7 +27,7 @@
         }
     }
 
-    &:hover {
+    .no-touch &:hover {
         background: lighten(#eaf8f4, 3%);
         border-color: #9fccc3;
     }
