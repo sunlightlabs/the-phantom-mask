@@ -75,13 +75,14 @@
     }
 
     &__error {
-        color: $red !important;
+        color: $red;
         font-size: $micro;
         position: relative;
+        line-height: 16px;
 
         &--zip {
             @extend .form__error;
-            margin: -15px 10px 20px;
+            margin: -15px 10px -15px;
 
             @include breakpoint(768px){
                 position: absolute;
@@ -89,9 +90,9 @@
                 margin: 0 10px 40px;
             }
         }
-        &--link {
+        &--clickable {
             @extend .form__error;
-            border-color: $red !important;
+            cursor: pointer;
         }
     }
 
