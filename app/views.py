@@ -101,10 +101,15 @@ def resolve_token(viewfunc):
         token = kwargs.get('token', '')
         msg, umi, user = Token.convert_token(token)
         if user is None:
+            # TODO where to redirect?
             return redirect(url_for_with_prefix('app_router.reset_token'))
         else:
-            if msg is not None and msg.is_already_sent() and viewfunc.__name__ is not 'message_sent':
-                return redirect(url_for_with_prefix('app_router.message_sent', token=token))
+            if msg is not None:
+                if msg.is_already_sent() and viewfunc.__name__ is not 'message_sent':
+                    return redirect(url_for_with_prefix('app_router.message_sent', token=token))
+                elif not msg.is_already_sent() and user.default_info.accept_tos and viewfunc.__name__ not in ['confirm_reps', 'message_sent']:
+                    return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
+
             kwargs.update({'msg': msg, 'umi': umi, 'user': user})
             return viewfunc(**kwargs)
 
@@ -247,7 +252,10 @@ def update_user_address(token='', msg=None, umi=None, user=None):
                 context['district_error'] = True
             else:
                 if msg is None:
+                    token = user.token.reset()
                     emailer.NoReply.address_changed(user).send()
+                else:
+                    emailer.NoReply.signup_success(user).send()
                 return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
 
     return render_template_wctx("pages/update_user_address.html", context=context)

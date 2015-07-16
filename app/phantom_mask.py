@@ -24,6 +24,7 @@ def create_app():
     app.config['SQLALCHEMY_ECHO'] = settings.DATABASE[env]['echo']
     app.config['RECAPTCHA_PUBLIC_KEY'] = settings.RECAPTCHA_PUBLIC_KEY
     app.config['RECAPTCHA_PRIVATE_KEY'] = settings.RECAPTCHA_PRIVATE_KEY
+    app.config['SERVER_NAME'] = settings.BASE_URL
 
     app.jinja_options['extensions'].append('jinja2.ext.loopcontrols')
     my_loader = jinja2.ChoiceLoader([

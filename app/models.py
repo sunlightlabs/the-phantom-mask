@@ -1,9 +1,13 @@
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.path.pardir))
+
 from phantom_mask import db
 from config import settings
 from datetime import datetime, timedelta
 import uuid
 from contextlib import contextmanager
-import urllib
 import json
 from lib import usps, phantom_on_the_capitol, select_solver
 import random
@@ -15,7 +19,6 @@ from lib.dict_ext import sanitize_keys
 from sqlalchemy import or_, and_, not_
 from flask import url_for, flash
 import jellyfish
-import sys
 from flask.ext.login import UserMixin
 import flask_login
 from flask_admin.contrib.sqla import ModelView
@@ -31,9 +34,6 @@ from util import render_without_request
 from helpers import render_template_wctx, append_get_params
 from flask_wtf import Form
 
-
-
-import os
 
 @contextmanager
 def get_db_session():
@@ -564,6 +564,9 @@ class User(MyBaseModel, HasTokenMixin):
     def last_message(self):
         return self.messages()[-1]
 
+    def new_address_change_link(self):
+        self.token.reset()
+
     def address_change_link(self):
         return self.token.link()
 
@@ -930,7 +933,7 @@ class Message(MyBaseModel, HasTokenMixin):
         from scheduler import send_to_phantom_of_the_capitol
         set_attributes(self, {'status': None}.iteritems(), commit=True)
         if moc is not None: self.set_legislators(moc)
-        send_to_phantom_of_the_capitol.delay(self.id)
+        send_to_phantom_of_the_capitol.delay(msg_id=self.id, force=True)
         return True
 
     def send(self, fresh=False):

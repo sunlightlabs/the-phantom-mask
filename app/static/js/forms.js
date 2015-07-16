@@ -2,15 +2,14 @@
     $(document).ready(function () {
         try {
 
-            $('#message-form').submit(function(event) {
-                var checked = true;
+            $(".button__primary[type='submit']").click(function(event) {
+                var checked = false;
                 $('input[type="checkbox"]').each(function(index, value) {
-                    if (!$(value).is(':checked')) {
-                        checked = false;
+                    if ($(value).prop('checked')) {
+                        checked = true;
                     }
                 });
                 if (!checked) {
-                    // do something
                     event.preventDefault();
                 }
             });
@@ -26,6 +25,7 @@
                 $(this).find('.repcard__checkbox').each(function () {
                     var checkbox = $(this);
                     checkbox.prop("checked", !checkbox.prop("checked"));
+                    console.log(checkbox.prop('checked'));
                 });
 
             });

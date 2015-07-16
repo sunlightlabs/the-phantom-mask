@@ -81,6 +81,28 @@ class NoReply():
                         }
                       )
 
+    @classmethod
+    @apply_admin_filter
+    def signup_success(cls, user):
+        """
+
+        @param user: the user to send the email to
+        @type user: models.User
+        @return: a python representation of a postmark object
+        @rtype: PMMail
+        """
+
+        return PMMail(api_key=settings.POSTMARK_API_KEY,
+              sender=cls.SENDER_EMAIL,
+              to=user.email,
+              subject="You are successfully signed up for OpenCongress email congress.",
+              html_body=render_without_request('emails/signup_success.html',
+                                               context={'link': user.address_change_link(),
+                                                        'user': user})
+              )
+
+
+
 
     @classmethod
     @apply_admin_filter
@@ -158,7 +180,7 @@ class NoReply():
 
         send_statuses = {True: [], False: []}
         for ml in msg_legs:
-            send_statuses[ml.get_send_status()['status'] == 'success'].append(ml)
+            send_statuses[ml.get_send_status()['status'] == 'success'].append(ml.legislator)
 
         if len(send_statuses[False]) > 0:
             subject = 'There were errors processing your recent message to congress.'
@@ -170,7 +192,7 @@ class NoReply():
                       to=user.email,
                       subject=subject,
                       html_body=render_without_request("emails/send_status.html",
-                                                        context={'send_statuses': send_statuses,
+                                                        context={'legislators': send_statuses,
                                                                  'user': user}),
                       track_opens=True
                       )
@@ -207,8 +229,6 @@ class NoReply():
 
         @param user: the user to send the email to
         @type user: models.User
-        @param umi: user message information instance
-        @type umi: models.UserMessageInfo
         @return: a python representation of a postmark object
         @rtype: PMMail
         """
@@ -219,5 +239,6 @@ class NoReply():
                       subject='Your OpenCongress contact information has changed.',
                       html_body=render_without_request('emails/address_changed.html',
                                                        context={'link': user.address_change_link(),
-                                                                'user': user})
+                                                                'user': user,
+                                                                'moc': user.default_info.members_of_congress})
                       )

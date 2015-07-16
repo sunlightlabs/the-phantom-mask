@@ -46,7 +46,7 @@ def create_test_data():
         from app.models import Topic
         from tests.factories import user, user_message_info, message, admin_user
 
-        user1 = user(email='rioisk@gmail.com')
+        user1 = user(email='cdunwell@sunlightfoundation.com')
         umi1 = user_message_info(user=user1, info={
             'default': True,
             'prefix': 'Mr.',
@@ -66,11 +66,6 @@ def create_test_data():
         user2 = user(email='ocheng@sunlightfoundation.com')
         umi2 = user_message_info(user=user2)
         msg2 = message(umi=umi2)
-
-
-        user3 = user(email='cdunwell@sunlightfoundation.com')
-        umi3 = user_message_info(user=user3)
-        msg3 = message(umi=umi3)
 
 
         for i in range(0,100):
@@ -114,7 +109,7 @@ def simulate_postmark_message(from_email, to_emails=None, messageid=None):
         "ToFull": to_emails
     }
     try:
-        req = requests.post(settings.BASE_URL + '/postmark/inbound',
+        req = requests.post(settings.BASE_PROTOCOL + settings.BASE_URL + '/postmark/inbound',
                             data=json.dumps(params),
                             headers={"content-type": "text/javascript"})
         print req.json()

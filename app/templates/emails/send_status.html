@@ -2,32 +2,42 @@
 
 {% block content %}
 
-    <table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top">
-        <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
-        <td class="wrapper" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; position: relative; text-align: left; vertical-align: top" align="left" valign="top">
+    {% if context.legislators[True] %}
+    <tr>
+        <td class="panel-border" style="background: #fefae7; border-collapse: collapse !important; border-style: solid none none; border-top-color: #FFF3BE !important; border-top-width: 2px !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 20px 30px; text-align: left; vertical-align: top" align="left" bgcolor="#fefae7" valign="top">
+            <h1 style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 20px; font-weight: bold; line-height: 28px; margin: 0; padding: 0; text-align: left; word-break: normal" align="left">Your message was successfully submitted to: {% with %}{% set legislators = context.legislators[True] %}{% include 'snippets/leg_full_title_and_full_name_loop.html' %}{% endwith %}</h1>
+        </td>
+    </tr>
+    {% endif %}
 
-          </td></tr>
-            <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
-            <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
-            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">We were unsuccessful because there appears to be an issue with the congressional contact system for the following.</p>
+    {% if context.legislators[False] %}
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td class="error-panel" style="background: #FBEDE9; border-collapse: collapse !important; border: none; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 20px 30px; text-align: left; vertical-align: top" align="left" bgcolor="#FBEDE9" valign="top">
+            <h1 style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 20px; font-weight: bold; line-height: 28px; margin: 0; padding: 0; text-align: left; word-break: normal" align="left">Your message was not able to be submitted to: {% with %}{% set legislators = context.legislators[False] %}{% include 'snippets/leg_full_title_and_full_name_loop.html' %}{% endwith %}</h1>
+            <p class="know-why" style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 25px 0px 25px 25px; padding: 0; text-align: left" align="left">
+                <i>We were unsuccessful because there appears to be an issue with the congressional contact system. Sorry about that! Our technical team has been notified about the issue and for now you can send your message through their respective congressional webforms as followed:</i>
+            </p>
+            <ul>
+                {% for leg in context.legislators[False] %}
+                <li><a href="{{ leg.contact_form }}">{{ leg.title_and_full_name() }}</a></li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
+    {% endif %}
 
-                <ul>
-                    {% for msg_leg in context.send_statuses[False] %}
-                    <li>{{ msg_leg.legislator.full_title_and_full_name() }} - <a href="{{ msg_leg.legislator.contact_form }}">{{ msg_leg.legislator.contact_form }}</a></li>
-                    {% endfor %}
-                </ul>
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td height="30" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top"></td>
+    </tr>
 
-               <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">Sorry about that! Our technical team has been notified about the issue and for now you can send your message through their congressional website webforms. Their links are above.</p>
-
-               <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">Thanks for using OpenCongress to contact Congress!</p>
-                <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
-                </p>
-
-                <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left"><i>Sunlight Foundation</i></p>
-
-            </td>
-            <td class="expander" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0; text-align: left; vertical-align: top; visibility: hidden; width: 0px" align="left" valign="top"></td>
-        </tr>
-    </table>
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
+                Thanks for using OpenCongress to contact Congress!
+                <br>
+                The Sunlight Foundation
+            </p>
+        </td>
+    </tr>
 
 {% endblock %}

@@ -1,13 +1,72 @@
-{% extends 'emails/email_root.html' %}
+{% extends 'emails/root.html' %}
 
-{% block title %}
+{% block content %}
 
-{% endblock %}
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td class="center" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px; text-align: center; vertical-align: top" align="center" valign="top">
+            <center style="min-width: 380px; width: 100%">
+                <img class="capitol" src="https://sunlight-cdn.s3.amazonaws.com/emails/phantom-mask/yellow-capitol.png" width="72" height="90" alt="Sunlight Foundation" style="-ms-interpolation-mode: bicubic; clear: both; display: block; float: none; height: 90px; image-rendering: auto; max-width: 100%; outline: none; text-decoration: none; width: 72px" align="none" />
+            </center>
+        </td>
+    </tr>
 
-{% block body %}
+    <tr>
+        <td class="panel-border" style="background: #fefae7; border-collapse: collapse !important; border-style: solid none none; border-top-color: #FFF3BE !important; border-top-width: 2px !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 20px 30px; text-align: left; vertical-align: top" align="left" bgcolor="#fefae7" valign="top"><!--into email copy, yellow background-->
+            <h1 style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 20px; font-weight: bold; line-height: 28px; margin: 0; padding: 0; text-align: left; word-break: normal" align="left">You successfully updated the information for your email address!</h1>
+        </td>
+    </tr>
 
-    Your address has recently been changed. If this wasn't you then click <a href="{{ context.link }}">here</a> to reset.
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td height="30" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top"></td>
+    </tr>
 
-    {# TODO Copy goes here to notify a user has changed their address. #}
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
+                Contact your members of Congress at:
+                <ul>
+                    {% for member in context.moc %}
+                        <li><a href="mailto:{{ member.oc_email }}">{{ member.oc_email }}</a></li>
+                    {% endfor %}
+                </ul>
+            </p>
+        </td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
+                Or contact all of them at once using <a href="mailto:myreps@opencongress.org">myreps@opencongress.org</a>
+            </p>
+        </td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td height="30" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top"></td>
+    </tr>
+
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">If this was not you, <a href="{{ context.link }}">please disable the changes</a>.</p>
+        </td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td height="30" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top"></td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">Thank you for using OpenCongress to contact Congress</p>
+        </td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">The Sunlight Foundation</p>
+        </td>
+    </tr>
+
 
 {% endblock %}
