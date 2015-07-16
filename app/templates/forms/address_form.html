@@ -4,7 +4,7 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
     {% if data.form.errors %}
-        <ul class="form__errors">
+        <ul class="form__errorlist">
             <li><strong>Whoops! Please fix these problems with your form.</strong></li>
             {% for field in data.form.ordered_fields_errors %}
                 {% for error in field.errors %}
@@ -78,7 +78,7 @@
             {{ data.form.zip5(class=classes, type="text", placeholder="Zipcode", required="required", title="Please enter five digit zipcode", required="required") }}
             {{ data.form.zip5.label (class="form__label") }}
         </div>
-        <p id="no-zip4-error" class="form__error" style="display:none;">
+        <p id="no-zip4-error" class="form__error--zip" style="display:none;">
             We couldn't determine your full zipcode.
             Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find the last four digits.
         </p>
