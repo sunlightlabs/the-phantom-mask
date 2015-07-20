@@ -17,6 +17,7 @@
     <script type="text/javascript" src="https://cdn.rawgit.com/dennyferra/TypeWatch/master/jquery.typewatch.js"></script>
 
     <script type="text/javascript">
+        var URL_PREFIX = "{{ context.url_for_static('') }}";
         var csrftoken = "{{ csrf_token() }}";
 
         $.ajaxSetup({

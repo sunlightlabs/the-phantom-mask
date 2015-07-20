@@ -121,6 +121,21 @@ class NoReply():
                       )
 
 
+    @classmethod
+    @apply_admin_filter
+    def message_queued(cls, user, legs):
+
+        return PMMail(api_key=settings.POSTMARK_API_KEY,
+              sender=cls.SENDER_EMAIL,
+              to=user.email,
+              subject="Your message is queued to be sent.",
+              html_body=render_without_request("emails/message_queued.html",
+                                                context={'legislators': legs,
+                                                         'user': user}),
+              track_opens=True
+              )
+
+
 
     @classmethod
     @apply_admin_filter
