@@ -10,10 +10,10 @@ def abs_base_url():
 
 
 def url_for_with_prefix(endpoint, **values):
-    env = os.environ.get('PHANTOM_ENVIRONMENT', 'dev' if settings.APP_DEBUG else 'prod')
-    if env == 'prod':
+    if settings.BASE_PROTOCOL == 'https://':
         values['_scheme'] = 'https'
-    return settings.BASE_PREFIX + url_for(endpoint, _external=True, **values)
+    return url_for(endpoint, _external=True, **values)
+
 
 def append_get_params(u, **kwargs):
     if len(kwargs) > 0:
@@ -24,6 +24,10 @@ def append_get_params(u, **kwargs):
 
 def app_router_path(func_name, **kwargs):
     return append_get_params(url_for_with_prefix('app_router.' + func_name, **kwargs))
+
+
+def url_for_static(rel_path):
+    return settings.BASE_PREFIX + rel_path
 
 
 def render_template_wctx(template_name_or_list, **context):
@@ -42,6 +46,8 @@ def render_template_wctx(template_name_or_list, **context):
         context['context'] = {}
     if 'base_url' not in context['context']:
         context['context']['base_url'] = settings.BASE_URL
+    if 'url_for_static' not in context['context']:
+        context['url_for_static'] = url_for_static
     if 'support_email' not in context['context']:
         context['context']['support_email'] = settings.SUPPORT_EMAIL
 

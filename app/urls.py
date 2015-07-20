@@ -14,7 +14,7 @@ def register_with_app(inst_func):
                 csrf.exempt(obj)
         if app is not None:
             if type(obj) is Blueprint:
-                app.register_blueprint(obj)
+                app.register_blueprint(obj, url_prefix=settings.BASE_PREFIX)
             else:
                 obj.init_app(app)
         return obj
@@ -26,7 +26,7 @@ def create_admin(app, csrf):
     from models import db, User, Legislator, AdminUser, UserMessageInfo, Message, MessageLegislator, Topic
     from flask.ext.admin.menu import MenuLink
 
-    admin = Admin(index_view=views.MyAdminIndexView())
+    admin = Admin(index_view=views.MyAdminIndexView(url=settings.BASE_PREFIX + '/admin'))
     admin.add_link(MenuLink('Logout', url=settings.BASE_PREFIX + '/admin/logout'))
     admin.add_view(User.ModelView(User, db.session))
     admin.add_view(Legislator.ModelView(Legislator, db.session))

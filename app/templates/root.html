@@ -51,6 +51,6 @@
         </footer>
     </main>
     <!-- JavaScript -->
-    <script type="text/javascript" src="/static/js/build/phantom-mask.min.js"></script>
+    <script type="text/javascript" src="{{ context.url_for_static('/static/js/build/phantom-mask.min.js') }}"></script>
     {% block javascript %}{% endblock %}
 </body>
