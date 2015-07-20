@@ -3,10 +3,6 @@
 
     {% include 'partials/your_reps.html' %}
 
-    {% if data.legs_buckets and data.legs_buckets.uncontactable %}
-        {% include 'partials/uncontactable_reps.html' %}
-    {% endif %}
-
     <section id="form--readonly">
         <h3 class="content__header"><strong>Next, look over your email message</strong></h3>
 
@@ -22,7 +18,7 @@
         </div>
     </section>
 
-    <button class="button__primary" type="submit">
+    <button class="button__primary" type="submit" value="send">
         <span class="button__text">Send this message now</span>
         <span class="button__text--disabled">Select at least one legislator first</span>
     </button>

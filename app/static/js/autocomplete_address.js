@@ -50,7 +50,7 @@
     function autocomplete_address(street_address, zip5) {
         $.ajax({
             type: 'POST',
-            url: '/ajax/autofill_address',
+            url: URL_PREFIX  + '/ajax/autofill_address',
             contentType: 'application/json',
             data: JSON.stringify({'street_address': street_address, 'zip5': zip5.substring(0,5)}),
             dataType: 'json',

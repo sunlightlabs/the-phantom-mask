@@ -1,0 +1,33 @@
+{% extends 'emails/root.html' %}
+
+{% block content %}
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td class="center" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px; text-align: center; vertical-align: top" align="center" valign="top">
+            <center style="min-width: 380px; width: 100%">
+                <img class="capitol" src="https://sunlight-cdn.s3.amazonaws.com/emails/phantom-mask/yellow-capitol.png" width="72" height="90" alt="Sunlight Foundation" style="-ms-interpolation-mode: bicubic; clear: both; display: block; float: none; height: 90px; image-rendering: auto; max-width: 100%; outline: none; text-decoration: none; width: 72px" align="none" />
+            </center>
+        </td>
+    </tr>
+
+    <tr>
+        <td class="panel-border" style="background: #fefae7; border-collapse: collapse !important; border-style: solid none none; border-top-color: #FFF3BE !important; border-top-width: 2px !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 20px 30px; text-align: left; vertical-align: top" align="left" bgcolor="#fefae7" valign="top"><!--into email copy, yellow background-->
+            <h1 style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 20px; font-weight: bold; line-height: 28px; margin: 0; padding: 0; text-align: left; word-break: normal" align="left">Your message has been successfully queued to be sent to {% with %}{% set legislators = context.legislators %}{% include 'snippets/leg_full_title_and_full_name_loop.html' %}{% endwith %}</h1>
+        </td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td height="30" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top"></td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
+                Thanks for using OpenCongress to contact Congress!
+                <br>
+                The Sunlight Foundation
+            </p>
+        </td>
+    </tr>
+
+{% endblock %}
