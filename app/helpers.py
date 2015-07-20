@@ -47,7 +47,7 @@ def render_template_wctx(template_name_or_list, **context):
     if 'base_url' not in context['context']:
         context['context']['base_url'] = settings.BASE_URL
     if 'url_for_static' not in context['context']:
-        context['url_for_static'] = url_for_static
+        context['context']['url_for_static'] = url_for_static
     if 'support_email' not in context['context']:
         context['context']['support_email'] = settings.SUPPORT_EMAIL
 
