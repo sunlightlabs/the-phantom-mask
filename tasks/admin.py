@@ -63,9 +63,9 @@ def create_test_data():
         msg1_2 = message(umi=umi1)
 
 
-        user2 = user(email='ocheng@sunlightfoundation.com')
-        umi2 = user_message_info(user=user2)
-        msg2 = message(umi=umi2)
+        # user2 = user(email='ocheng@sunlightfoundation.com')
+        # umi2 = user_message_info(user=user2)
+        # msg2 = message(umi=umi2)
 
 
         for i in range(0,100):
