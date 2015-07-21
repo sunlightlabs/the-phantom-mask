@@ -273,7 +273,7 @@ def process_inbound_message(user, umi, msg, send_email=False):
         msg.queue_to_send()
 
     if send_email:
-        emailer.NoReply.message_queued(user, legs).send()
+        emailer.NoReply.message_queued(user, legs['contactable']).send()
 
     return jsonify({'status': 'success'})
 
