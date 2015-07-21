@@ -223,11 +223,11 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
         'legislators': moc
     }
 
-    if msg is not None and request.method == 'POST' and form.validate():
+    if msg is not None and request.method == 'POST' and form.validate() and request.form.getlist('legislator_choices[]'):
         if not request.form.get('donotsend', False):
-            moc = [moc[int(i)] for i in request.form.getlist('legislator_choices[]')]
-            msg.queue_to_send(moc)
-            emailer.NoReply.message_queued(user, moc).send()
+            legs = [moc[int(i)] for i in request.form.getlist('legislator_choices[]')]
+            msg.queue_to_send(legs)
+            emailer.NoReply.message_queued(user, legs).send()
         return redirect(url_for_with_prefix('app_router.message_sent', token=token))
     else:
         if msg is not None:
@@ -273,7 +273,7 @@ def process_inbound_message(user, umi, msg, send_email=False):
         msg.queue_to_send()
 
     if send_email:
-        emailer.NoReply.message_receipt(user, legs, msg).send()
+        emailer.NoReply.message_queued(user, legs).send()
 
     return jsonify({'status': 'success'})
 
