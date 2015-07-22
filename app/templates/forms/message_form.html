@@ -4,7 +4,7 @@
     {% include 'partials/your_reps.html' %}
 
     <section id="form--readonly">
-        <h3 class="content__header"><strong>Next, look over your email message</strong></h3>
+        <h3 class="content__header" style="padding-bottom: 10px; border-bottom: 1px solid #ccc;"><strong>Next, look over your email message</strong></h3>
 
         <div class="form__group">
             <div class="col-sm-12">
@@ -13,7 +13,7 @@
         </div>
         <div class="form__group">
             <div class="col-sm-12">
-                <textarea class="form__textarea" readonly id="msgbody" name="msgbody">{{ data.msg.msgbody }}</textarea>
+                <textarea style="padding-bottom: 10px; border-bottom: 1px solid #ccc;" class="form__textarea" readonly id="msgbody" name="msgbody">{{ data.msg.msgbody }}</textarea>
             </div>
         </div>
     </section>
