@@ -895,6 +895,9 @@ class Message(MyBaseModel, HasTokenMixin):
             return Legislator.query.join(MessageLegislator).filter(
                 MessageLegislator.id.in_([ml.id for ml in self.to_legislators])).all()
 
+    def has_legislators(self):
+        return self.get_legislators()
+
     def get_send_status(self):
         target_count = len(self.to_legislators)
         sent_count = MessageLegislator.query.join(Message).filter(Message.id == self.id,

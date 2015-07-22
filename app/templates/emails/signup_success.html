@@ -35,6 +35,31 @@
 
     <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
         <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
+                Contact your members of Congress at:
+                <ul>
+                    {% for member in context.moc %}
+                        <li><a href="mailto:{{ member.oc_email }}">{{ member.oc_email }}</a></li>
+                    {% endfor %}
+                </ul>
+            </p>
+        </td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
+                Or contact all of them at once using <a href="mailto:myreps@opencongress.org">myreps@opencongress.org</a>
+            </p>
+        </td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td height="30" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top"></td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
             <h1 style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 20px; font-weight: bold; line-height: 28px; margin: 0px 0px 0px 25px; padding: 0; text-align: left; word-break: normal" align="left">Tips for emailing Congress:</h1>
 
             <table class="row" style="border-collapse: collapse; border-spacing: 0; display: block; padding: 0px; position: relative; text-align: left; vertical-align: top; width: 100%">

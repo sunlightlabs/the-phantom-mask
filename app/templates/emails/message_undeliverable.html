@@ -1,0 +1,59 @@
+{% extends 'emails/root.html' %}
+
+{% block content %}
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td class="error-panel" style="background: #FBEDE9; border-collapse: collapse !important; border: none; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 20px 30px; text-align: left; vertical-align: top" align="left" bgcolor="#FBEDE9" valign="top">
+            <h1 style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 20px; font-weight: bold; line-height: 28px; margin: 0; padding: 0; text-align: left; word-break: normal" align="left">There were problems submitting your message.</h1>
+        </td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td height="30" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top"></td>
+    </tr>
+
+    {% if context.leg_buckets['non_existent'] %}
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
+                The following email addresses do not exist in our system.
+            </p>
+            <ul>
+                {% for email in context.leg_buckets['non_existent'] %}
+                    <li>{{ email }}</li>
+                {% endfor %}
+            </ul>
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
+                Please check if you've accidently mistyped the email address and try again. Otherwise you can try looking up their email address here <a href="#">here</a>.
+            </p>
+        </td>
+    </tr>
+
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td height="30" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top"></td>
+    </tr>
+    {% endif %}
+
+    {% if context.leg_buckets['does_not_represent'] %}
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top">
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
+                We apology but our records show that the following legislators do not represent you based on the address that you gave us when you signed up.
+            </p>
+            <ul>
+                {% for leg in context.leg_buckets['does_not_represent'] %}
+                    <li>{{ leg.title_and_full_name() }}</li>
+                {% endfor %}
+            </ul>
+            <p style="color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0 0 18px 27px; padding: 0; text-align: left" align="left">
+                Unfortunately we're unable to send your message to members of congress who do not represent you. If you've moved and you're trying to message your new representatives
+                then click <a href="{{ context.user.address_change_link() }}">here</a> to change your address.
+            </p>
+        </td>
+    </tr>
+    <tr style="padding: 0; text-align: left; vertical-align: top" align="left">
+        <td height="30" style="border-collapse: collapse !important; color: #333333; font-family: 'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif; font-size: 14px; font-weight: normal; line-height: 19px; margin: 0; padding: 0px 0px 10px; text-align: left; vertical-align: top" align="left" valign="top"></td>
+    </tr>
+    {% endif %}
+
+{% endblock %}

@@ -98,7 +98,8 @@ class NoReply():
               subject="You are successfully signed up for OpenCongress email congress.",
               html_body=render_without_request('emails/signup_success.html',
                                                context={'link': user.address_change_link(),
-                                                        'user': user})
+                                                        'user': user,
+                                                        'moc': user.default_info.members_of_congress})
               )
 
 
@@ -136,6 +137,19 @@ class NoReply():
               )
 
 
+    @classmethod
+    @apply_admin_filter
+    def message_undeliverable(cls, user, leg_buckets):
+
+        return PMMail(api_key=settings.POSTMARK_API_KEY,
+              sender=cls.SENDER_EMAIL,
+              to=user.email,
+              subject="Your message to congress is unable to be delivered.",
+              html_body=render_without_request("emails/message_undeliverable.html",
+                                                context={'leg_buckets': leg_buckets,
+                                                         'user': user}),
+              track_opens=True
+              )
 
     @classmethod
     @apply_admin_filter
