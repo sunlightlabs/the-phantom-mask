@@ -36,7 +36,7 @@ function stop_celery()
 
 function start_celery()
 {
-    celery -A app.scheduler worker --loglevel=info -D --pidfile=celery.pid
+    PHANTOM_ENVIRONMENT=prod celery -A app.scheduler worker --loglevel=info -D --pidfile=celery.pid
 }
 
 cd $PROJECT_DIR
