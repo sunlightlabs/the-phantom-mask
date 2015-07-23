@@ -124,7 +124,7 @@ class NoReply():
 
     @classmethod
     @apply_admin_filter
-    def message_queued(cls, user, legs):
+    def message_queued(cls, user, legs, msg):
 
         return PMMail(api_key=settings.POSTMARK_API_KEY,
               sender=cls.SENDER_EMAIL,
@@ -133,13 +133,17 @@ class NoReply():
               html_body=render_without_request("emails/message_queued.html",
                                                 context={'legislators': legs,
                                                          'user': user}),
+              custom_headers={
+                  'In-Reply-To': msg.email_uid,
+                  'References': msg.email_uid,
+              },
               track_opens=True
               )
 
 
     @classmethod
     @apply_admin_filter
-    def message_undeliverable(cls, user, leg_buckets):
+    def message_undeliverable(cls, user, leg_buckets, msg):
 
         return PMMail(api_key=settings.POSTMARK_API_KEY,
               sender=cls.SENDER_EMAIL,
@@ -148,6 +152,10 @@ class NoReply():
               html_body=render_without_request("emails/message_undeliverable.html",
                                                 context={'leg_buckets': leg_buckets,
                                                          'user': user}),
+              custom_headers={
+                  'In-Reply-To': msg.email_uid,
+                  'References': msg.email_uid,
+              },
               track_opens=True
               )
 
@@ -194,7 +202,7 @@ class NoReply():
 
     @classmethod
     @apply_admin_filter
-    def send_status(cls, user, msg_legs):
+    def send_status(cls, user, msg_legs, msg):
         """
         Handles the case where phantom of the capitol is unable to send a message to a particular
         legislator. Notifies the user of such and includes the contact form URL in the body.
@@ -223,7 +231,11 @@ class NoReply():
                       html_body=render_without_request("emails/send_status.html",
                                                         context={'legislators': send_statuses,
                                                                  'user': user}),
-                      track_opens=True
+                      track_opens=True,
+                                    custom_headers={
+                  'In-Reply-To': msg.email_uid,
+                  'References': msg.email_uid,
+                },
                       )
 
     @classmethod

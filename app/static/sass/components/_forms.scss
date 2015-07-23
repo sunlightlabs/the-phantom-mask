@@ -99,7 +99,7 @@
     &__tip {
         &::before {
             content: " ";
-            background: url("/static/images/icon_question--red.svg") no-repeat;
+            background: url("{{{URL_PREFIX}}}/static/images/icon_question--red.svg") no-repeat;
             background-size: cover;
             height: 16px;
             width: 16px;
@@ -193,7 +193,7 @@
         -moz-appearance: none;
         
         // custom appearance
-        background: lighten($gray-lighter, 3%) url("/static/images/arrow_drop_down.svg") no-repeat 90% 70%;
+        background: lighten($gray-lighter, 3%) url("{{{URL_PREFIX}}}/static/images/arrow_drop_down.svg") no-repeat 90% 70%;
         box-shadow: 0px 1px 0px $gray-light;
         color: $gray-dark;
         font-size: $beta;
@@ -207,7 +207,7 @@
         }
 
         @include breakpoint($screen-sm){
-            background: lighten($gray-lighter, 3%) url("/static/images/arrow_drop_down.svg") no-repeat 98% 70%;
+            background: lighten($gray-lighter, 3%) url("{{{URL_PREFIX}}}/static/images/arrow_drop_down.svg") no-repeat 98% 70%;
         }
 
         @include breakpoint(768px){
