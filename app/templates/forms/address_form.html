@@ -19,8 +19,14 @@
         <div class="col-sm-2">
             <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select is-gray {% if data.form.prefix.errors %}is-invalid{% endif %}" required="required">
                {% for option in data.form.prefix %}
-                   {% if option.data == 'Title' %}
+                   {% if not data.msg and option.data==umi.prefix %}
                        {{ option(disabled=True, selected="selected") }}
+                   {% elif option.data == 'Title' %}
+                       {% if not data.msg %}
+                           {{ option(disabled=True) }}
+                       {% else %}
+                            {{ option(disabled=True, selected="selected") }}
+                       {% endif %}
                    {% else %}
                        {{ option }}
                    {% endif %}
