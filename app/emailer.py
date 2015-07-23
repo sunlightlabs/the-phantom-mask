@@ -107,8 +107,6 @@ class NoReply():
               )
 
 
-
-
     @classmethod
     @apply_admin_filter
     def reconfirm_info(cls, user, msg):

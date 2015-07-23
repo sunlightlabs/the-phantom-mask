@@ -104,13 +104,17 @@ class RegistrationForm(MyBaseForm):
                                      validators.NoneOf(['Title'], message='Please select a prefix.')],
                          option_widget=MyOption())
     first_name = StringField('First name',
-                             validators=[validators.DataRequired(message="First name is required.")])
+                             validators=[validators.DataRequired(message="First name is required."),
+                                         validators.Length(min=1, max=50)])
     last_name = StringField('Last name',
-                            validators=[validators.DataRequired(message="Last name is required.")])
+                            validators=[validators.DataRequired(message="Last name is required."),
+                                        validators.Length(min=1, max=50)])
     street_address = StringField('Street address',
-                                 validators=[validators.DataRequired(message="Street address is required.")])
+                                 validators=[validators.DataRequired(message="Street address is required."),
+                                             validators.Length(min=1, max=256)])
     street_address2 = StringField('Apt/Suite')
-    city = StringField('City', [validators.DataRequired(message="City is required.")])
+    city = StringField('City', [validators.DataRequired(message="City is required."),
+                                validators.Length(min=1, max=256)])
     state = MySelectField('State',
                         choices=[('State', 'State')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
                         validators=[validators.NoneOf(['State'], message='Please select a state.')],
@@ -187,10 +191,13 @@ class RegistrationForm(MyBaseForm):
         except:
             self.zip4.data = ''
 
-
-
     def _autocomplete_phone(self):
         self.phone_number.data = re.sub("[^0-9]", "", self.phone_number.data)
+
+    def _doctor_names(self):
+        self.first_name.data = self.first_name.data.replace(' ', '')
+        self.last_name.data = self.last_name.data.replace(' ', '')
+
 
     def resolve_zip4(self, force=False):
         if force or not self.zip4.data:
@@ -216,6 +223,7 @@ class RegistrationForm(MyBaseForm):
         self._autocomplete_email(user.email)
         self._autocomplete_zip()
         self._autocomplete_phone()
+        self._doctor_names()
 
         if self.validate():
             # get user's default info and either create new info or get the same info instance
