@@ -20,7 +20,7 @@
             <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select is-gray {% if data.form.prefix.errors %}is-invalid{% endif %}" required="required">
                {% for option in data.form.prefix %}
                    {% if not data.msg and option.data==data.umi.prefix %}
-                       {{ option(disabled=True, selected="selected") }}
+                       {{ option(selected="selected") }}
                    {% elif option.data == 'Title' %}
                        {% if not data.msg %}
                            {{ option(disabled=True) }}
