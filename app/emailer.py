@@ -83,7 +83,7 @@ class NoReply():
 
     @classmethod
     @apply_admin_filter
-    def signup_success(cls, user):
+    def signup_success(cls, user, msg):
         """
 
         @param user: the user to send the email to
@@ -99,7 +99,11 @@ class NoReply():
               html_body=render_without_request('emails/signup_success.html',
                                                context={'link': user.address_change_link(),
                                                         'user': user,
-                                                        'moc': user.default_info.members_of_congress})
+                                                        'moc': user.default_info.members_of_congress}),
+              custom_headers={
+                  'In-Reply-To': msg.email_uid,
+                  'References': msg.email_uid,
+                }
               )
 
 

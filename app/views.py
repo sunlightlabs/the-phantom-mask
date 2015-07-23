@@ -227,7 +227,7 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
         if not request.form.get('donotsend', False):
             legs = [moc[int(i)] for i in request.form.getlist('legislator_choices[]')]
             msg.queue_to_send(legs)
-            emailer.NoReply.message_queued(user, legs).send()
+            emailer.NoReply.message_queued(user, legs, msg).send()
         return redirect(url_for_with_prefix('app_router.message_sent', token=token))
     else:
         if msg is not None:
@@ -258,7 +258,7 @@ def update_user_address(token='', msg=None, umi=None, user=None):
                     token = user.token.reset()
                     emailer.NoReply.address_changed(user).send()
                 else:
-                    emailer.NoReply.signup_success(user).send()
+                    emailer.NoReply.signup_success(user, msg).send()
                 return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
 
     return render_template_wctx("pages/update_user_address.html", context=context)
