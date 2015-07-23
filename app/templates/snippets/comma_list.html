@@ -1,0 +1,3 @@
+{% for item in iterable -%}
+    {{ item }}{% if loop.length > 2 and not loop.last %}, {% endif %}{% if loop.length >=2 and loop.index == (loop.length - 1) %} and {% endif %}
+{%- endfor %}

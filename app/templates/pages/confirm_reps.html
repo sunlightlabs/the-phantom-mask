@@ -34,6 +34,12 @@
                 Why {% if context.legs_buckets.does_not_represent.__len__() > 1 %}aren't{% else %}isn't{% endif %} {% with %}{% set legislators = context.legs_buckets.does_not_represent %}{% include 'snippets/leg_full_title_and_full_name_loop.html' %}{% endwith %} listed here?
             </p>
             {% endif %}
+            {% if context.legs_buckets and context.legs_buckets.non_existent %}
+            <p class="form__error--clickable" href="#" data-toggle="modal" data-target="#modal">
+                Our system could not recognize the email addresses for {% with %}{% set iterable = context.legs_buckets.non_existent %}{% include 'snippets/comma_list.html' %}{% endif %}.
+            </p>
+            {% endif %}
+
         {% else %}
             <p>
                 <strong>What's next?</strong> You can use <a href="mailto:myreps@opencongress.org">myreps@opencongress.org</a> to write to all of your representatives at once. Or send individual emails:
