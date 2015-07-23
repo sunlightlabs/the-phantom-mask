@@ -245,6 +245,7 @@ def update_user_address(token='', msg=None, umi=None, user=None):
         'form': form,
         'verification_token': token,
         'msg_email': user.email,
+        'umi': umi,
         'msg': msg
     }
 

@@ -29,12 +29,14 @@
         </div>
         <div class="col-sm-5">
             {% if data.form.first_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {{ data.form.first_name(class=classes, type="text", placeholder="First Name", pattern="[A-Za-z0-9\s]{1,20}", required="required") }}
+            {% if not data.msg %}{% set field_val=data.umi.first_name %}{% else %}{% set field_val='' %}{% endif %}
+            {{ data.form.first_name(class=classes, type="text", placeholder="First Name", pattern="[A-Za-z0-9\s]{1,20}", required="required", value=field_val) }}
             {{ data.form.first_name.label (class="form__label") }}
         </div>
         <div class="col-sm-5">
             {% if data.form.last_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {{ data.form.last_name(class=classes,type="text", placeholder="Last Name", pattern="[A-Za-z0-9\s]{1,20}", required="required") }}
+            {% if not data.msg %}{% set field_val=data.umi.last_name %}{% else %}{% set field_val='' %}{% endif %}
+            {{ data.form.last_name(class=classes,type="text", placeholder="Last Name", pattern="[A-Za-z0-9\s]{1,20}", required="required", value=field_val) }}
             {{ data.form.last_name.label (class="form__label") }}
         </div>
     </div>
