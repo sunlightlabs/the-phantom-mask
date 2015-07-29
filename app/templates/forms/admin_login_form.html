@@ -1,31 +1,33 @@
-<form id="address-form" class="pure-form" method="POST" action="{{ form.post_action_url }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+<section class="content">
 
-    <div class="pure-form" style="text-align:center">
+    <form id="address-form" class="form" method="POST" action="{{ form.post_action_url }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-          {% if form.error_dict %}
-            <ul class="errors">{% for name, error in form.error_dict.iteritems() %}<li>{{ name }} - {{ error }}</li>{% endfor %}</ul>
+        {% if form.error_dict %}
+        <ul class="form__errorlist">
+            {% for name, error in form.error_dict.iteritems() %}
+            <li>{{ name }} - {{ error }}</li>
+            {% endfor %}
+        </ul>
         {% endif %}
 
-    <fieldset>
+        <div class="form__group">
+            <div class="col-sm-10 col-sm-offset-1">
+                {{ form.username(class="form__input", type="text", placeholder="Username", required="required") }}
+                {{ form.username.label (class="form__label") }}
+            </div>
+        </div>
 
-        <legend>Admin Login Form</legend>
+        <div class="form__group">
+            <div class="col-sm-10 col-sm-offset-1">
+                {{ form.password(class="form__input", type="password", placeholder="Password", required="required") }}
+                {{ form.password.label (class="form__label") }}
+            </div>
+            <div class="col-sm-10 col-sm-offset-1">
+                <button class="button" type="submit">Submit</button>
+            </div>
+        </div>
 
-           {{ form.username.label }}
-            {{ form.username }}
+    </form>
 
-
-                    {{ form.password.label }}
-                {{ form.password }}
-
-                                    <button type="submit" class="pure-button pure-button-primary">Submit</button>
-
-
-
-
-
-
-    </fieldset>
-
-    </div>
-</form>
+</section>

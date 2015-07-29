@@ -40,8 +40,8 @@
 
         {% block content %}{% endblock %}
         
+        {% block footer %}
         <footer class="footer">
-            {% block footer %}{% endblock %}
             <div class="footer__disclaimer">This service is offered by the <a class="link-alt" href="https://sunlightfoundation.com">Sunlight Foundation</a> and is not affiliated with Congress.</div>
             <nav class="footer__nav">
                 <span class="footer__nav--link"><a href="{{ context.url_for_static('/faq') }}">FAQ</a></span>
@@ -49,6 +49,7 @@
                 <span class="footer__nav--link"><a href="https://www.opencongress.org/terms#privacy_policy">Privacy Policy</a></span>
             </nav>
         </footer>
+        {% endblock %}
     </main>
     <!-- JavaScript -->
     <script type="text/javascript" src="{{ context.url_for_static('/static/js/build/phantom-mask.min.js') }}"></script>
