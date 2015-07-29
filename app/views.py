@@ -227,7 +227,7 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
         if not request.form.get('donotsend', False):
             legs = [moc[int(i)] for i in request.form.getlist('legislator_choices[]')]
             msg.queue_to_send(legs)
-            emailer.NoReply.message_queued(user, legs).send()
+            emailer.NoReply.message_queued(user, legs, msg).send()
         return redirect(url_for_with_prefix('app_router.message_sent', token=token))
     else:
         if msg is not None:
@@ -245,6 +245,7 @@ def update_user_address(token='', msg=None, umi=None, user=None):
         'form': form,
         'verification_token': token,
         'msg_email': user.email,
+        'umi': umi,
         'msg': msg
     }
 
@@ -258,7 +259,7 @@ def update_user_address(token='', msg=None, umi=None, user=None):
                     token = user.token.reset()
                     emailer.NoReply.address_changed(user).send()
                 else:
-                    emailer.NoReply.signup_success(user).send()
+                    emailer.NoReply.signup_success(user, msg).send()
                 return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
 
     return render_template_wctx("pages/update_user_address.html", context=context)
@@ -269,11 +270,11 @@ def process_inbound_message(user, umi, msg, send_email=False):
     legs = Legislator.get_leg_buckets_from_emails(umi.members_of_congress, json.loads(msg.to_originally))
     msg.set_legislators(legs['contactable'])
 
-    if msg.is_free_to_send():
+    if msg.has_legislators() and msg.is_free_to_send():
+        emailer.NoReply.message_queued(user, legs['contactable'], msg).send()
         msg.queue_to_send()
-
-    if send_email:
-        emailer.NoReply.message_queued(user, legs['contactable']).send()
+    if legs['does_not_represent'] or legs['non_existent']:
+        emailer.NoReply.message_undeliverable(user, legs, msg).send()
 
     return jsonify({'status': 'success'})
 

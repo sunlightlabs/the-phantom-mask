@@ -23,8 +23,12 @@
     "grunt": "^0.4.5",
     "gulp": "^3.8.11",
     "gulp-concat": "^2.5.2",
+    "gulp-mustache": "^1.1.1",
+    "gulp-replace": "^0.5.3",
+    "gulp-replace-task": "^0.2.1",
     "gulp-sass": "^2.0.1",
-    "gulp-uglifyjs": "^0.6.2"
+    "gulp-uglifyjs": "^0.6.2",
+    "mustache": "^2.1.2"
   },
   "dependencies": {
     "gulp-minify-css": "^1.1.1",

@@ -19,8 +19,14 @@
         <div class="col-sm-2">
             <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select is-gray {% if data.form.prefix.errors %}is-invalid{% endif %}" required="required">
                {% for option in data.form.prefix %}
-                   {% if option.data == 'Title' %}
-                       {{ option(disabled=True, selected="selected") }}
+                   {% if not data.msg and option.data==data.umi.prefix %}
+                       {{ option(selected="selected") }}
+                   {% elif option.data == 'Title' %}
+                       {% if not data.msg %}
+                           {{ option(disabled=True) }}
+                       {% else %}
+                            {{ option(disabled=True, selected="selected") }}
+                       {% endif %}
                    {% else %}
                        {{ option }}
                    {% endif %}
@@ -29,12 +35,14 @@
         </div>
         <div class="col-sm-5">
             {% if data.form.first_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {{ data.form.first_name(class=classes, type="text", placeholder="First Name", pattern="[A-Za-z0-9]{1,20}", required="required") }}
+            {% if not data.msg %}{% set field_val=data.umi.first_name %}{% else %}{% set field_val='' %}{% endif %}
+            {{ data.form.first_name(class=classes, type="text", placeholder="First Name", pattern="[A-Za-z0-9\s]{1,20}", required="required", value=field_val) }}
             {{ data.form.first_name.label (class="form__label") }}
         </div>
         <div class="col-sm-5">
             {% if data.form.last_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {{ data.form.last_name(class=classes,type="text", placeholder="Last Name", required="required") }}
+            {% if not data.msg %}{% set field_val=data.umi.last_name %}{% else %}{% set field_val='' %}{% endif %}
+            {{ data.form.last_name(class=classes,type="text", placeholder="Last Name", pattern="[A-Za-z0-9\s]{1,20}", required="required", value=field_val) }}
             {{ data.form.last_name.label (class="form__label") }}
         </div>
     </div>
@@ -85,7 +93,7 @@
         {% if 'district_error' in context %}
         <p id="no-district-error" class="form__error">
             Sorry! We were not able to identify a congressional district associated with this address. Double
-            check your address information or try using <a href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a>
+            check your address information or try using <a target="_blank" href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a>
             provided by the government.
         </p>
         {% endif %}
@@ -101,7 +109,7 @@
 
     {% endwith %}
 
-    <p class="form__disclaimer">By using this service, I agree to the <a href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
+    <p class="form__disclaimer">By using this service, I agree to the <a target="_blank" href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a target="_blank" href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
 
     {% if context.msg %}
     <button class="button" type="submit">Sign up and send my message</button>
@@ -115,7 +123,7 @@
             <strong>Members of Congress don't have official emails.</strong> This service makes navigating their required web forms as easy as emailing them.
         </p>
         <p>
-            If you don't want to use this service and would like an alternative method to communicate with Congress, follow <a href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a> provided by usa.gov.
+            If you don't want to use this service and would like an alternative method to communicate with Congress, follow <a target="_blank" href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a> provided by usa.gov.
         </p>
         <p>
             This service is offered by the Sunlight Foundation and is not affiliated with Congress.
