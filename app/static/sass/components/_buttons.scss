@@ -12,10 +12,6 @@
     transition: background 200ms, width 200ms;
     width: 100%;
 
-    @include breakpoint($screen-sm){
-        width: 75%;
-    }
-
     &:hover {
         background: darken($green, 5%);
     }
