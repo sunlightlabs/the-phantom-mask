@@ -47,3 +47,9 @@ in `config/settings.py`).
 - You can reset a user's acceptance of the terms of service by running `tasks/admin.py reset_tos <email>`.
 This will make it so a user has to go through the signup process again.
 Additionally, it will also allow all previously sent messages by the user to be sent again.
+
+
+## License
+
+Code released under the [MIT license](https://github.com/sunlightlabs/the-phantom-mask/blob/master/LICENSE).
+Design released under [Creative Commons](https://github.com/sunlightlabs/the-phantom-mask/blob/master/design/LICENSE).
