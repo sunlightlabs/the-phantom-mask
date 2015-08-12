@@ -55,8 +55,6 @@ class NoReply():
 
         @param user: the user to send the email to
         @type user: models.User
-        @param veri_link: the verification link to enter in their information
-        @type veri_link: string
         @return: a python representation of a postmark object
         @rtype: PMMail
         """
@@ -69,16 +67,13 @@ class NoReply():
                       to=user.email,
                       subject='Re: ' + msg.subject,
                       html_body=render_without_request("emails/validate_user.html",
-                                                        context={'verification_link': veri_link,
-                                                                 'user': user}),
-                      text_body=render_without_request('emails/validate_user.txt.html',
-                                                       context={'verification_link': veri_link,
+                            context={'verification_link': veri_link,
                                                                  'user': user}),
                       track_opens=True,
                       custom_headers={
                           'In-Reply-To': msg.email_uid,
                           'References': msg.email_uid,
-                        }
+                      }
                       )
 
     @classmethod

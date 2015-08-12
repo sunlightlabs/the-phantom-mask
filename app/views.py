@@ -83,6 +83,10 @@ class MyAdminIndexView(admin.AdminIndexView):
         return redirect(url_for_with_prefix('admin.login'))
 
 
+def index():
+    return render_template_wctx('pages/index.html', context={})
+
+
 def faq():
     return render_template_wctx('pages/static/faq.html', context={})
 

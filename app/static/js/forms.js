@@ -2,10 +2,6 @@
     $(document).ready(function () {
         try {
 
-
-
-
-
             $(".button__primary[type='submit']").click(function(event) {
                 var checked = false;
                 $('input[type="checkbox"]').each(function(index, value) {
