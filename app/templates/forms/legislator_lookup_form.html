@@ -1,0 +1,79 @@
+<section class="content">
+
+    <form id="lookup-form" class="form" method="POST" action="{{ form.post_action_url }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+        {% if form.errors %}
+            <ul class="form__errorlist">
+                <li><strong>Whoops! Please fix these problems with your form.</strong></li>
+                {% for field in form.ordered_fields_errors %}
+                    {% for error in field.errors %}
+                          <li>{{ error|safe }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% with %}
+
+        <div class="form__group">
+            <div class="col-sm-9">
+                {% if form.street_address.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+                {{ form.street_address(class=classes,type="text", placeholder="Street Address", required="required") }}
+                {{ form.street_address.label (class="form__label") }}
+            </div>
+            <div class="col-sm-3">
+                {% if form.street_address2.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+                {{ form.street_address2(class=classes,type="text", placeholder="Apt/Suite") }}
+                {{ form.street_address2.label (class="form__label") }}
+            </div>
+        </div>
+
+        <div class="form__group" id="autofill__group">
+
+            <div class="col-sm-7 {% if not form.errors %}is-hidden is-concealed{% endif %} city-wrap">
+                {% if form.city.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+                {{ form.city(class=classes, type="text", placeholder='City', required="required") }}
+                {{ form.city.label (class="form__label") }}
+            </div>
+
+            <div class="col-sm-2 {% if not form.errors %}is-hidden is-concealed{% endif %} state-wrap">
+                <select name="{{ form.state.name }}" id="state" class="form__select is-gray {% if form.state.errors %}is-invalid{% endif %}" required="required">
+                   {% for option in form.state %}
+                       {% if option.data == 'State' %}
+                           {{ option(disabled=True, selected="selected") }}
+                       {% else %}
+                           {{ option }}
+                       {% endif %}
+                   {% endfor %}
+               </select>
+                {{ form.state.label (class="form__label") }}
+            </div>
+
+            <div class="col-sm-3 is-fullwidth zip-wrap">
+                {% if form.zip5.errors or form.zip4.errors %}{% set classes="form__input--masked is-invalid" %}{% else %}{% set classes="form__input--masked" %}{% endif %}
+                {{ form.zip5(class=classes, type="text", placeholder="Zipcode", required="required", title="Please enter five digit zipcode", required="required") }}
+                {{ form.zip5.label (class="form__label") }}
+            </div>
+            <p id="no-zip4-error" class="form__error--zip" style="display:none;">
+                We couldn't determine your full zipcode.
+                Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find the last four digits.
+            </p>
+            {% if 'district_error' in context %}
+            <p id="no-district-error" class="form__error">
+                Sorry! We were not able to identify a congressional district associated with this address. Double
+                check your address information or try using <a target="_blank" href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a>
+                provided by the government.
+            </p>
+            {% endif %}
+        </div>
+
+        {% endwith %}
+
+        <button class="button" type="submit">
+            Lookup Legislators
+        </button>
+
+    </form>
+
+</section>

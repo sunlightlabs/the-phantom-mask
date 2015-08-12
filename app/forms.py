@@ -2,13 +2,17 @@ from wtforms import BooleanField, StringField, PasswordField, SelectField, TextA
 from flask.ext.wtf import Form
 import re
 from lib import usps
-from services import address_inferrence_service
+from services import address_inferrence_service, determine_district_service, geolocation_service
 from phantom_mask import db
 from models import UserMessageInfo, AdminUser
 import datetime
 from flask.ext.wtf.recaptcha import RecaptchaField
 from wtforms.widgets import html_params, HTMLString
 from cgi import escape
+from models import Legislator
+from sqlalchemy import or_, and_, not_
+
+
 
 
 class MyBaseForm(Form):
@@ -94,6 +98,43 @@ class MySelectField(SelectField):
                 break
         else:
             raise ValueError(self.gettext('Please select a ' + self.label.text))
+
+
+class LegislatorLookupForm(MyBaseForm):
+
+    street_address = StringField('Street address',
+                                 validators=[validators.DataRequired(message="Street address is required."),
+                                             validators.Length(min=1, max=256)])
+    street_address2 = StringField('Apt/Suite')
+    city = StringField('City', [validators.DataRequired(message="City is required."),
+                                validators.Length(min=1, max=256)])
+    state = MySelectField('State',
+                        choices=[('State', 'State')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
+                        validators=[validators.NoneOf(['State'], message='Please select a state.')],
+                        option_widget=MyOption())
+    zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Zipcode and Zip+4 must have form XXXXX-XXXX. Lookup up <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">here</a>')])
+    zip4 = StringField('Zip 4', [validators.Regexp(re.compile('^\d{4}$'), message='Zipcode and Zip+4 must have form XXXXX-XXXX. Lookup up <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">here</a>')])
+
+    def lookup_legislator(self):
+
+        data = determine_district_service.determine_district(zip5=self.zip5)
+        if data is None:
+            latitude, longitude = geolocation_service.geolocate(street_address=self.street_address,
+                                                                city=self.city,
+                                                                state=self.state,
+                                                                zip5=self.zip5)
+            data = determine_district_service.determine_district(latitude=latitude, longitude=longitude)
+
+        return Legislator.query.filter(
+            and_(Legislator.contactable.is_(True), Legislator.state == data.get('state'),
+            or_(Legislator.district.is_(None), Legislator.district == data.get('district')))).all()
+
+
+
+
+
+
+
 
 
 class RegistrationForm(MyBaseForm):

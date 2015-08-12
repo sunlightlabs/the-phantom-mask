@@ -1,21 +1,27 @@
-<form id="address-form" class="pure-form" method="POST" action="{{ form.post_action_url }}">
+<form id="token-reset-form" class="form" method="POST" action="{{ form.post_action_url }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-    <div class="pure-form" style="text-align:center">
+    {% if form.errors %}
+        <ul class="form__errorlist">
+            <li><strong>Whoops! Please fix these problems with your form.</strong></li>
+            {% for field in form.ordered_fields_errors %}
+                {% for error in field.errors %}
+                      <li>{{ error|safe }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-        {% if form.error_dict %}
-            <ul class="errors">{% for name, error in form.error_dict.iteritems() %}<li>{{ name }} - {{ error }}</li>{% endfor %}</ul>
-        {% endif %}
-
-    <fieldset>
-
-        <legend>Token Reset</legend>
-
-            {{ form.email.label }}
-            {{ form.email }}
-            <button type="submit" class="pure-button pure-button-primary">Submit</button>
-
-    </fieldset>
-
+   <div class="form__group">
+        <div class="col-sm-12">
+            {% if form.email.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+            {{ form.email(class=classes, type="text", placeholder="E-Mail", required="required") }}
+            {{ form.email.label(class="form__label") }}
+        </div>
     </div>
+
+   <button class="button" type="submit">
+        Send Reset Email
+    </button>
+
 </form>

@@ -84,7 +84,25 @@ class MyAdminIndexView(admin.AdminIndexView):
 
 
 def index():
-    return render_template_wctx('pages/index.html', context={})
+
+    form = forms.RegistrationForm(request.form, app_router_path('index'))
+    chg_addr_form = forms.TokenResetForm(request.form, app_router_path('index'))
+    legislator_lookup_form = forms.LegislatorLookupForm(request.form, app_router_path('index'))
+
+    if request.method == 'POST':
+        if request.form.get('signup', False):
+            pass
+        elif request.form.get('chg_addr', False):
+            pass
+        elif request.form.get('leg_lookup', False):
+            pass
+        else:
+            pass
+
+
+    return render_template_wctx('pages/index.html', context={'form': form,
+                                                             'chg_addr_form': chg_addr_form,
+                                                             'legislator_lookup_form': legislator_lookup_form})
 
 
 def faq():

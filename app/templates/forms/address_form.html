@@ -19,7 +19,7 @@
         <div class="col-sm-2">
             <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select is-gray {% if data.form.prefix.errors %}is-invalid{% endif %}" required="required">
                {% for option in data.form.prefix %}
-                   {% if not data.msg and option.data==data.umi.prefix %}
+                   {% if not data.msg and data.umi and option.data==data.umi.prefix %}
                        {{ option(selected="selected") }}
                    {% elif option.data == 'Title' %}
                        {% if not data.msg %}
@@ -35,13 +35,13 @@
         </div>
         <div class="col-sm-5">
             {% if data.form.first_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {% if not data.msg %}{% set field_val=data.umi.first_name %}{% else %}{% set field_val='' %}{% endif %}
+            {% if not data.msg and data.umi %}{% set field_val=data.umi.first_name %}{% else %}{% set field_val='' %}{% endif %}
             {{ data.form.first_name(class=classes, type="text", placeholder="First Name", pattern="[A-Za-z0-9\s]{1,20}", required="required", value=field_val) }}
             {{ data.form.first_name.label (class="form__label") }}
         </div>
         <div class="col-sm-5">
             {% if data.form.last_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {% if not data.msg %}{% set field_val=data.umi.last_name %}{% else %}{% set field_val='' %}{% endif %}
+            {% if not data.msg and data.umi %}{% set field_val=data.umi.last_name %}{% else %}{% set field_val='' %}{% endif %}
             {{ data.form.last_name(class=classes,type="text", placeholder="Last Name", pattern="[A-Za-z0-9\s]{1,20}", required="required", value=field_val) }}
             {{ data.form.last_name.label (class="form__label") }}
         </div>
@@ -111,11 +111,16 @@
 
     <p class="form__disclaimer">By using this service, I agree to the <a target="_blank" href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a target="_blank" href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
 
-    {% if context.msg %}
-    <button class="button" type="submit">Sign up and send my message</button>
-    {% else %}
-    <button class="button" type="submit">Update my information</button>
-    {% endif %}
+    <button class="button" type="submit">
+        {%- if context.msg -%}
+        Sign up and send my message
+        {% elif context.umi %}
+        Update my information
+        {%- else -%}
+        Signup
+        {%- endif -%}
+    </button>
+
 </form>
 
     <div class="content__notes">

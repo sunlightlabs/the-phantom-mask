@@ -14,7 +14,12 @@
                 <span class="button__text">Get started</span>
             </button>
         </p>
+
     </section>
+
+    {% with data=context %}
+        {% include 'forms/address_form.html' %}
+    {% endwith %}
 
     <hr>
 
@@ -25,6 +30,15 @@
             <a style="float:right">update my reps and information</a>
         </p>
     </section>
+
+    {% with form=context.chg_addr_form %}
+        {% include 'forms/token_reset_form.html' %}
+    {% endwith %}
+
+    {% with form=context.legislator_lookup_form %}
+        {% include 'forms/legislator_lookup_form.html' %}
+    {% endwith %}
+
 
     <hr>
 
