@@ -4,22 +4,15 @@
     Phantom Mask Admin Login
 {% endblock %}
 
-{% block header %}
-    <h1 class="center-text">Admins can log in below.</h1>
-{% endblock %}
-
 {% block content %}
-
+    <section class="overview">
+        {% include 'images/icon_user.svg' %}
+        <h2 class="overview__heading">Admin Login</h2>
+    </section>
     {% with form=context.form %}
         {% include 'forms/admin_login_form.html' %}
     {% endwith %}
-
 {% endblock %}
 
 {% block footer %}
-    <h1>Thank you for being an Admin.</h1>
-{% endblock %}
-
-{% block javascript %}
-
 {% endblock %}
