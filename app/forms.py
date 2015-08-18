@@ -9,9 +9,8 @@ import datetime
 from flask.ext.wtf.recaptcha import RecaptchaField
 from wtforms.widgets import html_params, HTMLString
 from cgi import escape
-from models import Legislator
+from models import Legislator, db_first_or_create, User, UserMessageInfo
 from sqlalchemy import or_, and_, not_
-
 
 
 
@@ -100,7 +99,7 @@ class MySelectField(SelectField):
             raise ValueError(self.gettext('Please select a ' + self.label.text))
 
 
-class LegislatorLookupForm(MyBaseForm):
+class BaseLookupForm(Form):
 
     street_address = StringField('Street address',
                                  validators=[validators.DataRequired(message="Street address is required."),
@@ -115,8 +114,26 @@ class LegislatorLookupForm(MyBaseForm):
     zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Zipcode and Zip+4 must have form XXXXX-XXXX. Lookup up <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">here</a>')])
     zip4 = StringField('Zip 4', [validators.Regexp(re.compile('^\d{4}$'), message='Zipcode and Zip+4 must have form XXXXX-XXXX. Lookup up <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">here</a>')])
 
-    def lookup_legislator(self):
 
+    def _autocomplete_zip(self):
+        zipdata = self.zip5.data.split('-')
+        try:
+            self.zip5.data = zipdata[0]
+        except:
+            self.zip5.data = ''
+        try:
+            self.zip4.data = zipdata[1]
+        except:
+            self.zip4.data = ''
+
+
+class LegislatorLookupForm(MyBaseForm, BaseLookupForm):
+
+    def _autocomplete_zip(self):
+        super(LegislatorLookupForm, self)._autocomplete_zip()
+
+    def lookup_legislator(self):
+        self._autocomplete_zip()
         data = determine_district_service.determine_district(zip5=self.zip5)
         if data is None:
             latitude, longitude = geolocation_service.geolocate(street_address=self.street_address,
@@ -130,14 +147,7 @@ class LegislatorLookupForm(MyBaseForm):
             or_(Legislator.district.is_(None), Legislator.district == data.get('district')))).all()
 
 
-
-
-
-
-
-
-
-class RegistrationForm(MyBaseForm):
+class RegistrationForm(MyBaseForm, BaseLookupForm):
 
     prefix = MySelectField('Prefix',
                          choices=[(x,x) for x in ['Title', 'Mr.', 'Mrs.', 'Ms.']],
@@ -150,24 +160,13 @@ class RegistrationForm(MyBaseForm):
     last_name = StringField('Last name',
                             validators=[validators.DataRequired(message="Last name is required."),
                                         validators.Length(min=1, max=50)])
-    street_address = StringField('Street address',
-                                 validators=[validators.DataRequired(message="Street address is required."),
-                                             validators.Length(min=1, max=256)])
-    street_address2 = StringField('Apt/Suite')
-    city = StringField('City', [validators.DataRequired(message="City is required."),
-                                validators.Length(min=1, max=256)])
-    state = MySelectField('State',
-                        choices=[('State', 'State')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
-                        validators=[validators.NoneOf(['State'], message='Please select a state.')],
-                        option_widget=MyOption())
+
     email = StringField('E-Mail', [validators.Email()])
-    zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Zipcode and Zip+4 must have form XXXXX-XXXX. Lookup up <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">here</a>')])
-    zip4 = StringField('Zip 4', [validators.Regexp(re.compile('^\d{4}$'), message='Zipcode and Zip+4 must have form XXXXX-XXXX. Lookup up <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">here</a>')])
     phone_number = StringField('Phone number',
                    [validators.Regexp(re.compile('^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'),
                                       message="Please enter a valid phone number.")])
 
-    accept_tos = BooleanField('I accept the terms of service and privacy policy', [validators.DataRequired()])
+    # accept_tos = BooleanField('I accept the terms of service and privacy policy', [validators.DataRequired()])
 
     @property
     def ordered_fields(self):
@@ -218,19 +217,11 @@ class RegistrationForm(MyBaseForm):
         self.zip4.data = address.get('zip4', '')
         self.state.data = address.get('state', '')
 
-    def _autocomplete_tos(self):
-        self.accept_tos.data = True
+    #def _autocomplete_tos(self):
+    #    self.accept_tos.data = True
 
     def _autocomplete_zip(self):
-        zipdata = self.zip5.data.split('-')
-        try:
-            self.zip5.data = zipdata[0]
-        except:
-            self.zip5.data = ''
-        try:
-            self.zip4.data = zipdata[1]
-        except:
-            self.zip4.data = ''
+        super(RegistrationForm, self)._autocomplete_zip()
 
     def _autocomplete_phone(self):
         self.phone_number.data = re.sub("[^0-9]", "", self.phone_number.data)
@@ -238,7 +229,6 @@ class RegistrationForm(MyBaseForm):
     def _doctor_names(self):
         self.first_name.data = self.first_name.data.replace(' ', '')
         self.last_name.data = self.last_name.data.replace(' ', '')
-
 
     def resolve_zip4(self, force=False):
         if force or not self.zip4.data:
@@ -248,8 +238,20 @@ class RegistrationForm(MyBaseForm):
                                                                     self.zip5.data
                                                                     )
 
+    def signup(self):
+        """
 
-    def validate_and_save_to_db(self, user, msg=None):
+        @return:
+        @rtype:
+        """
+        # create or get the user and his default information
+        user = db_first_or_create(User, email=self.email.data)
+        umi = db_first_or_create(UserMessageInfo, user_id=user.id, default=True)
+        print user.email
+        return self.validate_and_save_to_db(user, accept_tos=False)
+
+
+    def validate_and_save_to_db(self, user, msg=None, accept_tos=True):
         """
         Validates the form and (if valid) saves the data to the database.
 
@@ -260,7 +262,7 @@ class RegistrationForm(MyBaseForm):
         @return: True if validation and save is successful, False otherwise
         @rtype: boolean
         """
-        self._autocomplete_tos()
+        # self._autocomplete_tos()
         self._autocomplete_email(user.email)
         self._autocomplete_zip()
         self._autocomplete_phone()
@@ -287,11 +289,15 @@ class RegistrationForm(MyBaseForm):
                     return False
 
             # form is valid so user accepted tos at this time
-            umi.accept_tos = datetime.datetime.now()
+            umi.accept_tos = datetime.datetime.now() if accept_tos else None
 
             # if everything succeeded then we commit and return True
             db.session.commit()
+
+            if umi.determine_district(force=True) is None:
+                return 'district_error'
+
             return True
         else:
             self.zip5.data = self.zip5.data + '-' + self.zip4.data
-            return False
+            return 'invalid_form_error'

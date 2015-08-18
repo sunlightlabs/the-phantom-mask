@@ -483,14 +483,13 @@ class User(MyBaseModel, HasTokenMixin):
 
     class ModelView(MyModelView):
 
-        column_searchable_list = ['email', 'tmp_token']
+        column_searchable_list = ['email']
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), unique=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
     user_infos = db.relationship('UserMessageInfo', backref='user')
     role = db.Column(db.Integer, default=0)
-    tmp_token = db.Column(db.String(64), unique=True)
 
     ROLES = {
         0: 'user',
@@ -509,20 +508,6 @@ class User(MyBaseModel, HasTokenMixin):
     @property
     def default_info(self):
         return UserMessageInfo.query.filter_by(user_id=self.id, default=True).first()
-
-    def set_tmp_token(self, token):
-        self.tmp_token = token
-        db.session.commit()
-        return self.tmp_token
-
-    def create_tmp_token(self):
-        self.set_tmp_token(Token.uid_creator(self, 'tmp_token'))
-
-    def kill_tmp_token(self):
-        self.set_tmp_token(None)
-
-    def tmp_token_link(self):
-        return app_router_path('new_token', token=self.tmp_token)
 
     def get_role(self):
         return self.ROLES.get(self.role, 'unknown')
@@ -635,6 +620,9 @@ class UserMessageInfo(MyBaseModel):
 
     def humanized_state(self):
         return Legislator.humanized_state(self.state)
+
+    def confirm_accept_tos(self):
+        self.accept_tos = datetime.now()
 
     def should_update_address_info(self):
         """

@@ -118,7 +118,7 @@
 
     <p class="form__disclaimer">By using this service, I agree to the <a target="_blank" href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a target="_blank" href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
 
-    <button class="button" type="submit">
+    <button class="button" type="submit" name="signup" value="{%- if not context.msg or not context.umi -%}signup{% else %}{% endif %}" >
         {%- if context.msg -%}
         Sign up and send my message
         {% elif context.umi %}
