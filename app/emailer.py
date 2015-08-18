@@ -41,7 +41,7 @@ class NoReply():
                       to=user.email,
                       subject="You've requested to reset your OpenCongress token.",
                       html_body=render_without_request("emails/token_reset.html",
-                                                        context={'verification_link': user.tmp_token_link(),
+                                                        context={'verification_link': user.address_change_link(),
                                                                  'user': user}),
                       track_opens=True
                       )

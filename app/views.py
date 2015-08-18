@@ -90,10 +90,14 @@ def index():
     legislator_lookup_form = forms.LegislatorLookupForm(request.form, app_router_path('index'))
 
     if request.method == 'POST':
+        print "idk????"
         if request.form.get('signup', False):
+            # ask olivia. confirm reps first? click link in email? idk
             pass
         elif request.form.get('chg_addr', False):
-            pass
+            user = User.query.filter_by(email=request.form.get('email')).first()
+            if user:
+                emailer.NoReply.token_reset(user).send()
         elif request.form.get('leg_lookup', False):
             pass
         else:

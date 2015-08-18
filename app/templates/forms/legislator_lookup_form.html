@@ -60,7 +60,7 @@
                 Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find the last four digits.
             </p>
             {% if 'district_error' in context %}
-            <p id="no-district-error" class="form__error">
+            <p id="no-district-error" class="form__error no-district-error">
                 Sorry! We were not able to identify a congressional district associated with this address. Double
                 check your address information or try using <a target="_blank" href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a>
                 provided by the government.
@@ -70,7 +70,7 @@
 
         {% endwith %}
 
-        <button class="button" type="submit">
+        <button class="button" type="submit" name="leg_lookup">
             Lookup Legislators
         </button>
 
