@@ -46,6 +46,27 @@ class NoReply():
                       track_opens=True
                       )
 
+    @classmethod
+    @apply_admin_filter
+    def signup_confirm(cls, user):
+        """
+        If user signs up through index page then they receive a confirmation email with their change address link
+        to verify they are indeed the owner of the email.
+
+
+        @return: a python representation of a postmark object
+        @rtype: PMMail
+        """
+        return PMMail(api_key=settings.POSTMARK_API_KEY,
+                      sender=cls.SENDER_EMAIL,
+                      to=user.email,
+                      subject="Confirm your Email Congress account.",
+                      html_body=render_without_request("emails/signup_confirm.html",
+                                                        context={'verification_link': user.address_change_link(),
+                                                                 'user': user}),
+                      track_opens=True
+                      )
+
 
     @classmethod
     @apply_admin_filter

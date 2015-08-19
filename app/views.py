@@ -14,7 +14,7 @@ from phantom_mask import db
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from sqlalchemy import func
 from models import Legislator, Message, MessageLegislator, Token, User, AdminUser, UserMessageInfo, db_first_or_create, db_add_and_commit
-from helpers import render_template_wctx, convert_token, url_for_with_prefix, append_get_params, app_router_path
+from helpers import render_template_wctx, url_for_with_prefix, append_get_params, app_router_path
 from flask_admin import expose
 import flask_admin as admin
 from flask.ext.login import LoginManager
@@ -83,33 +83,44 @@ class MyAdminIndexView(admin.AdminIndexView):
         return redirect(url_for_with_prefix('admin.login'))
 
 
+
+
 def index():
+
+    print request.form
 
     form = forms.RegistrationForm(request.form, app_router_path('index'))
     chg_addr_form = forms.TokenResetForm(request.form, app_router_path('index'))
     legislator_lookup_form = forms.LegislatorLookupForm(request.form, app_router_path('index'))
 
+    context = {
+        'form': form,
+        'chg_addr_form': chg_addr_form,
+        'legislator_lookup_form': legislator_lookup_form,
+        'status': None
+    }
+
     if request.method == 'POST':
         if request.form.get('signup', False):
-            print 'here???'
-            if form.signup():
-                # TODO validate signup and return status
-                print 'wtf???'
-                if request.is_xhr:
-                    return jsonify({'status': True})
+            status, result = form.signup()
+            if status:
+                emailer.NoReply.signup_confirm(status).send()
+            context['status'] = {'signup': result}
         elif request.form.get('chg_addr', False):
             user = User.query.filter_by(email=request.form.get('email')).first()
             if user:
                 emailer.NoReply.token_reset(user).send()
+            context['status'] = {'chg_addr': 'success' if user else 'failure'}
         elif request.form.get('leg_lookup', False):
-            pass
-        else:
-            pass
+            if legislator_lookup_form.validate():
+                legs = legislator_lookup_form.lookup_legislator()
+                resp = render_template_wctx('partials/your_reps.html', context={'legislators': legs}) if legs else False
+                context['status'] = {'leg_lookup': resp}
 
-
-    return render_template_wctx('pages/index.html', context={'form': form,
-                                                             'chg_addr_form': chg_addr_form,
-                                                             'legislator_lookup_form': legislator_lookup_form})
+    if request.is_xhr:
+        return jsonify(context['status'])
+    else:
+        return render_template_wctx('pages/index.html', context=context)
 
 
 def faq():

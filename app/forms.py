@@ -126,6 +126,13 @@ class BaseLookupForm(Form):
         except:
             self.zip4.data = ''
 
+    def validate(self):
+        self._autocomplete_zip()
+        validation = super(BaseLookupForm, self).validate()
+        if not validation:
+            self.zip5.data = self.zip5.data + '-' + self.zip4.data
+        return validation
+
 
 class LegislatorLookupForm(MyBaseForm, BaseLookupForm):
 
@@ -133,8 +140,7 @@ class LegislatorLookupForm(MyBaseForm, BaseLookupForm):
         super(LegislatorLookupForm, self)._autocomplete_zip()
 
     def lookup_legislator(self):
-        self._autocomplete_zip()
-        data = determine_district_service.determine_district(zip5=self.zip5)
+        data = determine_district_service.determine_district(zip5=self.zip5.data)
         if data is None:
             latitude, longitude = geolocation_service.geolocate(street_address=self.street_address,
                                                                 city=self.city,
@@ -247,8 +253,8 @@ class RegistrationForm(MyBaseForm, BaseLookupForm):
         # create or get the user and his default information
         user = db_first_or_create(User, email=self.email.data)
         umi = db_first_or_create(UserMessageInfo, user_id=user.id, default=True)
-        print user.email
-        return self.validate_and_save_to_db(user, accept_tos=False)
+        status, result = self.validate_and_save_to_db(user, accept_tos=False)
+        return (user, result) if status else (status, result)
 
 
     def validate_and_save_to_db(self, user, msg=None, accept_tos=True):
@@ -264,7 +270,6 @@ class RegistrationForm(MyBaseForm, BaseLookupForm):
         """
         # self._autocomplete_tos()
         self._autocomplete_email(user.email)
-        self._autocomplete_zip()
         self._autocomplete_phone()
         self._doctor_names()
 
@@ -286,7 +291,7 @@ class RegistrationForm(MyBaseForm, BaseLookupForm):
                 try:
                     setattr(umi, field, str(val))
                 except:
-                    return False
+                    return False, 'error'
 
             # form is valid so user accepted tos at this time
             umi.accept_tos = datetime.datetime.now() if accept_tos else None
@@ -295,9 +300,8 @@ class RegistrationForm(MyBaseForm, BaseLookupForm):
             db.session.commit()
 
             if umi.determine_district(force=True) is None:
-                return 'district_error'
+                return False, 'district_error'
 
-            return True
+            return True, 'success'
         else:
-            self.zip5.data = self.zip5.data + '-' + self.zip4.data
-            return 'invalid_form_error'
+            return False, 'invalid_form_error'

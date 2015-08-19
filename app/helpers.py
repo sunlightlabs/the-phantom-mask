@@ -1,8 +1,6 @@
 from config import settings
 from flask import render_template, url_for
-from sqlalchemy import and_, not_
 import urllib
-import os
 
 
 def abs_base_url():
