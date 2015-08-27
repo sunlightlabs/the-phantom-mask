@@ -14,7 +14,7 @@ from phantom_mask import db
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from sqlalchemy import func
 from models import Legislator, Message, MessageLegislator, Token, User, AdminUser, UserMessageInfo, db_first_or_create, db_add_and_commit
-from helpers import render_template_wctx, convert_token, url_for_with_prefix, append_get_params, app_router_path
+from helpers import render_template_wctx, url_for_with_prefix, append_get_params, app_router_path
 from flask_admin import expose
 import flask_admin as admin
 from flask.ext.login import LoginManager
@@ -83,6 +83,46 @@ class MyAdminIndexView(admin.AdminIndexView):
         return redirect(url_for_with_prefix('admin.login'))
 
 
+
+
+def index():
+
+    print request.form
+
+    form = forms.RegistrationForm(request.form, app_router_path('index'))
+    chg_addr_form = forms.TokenResetForm(request.form, app_router_path('index'))
+    legislator_lookup_form = forms.LegislatorLookupForm(request.form, app_router_path('index'))
+
+    context = {
+        'form': form,
+        'chg_addr_form': chg_addr_form,
+        'legislator_lookup_form': legislator_lookup_form,
+        'status': None
+    }
+
+    if request.method == 'POST':
+        if request.form.get('signup', False):
+            status, result = form.signup()
+            if status:
+                emailer.NoReply.signup_confirm(status).send()
+            context['status'] = {'signup': result}
+        elif request.form.get('chg_addr', False):
+            user = User.query.filter_by(email=request.form.get('email')).first()
+            if user:
+                emailer.NoReply.token_reset(user).send()
+            context['status'] = {'chg_addr': 'success' if user else 'failure'}
+        elif request.form.get('leg_lookup', False):
+            if legislator_lookup_form.validate():
+                legs = legislator_lookup_form.lookup_legislator()
+                resp = render_template_wctx('partials/your_reps.html', context={'legislators': legs}) if legs else False
+                context['status'] = {'leg_lookup': resp}
+
+    if request.is_xhr:
+        return jsonify(context['status'])
+    else:
+        return render_template_wctx('pages/index.html', context=context)
+
+
 def faq():
     return render_template_wctx('pages/static/faq.html', context={})
 
@@ -101,14 +141,16 @@ def resolve_token(viewfunc):
         token = kwargs.get('token', '')
         msg, umi, user = Token.convert_token(token)
         if user is None:
-            # TODO where to redirect?
-            return redirect(url_for_with_prefix('app_router.reset_token'))
+            return redirect(url_for_with_prefix('app_router.index'))
         else:
             if msg is not None:
                 if msg.is_already_sent() and viewfunc.__name__ is not 'message_sent':
                     return redirect(url_for_with_prefix('app_router.message_sent', token=token))
                 elif not msg.is_already_sent() and user.default_info.accept_tos and viewfunc.__name__ not in ['confirm_reps', 'message_sent']:
                     return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
+
+            if user.default_info.accept_tos is None and viewfunc.__name__ is not 'confirm_reps':
+                return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
 
             kwargs.update({'msg': msg, 'umi': umi, 'user': user})
             return viewfunc(**kwargs)
@@ -211,7 +253,7 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
     @rtype:
     """
 
-    form = forms.MessageForm(request.form, append_get_params(url_for_with_prefix('app_router.' + inspect.stack()[0][3], token=token)))
+    form = forms.MessageForm(request.form, app_router_path('confirm_reps', token=token))
 
     moc = umi.members_of_congress
 
@@ -223,8 +265,8 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
         'legislators': moc
     }
 
-    if msg is not None and request.method == 'POST' and form.validate() and request.form.getlist('legislator_choices[]'):
-        if not request.form.get('donotsend', False):
+    if msg is not None and request.method == 'POST' and form.validate():
+        if not request.form.get('donotsend', False) and request.form.getlist('legislator_choices[]'):
             legs = [moc[int(i)] for i in request.form.getlist('legislator_choices[]')]
             msg.queue_to_send(legs)
             emailer.NoReply.message_queued(user, legs, msg).send()
@@ -233,13 +275,19 @@ def confirm_reps(token='', msg=None, umi=None, user=None):
         if msg is not None:
             form.populate_data_from_message(msg)
             context['legs_buckets'] = Legislator.get_leg_buckets_from_emails(umi.members_of_congress, json.loads(msg.to_originally))
+        elif umi.accept_tos is None:
+            umi.confirm_accept_tos()
+            context['accept_tos'] = True
+        else:
+            context['view_legs'] = True
+
         return render_template_wctx('pages/confirm_reps.html', context=context)
 
 
 @resolve_token
 def update_user_address(token='', msg=None, umi=None, user=None):
 
-    form = forms.RegistrationForm(request.form, app_router_path(inspect.stack()[0][3], token=token))
+    form = forms.RegistrationForm(request.form, app_router_path('update_user_address', token=token))
 
     context = {
         'form': form,
@@ -250,17 +298,17 @@ def update_user_address(token='', msg=None, umi=None, user=None):
     }
 
     if request.method == 'POST':
-        if form.validate_and_save_to_db(user, msg=msg):
-            district = umi.determine_district(force=True)
-            if district is None:
+        error = form.validate_and_save_to_db(user, msg=msg)
+        if type(error) is str:
+            if error == 'district_error':
                 context['district_error'] = True
+        else:
+            if msg is None:
+                token = user.token.reset()
+                emailer.NoReply.address_changed(user).send()
             else:
-                if msg is None:
-                    token = user.token.reset()
-                    emailer.NoReply.address_changed(user).send()
-                else:
-                    emailer.NoReply.signup_success(user, msg).send()
-                return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
+                emailer.NoReply.signup_success(user, msg).send()
+            return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
 
     return render_template_wctx("pages/update_user_address.html", context=context)
 
@@ -293,6 +341,7 @@ def postmark_inbound():
         user = db_first_or_create(User, email=inbound.sender()['Email'].lower())
         umi = db_first_or_create(UserMessageInfo, user_id=user.id, default=True)
 
+        # grab message id for email threading
         if 'Headers' in inbound.source and inbound.headers('Message-ID') is not None:
             msg_id = inbound.headers('Message-ID')
         else:

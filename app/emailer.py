@@ -41,7 +41,28 @@ class NoReply():
                       to=user.email,
                       subject="You've requested to reset your OpenCongress token.",
                       html_body=render_without_request("emails/token_reset.html",
-                                                        context={'verification_link': user.tmp_token_link(),
+                                                        context={'verification_link': user.address_change_link(),
+                                                                 'user': user}),
+                      track_opens=True
+                      )
+
+    @classmethod
+    @apply_admin_filter
+    def signup_confirm(cls, user):
+        """
+        If user signs up through index page then they receive a confirmation email with their change address link
+        to verify they are indeed the owner of the email.
+
+
+        @return: a python representation of a postmark object
+        @rtype: PMMail
+        """
+        return PMMail(api_key=settings.POSTMARK_API_KEY,
+                      sender=cls.SENDER_EMAIL,
+                      to=user.email,
+                      subject="Confirm your Email Congress account.",
+                      html_body=render_without_request("emails/signup_confirm.html",
+                                                        context={'verification_link': user.address_change_link(),
                                                                  'user': user}),
                       track_opens=True
                       )
@@ -55,8 +76,6 @@ class NoReply():
 
         @param user: the user to send the email to
         @type user: models.User
-        @param veri_link: the verification link to enter in their information
-        @type veri_link: string
         @return: a python representation of a postmark object
         @rtype: PMMail
         """
@@ -69,16 +88,13 @@ class NoReply():
                       to=user.email,
                       subject='Re: ' + msg.subject,
                       html_body=render_without_request("emails/validate_user.html",
-                                                        context={'verification_link': veri_link,
-                                                                 'user': user}),
-                      text_body=render_without_request('emails/validate_user.txt.html',
-                                                       context={'verification_link': veri_link,
+                            context={'verification_link': veri_link,
                                                                  'user': user}),
                       track_opens=True,
                       custom_headers={
                           'In-Reply-To': msg.email_uid,
                           'References': msg.email_uid,
-                        }
+                      }
                       )
 
     @classmethod

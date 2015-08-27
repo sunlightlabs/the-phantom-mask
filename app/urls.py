@@ -44,6 +44,7 @@ def create_app_router(app, csrf):
     app_router = Blueprint('app_router', __name__, template_folder='templates')
 
     # main user pathway
+    app_router.route('/', methods=['GET', 'POST'])(views.index)
     app_router.route('/validate/<token>', methods=['GET', 'POST'])(views.update_user_address)
     app_router.route('/confirm_reps/<token>', methods=['GET', 'POST'])(views.confirm_reps)
     app_router.route('/complete/<token>', methods=['GET'])(views.message_sent)
