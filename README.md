@@ -14,10 +14,23 @@ This project is still a work in progress so the README will be updated as it fin
 4. `mv config/settings.py.example config/settings.py` **YOU WILL NEED TO CONFIG THIS**
 5. Set values for API keys, url for your instance of Phantom of the Capitol, etc in `config/settings.py`
 6. `python tasks/admin.py setup_test_environment` to create initial schema for database & create test data
-7. `python run.py` to run app locally for development. 
+7. `python run.py` to run app locally for development.
 8. Check out `bin/deploy.sh` and `fabfile.py` for deploying to a production environment.
 
-You will also need to do the following to fully set up the project:
+#### Gulp
+We use Gulp to build our static assets. To set this up:
+
+1. Run `npm install` to install package dependencies. If npm isn't installed, follow [these instructions](https://docs.npmjs.com/getting-started/installing-node) to do so.
+2. Run `npm install -g gulp` for the gulp command line client if Gulp isn't installed.
+
+
+### Development
+1. Run `python run.py` to run app locally for development.
+2. Run `gulp watch` to watch Sass and Javascript files for changes and compile them on the fly.
+
+---
+
+### You will also need to do the following to fully set up the project:
 
 #### PHANTOM OF THE CAPITOL SERVER SETUP
 
@@ -34,6 +47,8 @@ You will also need to do the following to fully set up the project:
 
 1. Install redis ([http://redis.io/](http://redis.io/) or `brew install redis`, `sudo apt-get install redis-server`)
 2. Run the redis server with `$ redis-server`
+
+---
 
 ### Helpful Commands
 
