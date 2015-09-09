@@ -1,4 +1,5 @@
 <!doctype html>
+<html class="bb_wrapper">
 <head>
     <title>{% block title %}Default Title{% endblock %}</title>
     
@@ -8,8 +9,10 @@
     <meta name="author" content="put author here">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" type="text/css" href="{{ context.url_for_static('/static/css/style.min.css') }}" />
-    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,400italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//sunlight-cdn.s3.amazonaws.com/brandingbar/0.3/css/brandingbar.css">
+    <link rel="stylesheet" href="//sunlight-cdn.s3.amazonaws.com/sf-icons/0.2/css/sf-icons.css">
+    <link rel="stylesheet" href="{{ context.url_for_static('/static/css/style.min.css') }}" />
+    <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,400italic' rel='stylesheet' type='text/css'>
     
     <!-- CDN javascript -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
@@ -31,6 +34,10 @@
 </head>
 
 <body>
+    {% block brandingbar %}
+    <div class="branding-bar" data-bb-brandingbar="true" data-bb-property-id="sunlightlabs-awesome"></div>
+    {% endblock %}
+
     {% block header %}
     <header class="header">
         <img class="header__logo" src="{{ context.url_for_static('/static/images/emailcongress-logo.svg') }}" alt="EmailCongress Logo">
@@ -56,5 +63,7 @@
     {% endblock %}
     <!-- JavaScript -->
     <script type="text/javascript" src="{{ context.url_for_static('/static/js/build/phantom-mask.min.js') }}"></script>
+    <script src="//sunlight-cdn.s3.amazonaws.com/brandingbar/0.3/js/brandingbar.min.js.gz"></script>
     {% block javascript %}{% endblock %}
 </body>
+</html>

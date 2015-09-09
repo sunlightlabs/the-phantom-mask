@@ -4,17 +4,18 @@
     Email Congress
 {% endblock %}
 
+{% block brandingbar %} {% endblock %}
 {% block header %} {% endblock %}
 
 {% block main %}
 
     <section class="header--hero">
+    <div class="branding-bar" data-bb-brandingbar="true" data-bb-property-id="sunlightlabs-awesome"></div>
+
         <h1 class="">{% include 'images/emailcongress-logo.svg' %}</h1>
         <h2>Contacting Congress is now as easy as email.</h2>
         <button class="button__hero">Get Started</button>
     </section>
-
-    <hr>
 
     <section class="overview">
         <h2 class="overview__heading">Returning to Email Congress?</h2>
