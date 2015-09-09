@@ -54,9 +54,10 @@ body {
 }
 
 .footer {
-    text-align: center;
-    margin-top: 75px;
-    padding: 0 50px;
+    @extend .container;
+    // text-align: center;
+    // margin-top: 75px;
+    // padding: 0 50px;
 
     &__disclaimer {
         border-bottom: 1px solid $gray-light;
@@ -95,6 +96,29 @@ body {
         }
     }
 }
+
+.header--hero {
+    background: $green url('/static/images/flag-background.jpg');
+    background-size: cover;
+    padding: 150px 0;
+    height: 500px;
+
+    h2 {
+        font-size: 32px;
+        text-align: center;
+        color: #fff;
+        margin: 25px 0;
+    }
+}
+
+.emailcongress-logo {
+    display: block;
+    width: 325px;
+    margin: auto;
+
+    g { fill: #fff; }
+}
+
 
 p {
     margin: 0 0 1em;

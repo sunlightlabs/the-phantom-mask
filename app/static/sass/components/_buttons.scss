@@ -92,6 +92,31 @@
             width: 120px;
         }
     }
+
+    // Hero button
+
+    &__hero {
+        @extend .button__secondary;
+        width: 300px;
+        box-shadow: none;
+        border-bottom: 4px solid #ccc;
+        position: relative;
+        transition: border-color 200ms, top 200ms;
+
+        &:hover {
+            border-color: #bbb;
+        }
+
+        &:active {
+            top: 2px;
+            border-color: #bbb;
+            border-bottom: 2px solid #ccc;
+        }
+
+        &:focus {
+            border-color: #bbb;
+        }
+    }
 }
 
 @keyframes shake {

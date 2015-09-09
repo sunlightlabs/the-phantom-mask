@@ -4,30 +4,23 @@
     Email Congress
 {% endblock %}
 
-{% block content %}
+{% block header %} {% endblock %}
 
-    <section class="overview">
-        {% include 'images/machine.svg' %}
-        <h2 class="overview__heading">Contacting congress used to be hard, but now it's as easy as email.</h2>
-        <p class="overview__description">
-            <button class="button__primary" type="submit" style="float:none">
-                <span class="button__text">Get started</span>
-            </button>
-        </p>
+{% block main %}
 
+    <section class="header--hero">
+        <h1 class="">{% include 'images/emailcongress-logo.svg' %}</h1>
+        <h2>Contacting Congress is now as easy as email.</h2>
+        <button class="button__hero">Get Started</button>
     </section>
-
-    {% with data=context %}
-        {% include 'forms/address_form.html' %}
-    {% endwith %}
 
     <hr>
 
     <section class="overview">
-        <h2 class="overview__heading">Already signed up?</h2>
+        <h2 class="overview__heading">Returning to Email Congress?</h2>
         <p class="overview__description">
             <a style="float:left">Remind me who my reps are</a>
-            <a style="float:right">update my reps and information</a>
+            <a style="float:right">I moved&amp;update my information</a>
         </p>
     </section>
 
@@ -35,45 +28,41 @@
         {% include 'forms/token_reset_form.html' %}
     {% endwith %}
 
-    {% with form=context.legislator_lookup_form %}
-        {% include 'forms/legislator_lookup_form.html' %}
-    {% endwith %}
-
 
     <hr>
 
-    <section class="overview">
-        <h2 class="overview__heading">How it works</h2>
+    <section class="">
+        <h2 class="">How does it work?</h2>
         <div>
-            <h3 style="float:left; margin-right:25px">1.</h3>
-            <p class="overview__description" style="text-align:left">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras hendrerit purus lorem, eu tristique orci scelerisque eu.
+            <p>
+                <strong>Find your reps</strong>
+                <br>
+                We match you with your representatives when you sign up and provide your address.
             </p>
         </div>
         <div>
-            <h3 style="float:left; margin-right:25px">2.</h3>
-            <p class="overview__description" style="text-align:left">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras hendrerit purus lorem, eu tristique orci scelerisque eu.
+            <p>
+                <strong>Write to Congress</strong>
+                <br>
+                Once we’ve found your reps, you can send them a message directly through your email.
             </p>
         </div>
         <div>
-            <h3 style="float:left; margin-right:25px">3.</h3>
-            <p class="overview__description" style="text-align:left">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras hendrerit purus lorem, eu tristique orci scelerisque eu.
+            <p>
+                <strong>Whoosh!</strong>
+                <br>
+                We deliver your message to your reps using technology that navigates their complicated webforms.
             </p>
         </div>
     </section>
 
     <hr>
 
-    <section class="overview">
-        <h2 class="overview__heading">Why</h2>
-        <p class="overview__description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis fermentum lorem. Ut turpis mi, interdum a leo eu, interdum mollis lorem. Curabitur felis mi, dapibus et nibh vel, malesuada maximus felis. Nunc blandit a nibh sit amet tincidunt.
-        </p>
-         <p class="overview__description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis fermentum lorem. Ut turpis mi, interdum a leo eu, interdum mollis lorem. Curabitur felis mi, dapibus et nibh vel, malesuada maximus felis. Nunc blandit a nibh sit amet tincidunt. Vivamus a aliquet mi, nec consequat enim. Proin risus orci, bibendum ac ligula et, porttitor ultricies ante. Praesent laoreet velit tortor, non faucibus augue tincidunt ut.
-        </p>
+    <section class="">
+        <h2 class="">Why we made this</h2>
+        <p>It’s not easy to get in touch with members of Congress. You have to navigate different, complicated web forms each time you want to send a message to your representatives.</p>
+        <p>Now, with Email Congress you can use your own email to write to your reps. After you sign up, our technology does all the work, so all you have to do is send an email!</p>
+        <p>Remember we aren’t Congress, we just help you communicate with your representatives.</p>
     </section>
 
 {% endblock %}
