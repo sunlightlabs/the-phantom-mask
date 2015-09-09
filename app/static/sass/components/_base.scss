@@ -155,6 +155,11 @@ a {
         padding: 50px 75px;
     }
 
+    &--light {
+        @extend .overview;
+        background: #fff;
+    }
+
     &__heading {
         @extend %alpha;
         font-weight: bold;
