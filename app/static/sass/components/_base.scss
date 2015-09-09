@@ -38,6 +38,8 @@ body {
         margin: auto;
         transition: width 150ms;
         width: 160px;
+        padding-top: 10px;
+        padding-bottom: 10px;
 
         @include breakpoint($screen-sm){
             width: 200px;
