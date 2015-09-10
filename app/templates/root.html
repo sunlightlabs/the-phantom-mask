@@ -52,13 +52,29 @@
 
     {% block footer %}
     <footer class="footer">
-        <nav class="footer__nav">
-            <span class="footer__nav--link"><a target="_blank" href="{{ context.url_for_static('/faq') }}">FAQ</a></span>
-            <span class="footer__nav--link"><a target="_blank" href="http://sunlightfoundation.com/legal/terms/">Terms of Service</a></span>
-            <span class="footer__nav--link"><a target="_blank" href="http://sunlightfoundation.com/legal/privacy/">Privacy Policy</a></span>
+        <nav class="row footer__nav">
+            <div class="col-sm-4">
+                <div class="footer__nav-item">
+                    {% include 'images/icon_user.svg' %}
+                    <span class="link"><a target="_blank" href="{{ context.url_for_static('/faq') }}">Update my reps and info</a></span>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="footer__nav-item">
+                    {% include 'images/icon_question.svg' %}
+                    <span class="link"><a target="_blank" href="http://sunlightfoundation.com/legal/terms/">Questions? Check our FAQ</a></span>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="footer__nav-item">
+                    {% include 'images/icon_lock.svg' %}
+                    <span class="link"><a target="_blank" href="http://sunlightfoundation.com/legal/privacy/">Terms &amp; Privacy Policy</a></span>
+                </div>
+            </div>
         </nav>
-
-        <div class="footer__disclaimer">This service is offered by the <a class="link-alt" href="https://sunlightfoundation.com">Sunlight Foundation</a> and is not affiliated with Congress.</div>
+        <div class="row">
+            <div class="footer__disclaimer">This service is offered by the <a class="link-alt" href="https://sunlightfoundation.com">Sunlight Foundation</a> and is not affiliated with Congress.</div>
+        </div>
     </footer>
     {% endblock %}
     <!-- JavaScript -->

@@ -60,39 +60,40 @@ body {
     // padding: 0 50px;
 
     &__disclaimer {
-        border-bottom: 1px solid $gray-light;
         color: $gray;
         margin-bottom: 10px;
-        padding: 10px 0;
+        text-align: center;
+        padding: 25px;
     }
 
     &__nav {
-        margin: 10px 0 75px;
-
-        &--link { 
+        border-bottom: 1px solid #ddd;
+        padding: 25px;
+    }
+    
+    &__nav-item {
+        // text-align: center;
+        display: table;
+        width: 250px;
+        margin: auto;
+        .icon {
+            // display: block;
             display: inline-block;
-            padding: 5px;
+            margin: auto;
+            display: table-cell;
+            vertical-align: middle;
+            margin: 20px;
+            width: 36px;
+            height: 36px;
+            path {
+                fill: #777;
+            }
+        }
+         .link {
+            // display: block;
+            display: table-cell;
             width: 100%;
-
-            @include breakpoint($screen-sm){
-                
-                display: inline-block;
-                margin: 0 15px;
-                padding: 0;
-                width: inherit;
-
-                &:first-child {
-                    margin-left: 0;
-                }
-                
-                &:last-child {
-                    margin-right: 0;
-                }            
-            }
-
-            @include breakpoint($screen-md){                
-                margin: 0 30px;
-            }
+            vertical-align: middle;
         }
     }
 }
