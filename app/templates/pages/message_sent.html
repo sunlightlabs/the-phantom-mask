@@ -9,17 +9,17 @@
 {% endblock %}
 
 {% block content %}
-    <section class="overview">
+    <section class="section">
         {% if context.msg.is_already_sent() %}
             {% include 'images/icon_check.svg' %}
-            <h2 class="overview__heading">Message sent!</h2>
-            <p class="overview__description">
+            <h2 class="section__heading">Message sent!</h2>
+            <p class="section__description">
                 Your email is now on its way to {% with legislators = context.msg_legislators %}{% include 'snippets/leg_full_title_and_full_name_loop.html' %}{% endwith %}!
             </p>
         {% else %}
             {% include 'images/icon_xmark.svg' %}
-            <h2 class="overview__heading">Your message was not sent</h2>
-            <p class="overview__description">
+            <h2 class="section__heading">Your message was not sent</h2>
+            <p class="section__description">
                 From now on, you can send messages by email <br> to your representatives.
             </p>
         {% endif %}

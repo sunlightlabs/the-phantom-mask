@@ -147,7 +147,7 @@ a {
 }
 
 
-.overview {
+.section {
     padding: 50px 25px;
     text-align: center;
     
@@ -156,7 +156,7 @@ a {
     }
 
     &--light {
-        @extend .overview;
+        @extend .section;
         background: #fff;
     }
 

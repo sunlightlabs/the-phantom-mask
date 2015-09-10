@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block content %}
-    <section class="overview">
+    <section class="section">
         {% include 'images/icon_user.svg' %}
-        <h2 class="overview__heading">Admin Login</h2>
+        <h2 class="section__heading">Admin Login</h2>
     </section>
     {% with form=context.form %}
         {% include 'forms/admin_login_form.html' %}
