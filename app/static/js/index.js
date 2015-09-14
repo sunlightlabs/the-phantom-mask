@@ -1,5 +1,18 @@
 (function(){
     $(document).ready(function(){
+
+        var $get_started =  $('#get-started');
+        $get_started.click(function() {
+            var clicks = $(this).data('clicks');
+            if (clicks) {
+                alert('odd number of clicks');
+            } else {
+                alert('even number of clicks');
+            }
+            $(this).data("clicks", !clicks);
+        });
+
+
         var $lookup_form = $("#lookup-form");
         $lookup_form.submit(function(event) {
             event.preventDefault();

@@ -45,9 +45,10 @@ def create_app_router(app, csrf):
 
     # main user pathway
     app_router.route('/', methods=['GET', 'POST'])(views.index)
+    app_router.route('/signup', methods=['GET','POST'])(views.update_user_address)
     app_router.route('/validate/<token>', methods=['GET', 'POST'])(views.update_user_address)
     app_router.route('/confirm_reps/<token>', methods=['GET', 'POST'])(views.confirm_reps)
-    app_router.route('/complete/<token>', methods=['GET'])(views.message_sent)
+    app_router.route('/complete/<token>', methods=['GET'])(views.complete)
 
     # bonus points
     app_router.route('/legislator_index', methods=['GET'])(views.legislator_index)

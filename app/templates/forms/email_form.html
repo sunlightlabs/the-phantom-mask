@@ -1,0 +1,27 @@
+<form id="email-form" class="form" method="POST" action="{{ form.post_action_url }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+    {% if form.errors %}
+        <ul class="form__errorlist">
+            <li><strong>Whoops! Please fix these problems with your form.</strong></li>
+            {% for field in form.ordered_fields_errors %}
+                {% for error in field.errors %}
+                      <li>{{ error|safe }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+   <div class="form__group">
+        <div class="col-sm-12">
+            {% if form.email.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+            {{ form.email(class=classes, type="text", placeholder="E-Mail", required="required") }}
+            {{ form.email.label(class="form__label") }}
+        </div>
+    </div>
+
+   <button class="button" type="submit" name="chg_addr" value="chg_addr">
+        Send Reset Email
+    </button>
+
+</form>

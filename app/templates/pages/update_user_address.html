@@ -7,24 +7,32 @@
 {% block content %}
 
     <section class="section">
-    {% if context.msg %}
-        {% include 'images/machine.svg' %}
-        <h2 class="section__heading">Let's get your message to Congress.</h2>
+    {% if context.signup %}
+        {% include 'images/icon_user.svg' %}
+        <h2 class="section__heading">Check your email.</h2>
         <p class="section__description">
-            Contacting Congress should be as easy as email. We just need some info to make that happen.
+            An email has been sent to you with a verification link.
         </p>
-    {% else %}
+    {% elif context.user %}
         {% include 'images/icon_user.svg' %}
         <h2 class="section__heading">Let's get your information updated.</h2>
         <p class="section__description">
             This helps us ensure that we're delivering your messages to the right representatives.
         </p>
+    {% else %}
+        {% include 'images/machine.svg' %}
+        <h2 class="section__heading">Let's get your message to Congress.</h2>
+        <p class="section__description">
+            Contacting Congress should be as easy as email. We just need some info to make that happen.
+        </p>
     {% endif %}
     </section>
 
-    {% with data = context %}
-        {% include 'forms/address_form.html' %}
-    {% endwith %}
+    {% if not context.signup %}
+        {% with data = context %}
+            {% include 'forms/address_form.html' %}
+        {% endwith %}
+    {% endif %}
 
 {% endblock %}
 

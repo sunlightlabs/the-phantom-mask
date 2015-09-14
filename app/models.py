@@ -502,6 +502,12 @@ class User(MyBaseModel, HasTokenMixin):
         return Message.query.filter((datetime.now() - timedelta(hours=settings.USER_MESSAGE_LIMIT_HOURS)
                                     < Message.created_at)).count() > settings.GLOBAL_HOURLY_CAPTCHA_THRESHOLD
 
+    @classmethod
+    def get_or_create(cls, email):
+        user = db_first_or_create(User, email=email.lower())
+        umi = db_first_or_create(UserMessageInfo, user_id=user.id, default=True)
+        return user, umi
+
     def __html__(self):
         return render_without_request('snippets/user.html', user=self)
 

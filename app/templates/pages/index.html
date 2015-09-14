@@ -15,7 +15,7 @@
 
             <h1 class="">{% include 'images/emailcongress-logo.svg' %}</h1>
             <h2>Contacting Congress is now as easy as email.</h2>
-            <button class="button__hero">Get Started</button>
+            <a href="{{ context.signup_link }}"><button class="button__hero">Get Started</button></a>
         </section>
 
         <section class="section--light">
@@ -23,13 +23,18 @@
             <h2 class="section__heading">Returning to Email Congress?</h2>
             <div class="row">
                 <div class="col-sm-6">
-                    <button class="button__secondary">I moved&mdash;update my information</a>
+                    <button class="button__secondary">I moved&mdash;update my information</button>
                 </div>
                 <div class="col-sm-6">
-                    <button class="button__primary">Remind me who my reps are</a>
+                    <button class="button__primary">Remind me who my reps are</button>
                 </div>
             </div>
-            
+        </section>
+
+        <section>
+            {% with form=context.chg_addr_form %}
+                {% include 'forms/email_form.html' %}
+            {% endwith %}
         </section>
 
         <section class="section">

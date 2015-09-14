@@ -1,7 +1,7 @@
 {% extends 'root.html' %}
 
 {% block title %}
-    {% if context.msg.is_already_sent() %}
+    {% if context.msg and context.msg.is_already_sent() %}
         Message sent!
     {% else %}
         Message not sent
@@ -10,7 +10,13 @@
 
 {% block content %}
     <section class="section">
-        {% if context.msg.is_already_sent() %}
+        {% if not context.msg %}
+            {% include 'images/icon_check.svg' %}
+            <h2 class="section__heading">Great, you're signed up!</h2>
+            <p class="section__description">
+                You may now message your representatives in Congress via email.
+            </p>
+        {% elif context.msg.is_already_sent() %}
             {% include 'images/icon_check.svg' %}
             <h2 class="section__heading">Message sent!</h2>
             <p class="section__description">
@@ -36,7 +42,7 @@
             {% include 'partials/your_reps.html' %}
         {% endwith %}
 
-        <h3 class="content__header"><strong>Tips for emailing Congress next time</strong></h3>
+        <h3 class="content__header"><strong>Tips for emailing Congress</strong></h3>
         <hr>
         {% include 'partials/faq_tips.html' %}
     </div>

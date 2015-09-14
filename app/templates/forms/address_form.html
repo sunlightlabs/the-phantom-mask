@@ -1,134 +1,134 @@
 <section class="content">
 
-<form id="address-form" class="form" method="POST" action="{{ data.form.post_action_url }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <form id="address-form" class="form" method="POST" action="{{ data.form.post_action_url }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-    {% if data.form.errors %}
-        <ul class="form__errorlist">
-            <li><strong>Whoops! Please fix these problems with your form.</strong></li>
-            {% for field in data.form.ordered_fields_errors %}
-                {% for error in field.errors %}
-                      <li>{{ error|safe }}</li>
+        {% if data.form.errors %}
+            <ul class="form__errorlist">
+                <li><strong>Whoops! Please fix these problems with your form.</strong></li>
+                {% for field in data.form.ordered_fields_errors %}
+                    {% for error in field.errors %}
+                          <li>{{ error|safe }}</li>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-        </ul>
-    {% endif %}
+            </ul>
+        {% endif %}
 
-    {% with %}
-    <div class="form__group">
-        <div class="col-sm-2">
-            <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select is-gray {% if data.form.prefix.errors %}is-invalid{% endif %}" required="required">
-               {% for option in data.form.prefix %}
-                   {% if not data.msg and data.umi and option.data==data.umi.prefix %}
-                       {{ option(selected="selected") }}
-                   {% elif option.data == 'Title' %}
-                       {% if not data.msg %}
-                           {{ option(disabled=True) }}
+        {% with %}
+        <div class="form__group">
+            <div class="col-sm-2">
+                <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select is-gray {% if data.form.prefix.errors %}is-invalid{% endif %}" required="required">
+                   {% for option in data.form.prefix %}
+                       {% if not data.msg and data.umi and option.data==data.umi.prefix %}
+                           {{ option(selected="selected") }}
+                       {% elif option.data == 'Title' %}
+                           {% if not data.msg %}
+                               {{ option(disabled=True) }}
+                           {% else %}
+                                {{ option(disabled=True, selected="selected") }}
+                           {% endif %}
                        {% else %}
-                            {{ option(disabled=True, selected="selected") }}
+                           {{ option }}
                        {% endif %}
-                   {% else %}
-                       {{ option }}
-                   {% endif %}
-               {% endfor %}
-           </select>
-        </div>
-        <div class="col-sm-5">
-            {% if data.form.first_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {% if not data.msg and data.umi %}{% set field_val=data.umi.first_name %}{% else %}{% set field_val='' %}{% endif %}
-            {{ data.form.first_name(class=classes, type="text", placeholder="First Name", pattern="[A-Za-z0-9\s]{1,20}", required="required", value=field_val) }}
-            {{ data.form.first_name.label (class="form__label") }}
-        </div>
-        <div class="col-sm-5">
-            {% if data.form.last_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {% if not data.msg and data.umi %}{% set field_val=data.umi.last_name %}{% else %}{% set field_val='' %}{% endif %}
-            {{ data.form.last_name(class=classes,type="text", placeholder="Last Name", pattern="[A-Za-z0-9\s]{1,20}", required="required", value=field_val) }}
-            {{ data.form.last_name.label (class="form__label") }}
-        </div>
-    </div>
-
-    <div class="form__group">
-        <div class="col-sm-9">
-            {% if data.form.street_address.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {{ data.form.street_address(class=classes,type="text", placeholder="Street Address", required="required") }}
-            {{ data.form.street_address.label (class="form__label") }}
-        </div>
-        <div class="col-sm-3">
-            {% if data.form.street_address2.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {{ data.form.street_address2(class=classes,type="text", placeholder="Apt/Suite") }}
-            {{ data.form.street_address2.label (class="form__label") }}
-        </div>
-    </div>
-
-    <div class="form__group autofill__group" id="autofill__group">
-
-        <div class="col-sm-7 {% if not data.form.errors %}is-hidden is-concealed{% endif %} city-wrap">
-            {% if data.form.city.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {{ data.form.city(class=classes, type="text", placeholder='City', required="required") }}
-            {{ data.form.city.label (class="form__label") }}
+                   {% endfor %}
+               </select>
+            </div>
+            <div class="col-sm-5">
+                {% if data.form.first_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+                {% if not data.msg and data.umi %}{% set field_val=data.umi.first_name %}{% else %}{% set field_val='' %}{% endif %}
+                {{ data.form.first_name(class=classes, type="text", placeholder="First Name", pattern="[A-Za-z0-9\s]{1,20}", required="required", value=field_val) }}
+                {{ data.form.first_name.label (class="form__label") }}
+            </div>
+            <div class="col-sm-5">
+                {% if data.form.last_name.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+                {% if not data.msg and data.umi %}{% set field_val=data.umi.last_name %}{% else %}{% set field_val='' %}{% endif %}
+                {{ data.form.last_name(class=classes,type="text", placeholder="Last Name", pattern="[A-Za-z0-9\s]{1,20}", required="required", value=field_val) }}
+                {{ data.form.last_name.label (class="form__label") }}
+            </div>
         </div>
 
-        <div class="col-sm-2 {% if not data.form.errors %}is-hidden is-concealed{% endif %} state-wrap">
-            <select name="{{ data.form.state.name }}" id="state" class="form__select is-gray {% if data.form.state.errors %}is-invalid{% endif %}" required="required">
-               {% for option in data.form.state %}
-                   {% if option.data == 'State' %}
-                       {{ option(disabled=True, selected="selected") }}
-                   {% else %}
-                       {{ option }}
-                   {% endif %}
-               {% endfor %}
-           </select>
-            {{ data.form.state.label (class="form__label") }}
+        <div class="form__group">
+            <div class="col-sm-9">
+                {% if data.form.street_address.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+                {{ data.form.street_address(class=classes,type="text", placeholder="Street Address", required="required") }}
+                {{ data.form.street_address.label (class="form__label") }}
+            </div>
+            <div class="col-sm-3">
+                {% if data.form.street_address2.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+                {{ data.form.street_address2(class=classes,type="text", placeholder="Apt/Suite") }}
+                {{ data.form.street_address2.label (class="form__label") }}
+            </div>
         </div>
 
-        <div class="col-sm-3 is-fullwidth zip-wrap">
-            {% if data.form.zip5.errors or data.form.zip4.errors %}{% set classes="form__input--masked is-invalid" %}{% else %}{% set classes="form__input--masked" %}{% endif %}
-            {{ data.form.zip5(class=classes, type="text", placeholder="Zipcode", required="required", title="Please enter five digit zipcode", required="required") }}
-            {{ data.form.zip5.label (class="form__label") }}
+        <div class="form__group autofill__group" id="autofill__group">
+
+            <div class="col-sm-7 {% if not data.form.errors %}is-hidden is-concealed{% endif %} city-wrap">
+                {% if data.form.city.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
+                {{ data.form.city(class=classes, type="text", placeholder='City', required="required") }}
+                {{ data.form.city.label (class="form__label") }}
+            </div>
+
+            <div class="col-sm-2 {% if not data.form.errors %}is-hidden is-concealed{% endif %} state-wrap">
+                <select name="{{ data.form.state.name }}" id="state" class="form__select is-gray {% if data.form.state.errors %}is-invalid{% endif %}" required="required">
+                   {% for option in data.form.state %}
+                       {% if option.data == 'State' %}
+                           {{ option(disabled=True, selected="selected") }}
+                       {% else %}
+                           {{ option }}
+                       {% endif %}
+                   {% endfor %}
+               </select>
+                {{ data.form.state.label (class="form__label") }}
+            </div>
+
+            <div class="col-sm-3 is-fullwidth zip-wrap">
+                {% if data.form.zip5.errors or data.form.zip4.errors %}{% set classes="form__input--masked is-invalid" %}{% else %}{% set classes="form__input--masked" %}{% endif %}
+                {{ data.form.zip5(class=classes, type="text", placeholder="Zipcode", required="required", title="Please enter five digit zipcode", required="required") }}
+                {{ data.form.zip5.label (class="form__label") }}
+            </div>
+            <p id="no-zip4-error" class="form__error--zip" style="display:none;">
+                We couldn't determine your full zipcode.
+                Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find the last four digits.
+            </p>
+            {% if 'district_error' in context %}
+            <p id="no-district-error" class="form__error">
+                Sorry! We were not able to identify a congressional district associated with this address. Double
+                check your address information or try using <a target="_blank" href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a>
+                provided by the government.
+            </p>
+            {% endif %}
         </div>
-        <p id="no-zip4-error" class="form__error--zip" style="display:none;">
-            We couldn't determine your full zipcode.
-            Use <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">this tool</a> to find the last four digits.
-        </p>
-        {% if 'district_error' in context %}
-        <p id="no-district-error" class="form__error">
-            Sorry! We were not able to identify a congressional district associated with this address. Double
-            check your address information or try using <a target="_blank" href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a>
-            provided by the government.
-        </p>
-        {% endif %}
-    </div>
-    
-    <div class="form__group">
-        <div class="{% if not data.umi %}col-sm-4{% else %}col-sm-12{% endif %}">
-            {% if data.form.phone_number.errors %}{% set classes="form__input--masked is-invalid" %}{% else %}{% set classes="form__input--masked" %}{% endif %}
-            {{ data.form.phone_number(class=classes,type="text", placeholder="Phone Number", title="Please your phone number XXXXXXXXXX.", required="required") }}
-            {{ data.form.phone_number.label (class="form__label") }}
-         </div>
-        {% if not data.umi %}
-        <div class="col-sm-8">
-            {% if data.form.email.errors %}{% set classes="form__input--masked is-invalid" %}{% else %}{% set classes="form__input--masked" %}{% endif %}
-            {{ data.form.email(class=classes,type="text", placeholder="E-Mail", title="Please enter your email.", required="required") }}
-            {{ data.form.email.label (class="form__label") }}
-         </div>
-        {% endif %}
-    </div>
 
-    {% endwith %}
+        <div class="form__group">
+            <div class="{% if not data.umi %}col-sm-4{% else %}col-sm-12{% endif %}">
+                {% if data.form.phone_number.errors %}{% set classes="form__input--masked is-invalid" %}{% else %}{% set classes="form__input--masked" %}{% endif %}
+                {{ data.form.phone_number(class=classes,type="text", placeholder="Phone Number", title="Please your phone number XXXXXXXXXX.", required="required") }}
+                {{ data.form.phone_number.label (class="form__label") }}
+             </div>
+            {% if not data.umi %}
+            <div class="col-sm-8">
+                {% if data.form.email.errors %}{% set classes="form__input--masked is-invalid" %}{% else %}{% set classes="form__input--masked" %}{% endif %}
+                {{ data.form.email(class=classes,type="text", placeholder="E-Mail", title="Please enter your email.", required="required") }}
+                {{ data.form.email.label (class="form__label") }}
+             </div>
+            {% endif %}
+        </div>
 
-    <p class="form__disclaimer">By using this service, I agree to the <a target="_blank" href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a target="_blank" href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
+        {% endwith %}
 
-    <button class="button" type="submit" name="signup" value="{%- if not context.msg or not context.umi -%}signup{% else %}{% endif %}" >
-        {%- if context.msg -%}
-        Sign up and send my message
-        {% elif context.umi %}
-        Update my information
-        {%- else -%}
-        Signup
-        {%- endif -%}
-    </button>
+        <p class="form__disclaimer">By using this service, I agree to the <a target="_blank" href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a target="_blank" href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
 
-</form>
+        <button class="button" type="submit" name="signup" value="{%- if not context.msg or not context.umi -%}signup{% else %}{% endif %}" >
+            {%- if context.msg -%}
+            Sign up and send my message
+            {% elif context.umi %}
+            Update my information
+            {%- else -%}
+            Signup
+            {%- endif -%}
+        </button>
+
+    </form>
 
     <div class="content__notes">
         <p>

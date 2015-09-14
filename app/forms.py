@@ -16,9 +16,12 @@ from sqlalchemy import or_, and_, not_
 
 class MyBaseForm(Form):
 
-    def __init__(self, formdata, post_action_url, **kwargs):
+    def __init__(self, formdata, post_action_url='', **kwargs):
         super(MyBaseForm, self).__init__(formdata, **kwargs)
         self.post_action_url = post_action_url
+
+    def set_post_action_url(self, url):
+        self.post_action_url = url
 
     def data_dict(self):
         """
@@ -256,6 +259,10 @@ class RegistrationForm(MyBaseForm, BaseLookupForm):
         status, result = self.validate_and_save_to_db(user, accept_tos=False)
         return (user, result) if status else (status, result)
 
+    def update_address(self):
+        pass
+
+
 
     def validate_and_save_to_db(self, user, msg=None, accept_tos=True):
         """
@@ -269,6 +276,7 @@ class RegistrationForm(MyBaseForm, BaseLookupForm):
         @rtype: boolean
         """
         # self._autocomplete_tos()
+
         self._autocomplete_email(user.email)
         self._autocomplete_phone()
         self._doctor_names()

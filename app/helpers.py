@@ -20,7 +20,7 @@ def append_get_params(u, **kwargs):
         return u
 
 
-def app_router_path(func_name, **kwargs):
+def app_router_path(func_name='', **kwargs):
     return append_get_params(url_for_with_prefix('app_router.' + func_name, **kwargs))
 
 
