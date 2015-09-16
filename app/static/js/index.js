@@ -1,29 +1,36 @@
 (function(){
     $(document).ready(function(){
 
-        var $get_started =  $('#get-started');
-        $get_started.click(function() {
-            var clicks = $(this).data('clicks');
-            if (clicks) {
-                alert('odd number of clicks');
-            } else {
-                alert('even number of clicks');
+        var $email_form = $('#email-form');
+        var $email_form_submit = $email_form.children('button[type="submit"]').first();
+        var $update_address_h3 = $('[data-js=update_address-h3]');
+        var $remind_reps_h3 = $('[data-js=remind_reps-h3]');
+        var $email_form_message = $('[data-js=email-form-message]');
+
+        $('[data-js=toggle-email-form]').click(function(event) {
+            var id = $(this).attr('id');
+            $email_form_submit.attr('value', id);
+            $email_form.parent().show();
+
+            $email_form.children('h3').hide();
+            if (id == 'update_address') {
+                $update_address_h3.show();
+            } else if (id == 'remind_reps') {
+                $remind_reps_h3.show();
             }
-            $(this).data("clicks", !clicks);
         });
 
-
-        var $lookup_form = $("#lookup-form");
-        $lookup_form.submit(function(event) {
+        $email_form.submit(function(event) {
             event.preventDefault();
             $.ajax({
                 type: 'POST',
                 url: URL_PREFIX + '/',
-                data: $(this).serialize() + '&leg_lookup=leg_lookup',
-                dataType: 'json',
+                data: $(this).serialize()+'&submit_type='+$email_form_submit.attr('value'),
+                dataType: 'text',
                 timeout: 3000,
                 success: function (result) {
-                    $('#legislator-display').html($(result['leg_lookup']));
+                    $email_form_message.text(result);
+                    $email_form_message.show();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
 

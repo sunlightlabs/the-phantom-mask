@@ -11,6 +11,7 @@ from wtforms.widgets import html_params, HTMLString
 from cgi import escape
 from models import Legislator, db_first_or_create, User, UserMessageInfo
 from sqlalchemy import or_, and_, not_
+import emailer
 
 
 
@@ -36,6 +37,31 @@ class MyBaseForm(Form):
 class TokenResetForm(MyBaseForm):
 
     email = StringField('Email', validators=[validators.Email(message='Please enter a valid e-mail address.')])
+
+class EmailForm(MyBaseForm):
+
+    email = StringField('Email', validators=[validators.Email(message='Please enter a valid e-mail address.')])
+
+    def success_msg(self):
+        return 'Email has been sent to ' + self.email.data + '. Check out email.'
+
+    def failure_msg(self):
+        return "That email address hasn't been used with Email Congress yet"
+
+    def validate_and_process(self, submit_name):
+        if self.validate():
+            user = User.query.filter_by(email=self.email.data).first()
+            if user:
+                print submit_name
+                if submit_name == 'update_address':
+                    emailer.NoReply.token_reset(user).send()
+                elif submit_name == 'remind_reps':
+                    emailer.NoReply.remind_reps(user).send()
+                return self.success_msg()
+            else:
+                return self.failure_msg()
+        else:
+            return 'error'
 
 
 class RecaptchaForm(MyBaseForm):

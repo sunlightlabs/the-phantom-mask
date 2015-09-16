@@ -87,30 +87,19 @@ class MyAdminIndexView(admin.AdminIndexView):
 
 def index():
 
-    chg_addr_form = forms.TokenResetForm(request.form, app_router_path('index'))
-    legislator_lookup_form = forms.LegislatorLookupForm(request.form, app_router_path('index'))
+    email_form = forms.EmailForm(request.form, app_router_path('index'))
 
     context = {
-        'chg_addr_form': chg_addr_form,
-        'legislator_lookup_form': legislator_lookup_form,
+        'email_form': email_form,
         'status': None,
         'signup_link': app_router_path('update_user_address')
     }
 
     if request.method == 'POST':
-        if request.form.get('chg_addr', False):
-            user = User.query.filter_by(email=request.form.get('email')).first()
-            if user:
-                emailer.NoReply.token_reset(user).send()
-            context['status'] = {'chg_addr': 'success' if user else 'failure'}
-        elif request.form.get('leg_lookup', False):
-            if legislator_lookup_form.validate():
-                legs = legislator_lookup_form.lookup_legislator()
-                resp = render_template_wctx('partials/your_reps.html', context={'legislators': legs}) if legs else False
-                context['status'] = {'leg_lookup': resp}
+        context['status'] = email_form.validate_and_process(request.form.get('submit_type'))
 
     if request.is_xhr:
-        return jsonify(context['status'])
+        return context['status']
     else:
         return render_template_wctx('pages/index.html', context=context)
 

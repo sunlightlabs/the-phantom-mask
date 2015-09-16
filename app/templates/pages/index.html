@@ -23,16 +23,16 @@
             <h2 class="section__heading">Returning to Email Congress?</h2>
             <div class="row">
                 <div class="col-sm-6">
-                    <button class="button__secondary">I moved&mdash;update my information</button>
+                    <button id="update_address" class="button__secondary" data-js="toggle-email-form">I moved&mdash;update my information</button>
                 </div>
                 <div class="col-sm-6">
-                    <button class="button__primary">Remind me who my reps are</button>
+                    <button id="remind_reps" class="button__primary" data-js="toggle-email-form">Remind me who my reps are</button>
                 </div>
             </div>
         </section>
 
-        <section>
-            {% with form=context.chg_addr_form %}
+        <section style="display:none">
+            {% with form=context.email_form %}
                 {% include 'forms/email_form.html' %}
             {% endwith %}
         </section>

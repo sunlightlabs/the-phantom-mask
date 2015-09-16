@@ -12,7 +12,10 @@
         </ul>
     {% endif %}
 
-   <div class="form__group">
+    <h3 data-js="update_address-h3" style="display:none">Enter the email you used, we'll send you a link to update your info.</h3>
+    <h3 data-js="remind_reps-h3" style="display:none">Enter the email you used, we'll send you an email with your reps.</h3>
+
+    <div class="form__group">
         <div class="col-sm-12">
             {% if form.email.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
             {{ form.email(class=classes, type="text", placeholder="E-Mail", required="required") }}
@@ -20,8 +23,10 @@
         </div>
     </div>
 
-   <button class="button" type="submit" name="chg_addr" value="chg_addr">
-        Send Reset Email
+    <button class="button" type="submit" name="submit_type" value="">
+        Submit
     </button>
+
+    <h4 data-js="email-form-message" style="display:none"></h4>
 
 </form>

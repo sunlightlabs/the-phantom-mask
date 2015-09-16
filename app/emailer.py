@@ -301,3 +301,16 @@ class NoReply():
                                                                 'user': user,
                                                                 'moc': user.default_info.members_of_congress})
                       )
+
+    @classmethod
+    @apply_admin_filter
+    def remind_reps(cls, user):
+        return PMMail(api_key=settings.POSTMARK_API_KEY,
+              sender=cls.SENDER_EMAIL,
+              to=user.email,
+              subject='',
+              html_body=render_without_request('emails/address_changed.html',
+                                               context={'link': user.address_change_link(),
+                                                        'user': user,
+                                                        'moc': user.default_info.members_of_congress})
+              )

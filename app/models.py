@@ -629,6 +629,7 @@ class UserMessageInfo(MyBaseModel):
 
     def confirm_accept_tos(self):
         self.accept_tos = datetime.now()
+        db.session.commit()
 
     def should_update_address_info(self):
         """
