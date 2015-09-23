@@ -154,6 +154,7 @@ a {
     
     @include breakpoint($screen-md){
         padding: 50px 75px;
+        // max-width: 60em;
     }
 
     &--light {
@@ -166,7 +167,14 @@ a {
         font-weight: bold;
         margin: 0;
         margin-top: 10px;
+    }
 
+    &__heading--large {
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0;
+        margin-top: 25px;
+        margin-bottom: 50px;
     }
 
     &__description {
@@ -183,6 +191,12 @@ a {
             fill: $green;
         }
     }
+}
+
+
+.content_wrapper {
+    margin: auto;
+    max-width: 50em;
 }
 
 .content {
@@ -252,10 +266,28 @@ a {
     }
 }
 
+.illustration {
+    width: 75px;
+}
 
+.steps-group {
+    margin-bottom: 50px;
 
+    .prose {
+        padding-left: 0;
+    }
+}
 
+.prose {
+    text-align: left;
+    font-size: 18px;
+    padding-left: 50px;
+    padding-right: 50px;
 
+    p {
+        margin-top: 10px;
+    }
+}
 
 
 
