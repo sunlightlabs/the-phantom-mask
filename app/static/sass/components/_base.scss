@@ -128,7 +128,7 @@ a {
     &:link,
     &:visited  {
         border-bottom: 0px solid transparent;
-        color: $blue;
+        color: $green;
         text-decoration: none;
         transition: all 200ms;
     }
@@ -266,27 +266,46 @@ a {
     }
 }
 
-.illustration {
-    width: 75px;
-}
-
 .steps-group {
     margin-bottom: 50px;
 
-    .prose {
-        padding-left: 0;
+    .illustration {
+        width: 50px;
+
+        @include breakpoint($screen-sm){
+            width: 75px;
+        }
     }
 }
 
 .prose {
     text-align: left;
     font-size: 18px;
-    padding-left: 50px;
-    padding-right: 50px;
+
+    @include breakpoint($screen-md){
+        padding-left: 50px;
+        padding-right: 50px;
+    }
 
     p {
-        margin-top: 10px;
+        margin-top: 0;
+
+        @include breakpoint(768px){
+            margin-top: 10px;
+        }
     }
+
+    .steps-group & {
+        padding-left: 0;
+        padding-right: 0;
+
+
+
+        @include breakpoint($screen-md){
+            padding-right: 50px;
+        }
+    }
+
 }
 
 
