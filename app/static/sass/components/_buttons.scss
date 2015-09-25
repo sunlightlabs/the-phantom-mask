@@ -71,6 +71,11 @@
             color: $green;
         }
 
+        &.is-active {
+            background: $green;
+            color: $white;
+        }
+
         &--red {
             @extend .button__secondary;
             color: $red;

@@ -9,6 +9,8 @@
 
 .semibold { font-weight: 600; }
 
+.u-text-light { color: #fff;}
+
 
 // Layout
 
@@ -30,7 +32,7 @@ body {
     transition: padding 150ms;
 
     @include breakpoint($screen-sm){
-        padding: 15px 0;
+        padding: 30px 0;
     }
     
     &__logo {
@@ -55,9 +57,7 @@ body {
 
 .footer {
     @extend .container;
-    // text-align: center;
-    // margin-top: 75px;
-    // padding: 0 50px;
+    margin-top: 50px;
 
     &__disclaimer {
         color: $gray;
@@ -72,12 +72,11 @@ body {
     }
     
     &__nav-item {
-        // text-align: center;
         display: table;
         width: 250px;
         margin: auto;
+
         .icon {
-            // display: block;
             display: inline-block;
             margin: auto;
             display: table-cell;
@@ -90,7 +89,6 @@ body {
             }
         }
          .link {
-            // display: block;
             display: table-cell;
             width: 100%;
             vertical-align: middle;
@@ -154,12 +152,16 @@ a {
     
     @include breakpoint($screen-md){
         padding: 50px 75px;
-        // max-width: 60em;
     }
 
     &--light {
         @extend .section;
         background: #fff;
+    }
+
+    &--dark {
+        @extend .section;
+        background: #333;
     }
 
     &__heading {
@@ -181,6 +183,10 @@ a {
         @extend %alpha;
         margin: 0;
         margin-top: 20px;
+
+        .email-form-wrapper & {
+            margin-bottom: 25px;
+        }
     }
 
     .icon {
@@ -193,6 +199,23 @@ a {
     }
 }
 
+.email-form-wrapper {
+    position: relative;
+
+    &:before {
+        @include triangle(16px, #fff);
+        content: ''; 
+        position: absolute;
+        top: 0;
+        left: 48%;
+        left: calc(50% - 16px);
+    }
+
+    .button {
+        margin-top: 0;
+        padding: 9px 14px 8px;
+    }
+}
 
 .content_wrapper {
     margin: auto;
@@ -217,6 +240,7 @@ a {
         position: absolute;
         top: 0;
         left: 48%;
+        left: calc(50% - 16px);
     }
 
     &__header {
@@ -235,7 +259,7 @@ a {
 
 .header--hero {
     .branding-bar {
-        background-color: rgba(255, 255, 255, 0.25) !important;
+        background-color: transparent !important;
         height: 45px;
         position: absolute;
         width: 100%;
@@ -263,6 +287,20 @@ a {
     a.branding-bar_sunlight-logo {
         background: url('https://sunlight-cdn.s3.amazonaws.com/brandingbar/0.3/img/sunlight-logo-light.png') no-repeat 50% 50% !important;
         background: rgba(0, 0, 0, 0) url('https://sunlight-cdn.s3.amazonaws.com/brandingbar/0.3/img/sunlight-logo-light.svg') no-repeat 50% 50% !important;
+    }
+}
+
+.branding-bar {
+    background-color: #fff !important;
+    height: 45px;
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px solid #f0f0f0;
+
+    a:link,
+    a:hover {
+        border-bottom: none;
     }
 }
 
@@ -305,7 +343,6 @@ a {
             padding-right: 50px;
         }
     }
-
 }
 
 
