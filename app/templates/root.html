@@ -9,7 +9,7 @@
     <meta name="author" content="put author here">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="//sunlight-cdn.s3.amazonaws.com/brandingbar/0.3/css/brandingbar.css">
+    <link rel="stylesheet" href="//sunlight-cdn.s3.amazonaws.com/brandingbar/0.4/css/brandingbar.css">
     <link rel="stylesheet" href="//sunlight-cdn.s3.amazonaws.com/sf-icons/0.2/css/sf-icons.css">
     <link rel="stylesheet" href="{{ context.url_for_static('/static/css/style.min.css') }}" />
     <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,400italic' rel='stylesheet' type='text/css'>
@@ -40,7 +40,7 @@
 
     {% block header %}
     <header class="header">
-        <img class="header__logo" src="{{ context.url_for_static('/static/images/emailcongress-logo.svg') }}" alt="EmailCongress Logo">
+        <a href="/"><img class="header__logo" src="{{ context.url_for_static('/static/images/emailcongress-logo.svg') }}" alt="EmailCongress Logo"></a>
     </header>
     {% endblock %}
     
@@ -56,19 +56,19 @@
             <div class="col-sm-4">
                 <div class="footer__nav-item">
                     {% include 'images/icon_user.svg' %}
-                    <span class="link"><a target="_blank" href="{{ context.url_for_static('/faq') }}">Update my reps and info</a></span>
+                    <span class="link"><a href="{{ context.url_for_static('/#returninguser') }}">Update my reps and info</a></span>
                 </div>
             </div>
             <div class="col-sm-4">
                 <div class="footer__nav-item">
                     {% include 'images/icon_question.svg' %}
-                    <span class="link"><a target="_blank" href="http://sunlightfoundation.com/legal/terms/">Questions? Check our FAQ</a></span>
+                    <span class="link"><a href="{{ context.url_for_static('/faq') }}">Questions? Check our FAQ</a></span>
                 </div>
             </div>
             <div class="col-sm-4">
                 <div class="footer__nav-item">
                     {% include 'images/icon_lock.svg' %}
-                    <span class="link"><a target="_blank" href="http://sunlightfoundation.com/legal/privacy/">Terms &amp; Privacy Policy</a></span>
+                    <span class="link"><a href="http://sunlightfoundation.com/legal/terms/">Terms &amp;</a> <a href="http://sunlightfoundation.com/legal/privacy/">Privacy Policy</a></span>
                 </div>
             </div>
         </nav>
@@ -79,7 +79,7 @@
     {% endblock %}
     <!-- JavaScript -->
     <script type="text/javascript" src="{{ context.url_for_static('/static/js/build/phantom-mask.min.js') }}"></script>
-    <script src="//sunlight-cdn.s3.amazonaws.com/brandingbar/0.3/js/brandingbar.min.js.gz"></script>
+    <script src="//sunlight-cdn.s3.amazonaws.com/brandingbar/0.4/js/brandingbar.min.js.gz"></script>
     {% block javascript %}{% endblock %}
 </body>
 </html>
