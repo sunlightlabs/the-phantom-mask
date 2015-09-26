@@ -93,7 +93,7 @@
             {% if 'district_error' in context %}
             <p id="no-district-error" class="form__error">
                 Sorry! We were not able to identify a congressional district associated with this address. Double
-                check your address information or try using <a target="_blank" href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a>
+                check your address information or try using <a target="_blank" href="https://www.usa.gov/elected-officials">this guide</a>
                 provided by the government.
             </p>
             {% endif %}
@@ -116,7 +116,7 @@
 
         {% endwith %}
 
-        <p class="form__disclaimer">By using this service, I agree to the <a target="_blank" href="https://www.opencongress.org/terms#terms_of_service">terms of service</a> and <a target="_blank" href="https://www.opencongress.org/terms#privacy_policy">privacy policy</a>.</p>
+        <p class="form__disclaimer">By using this service, I agree to the <a target="_blank" href="https://sunlightfoundation.com/legal/terms/">terms of service</a> and <a target="_blank" href="https://sunlightfoundation.com/legal/privacy/">privacy policy</a>.</p>
 
         <button class="button" type="submit" name="signup" value="{%- if not context.msg or not context.umi -%}signup{% else %}{% endif %}" >
             {%- if context.msg -%}
@@ -135,7 +135,7 @@
             <strong>Members of Congress don't have official emails.</strong> This service makes navigating their required web forms as easy as emailing them.
         </p>
         <p>
-            If you don't want to use this service and would like an alternative method to communicate with Congress, follow <a target="_blank" href="http://www.usa.gov/Contact/US-Congress.shtml">this guide</a> provided by usa.gov.
+            If you don't want to use this service and would like an alternative method to communicate with Congress, follow <a target="_blank" href="https://www.usa.gov/elected-officials">this guide</a> provided by usa.gov.
         </p>
         <p>
             This service is offered by the Sunlight Foundation and is not affiliated with Congress.
