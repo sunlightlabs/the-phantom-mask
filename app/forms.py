@@ -43,7 +43,7 @@ class EmailForm(MyBaseForm):
     email = StringField('Email', validators=[validators.Email(message='Please enter a valid e-mail address.')])
 
     def success_msg(self):
-        return 'Email has been sent to ' + self.email.data + '. Check out email.'
+        return 'Check your inbox! We just sent an email to ' + self.email.data + '.'
 
     def failure_msg(self):
         return "That email address hasn't been used with Email Congress yet"
