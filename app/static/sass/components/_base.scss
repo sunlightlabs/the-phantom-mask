@@ -99,8 +99,10 @@ body {
 .header--hero {
     background: $green url('/static/images/flag-background.jpg');
     background-size: cover;
-    padding: 150px 0;
+    // padding: 150px 0;
     height: 500px;
+    position: relative;
+    overflow: hidden;
 
     h2 {
         text-align: center;
@@ -268,6 +270,7 @@ a {
         top: 0;
         border-bottom: 1px solid rgba(255,255,255,.25);
         color: #fff;
+        z-index: 1;
     }
 
     a.branding-bar_trigger {
@@ -345,5 +348,16 @@ a {
     }
 }
 
+.intro-video {
+    object-fit: cover;
+    width: 100%;
+    background: url('/static/images/flag-background.jpg');
+}
 
+.hero--content {
+    position: absolute;
+    top: 150px;
+    width: 100%;
+    z-index: 1;
+}
 

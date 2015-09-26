@@ -11,11 +11,16 @@
     <main>
 
         <section class="header--hero">
-        <div class="branding-bar" data-bb-brandingbar="true" data-bb-property-id="sunlightlabs-awesome"></div>
-
-            <h1 class="">{% include 'images/emailcongress-logo.svg' %}</h1>
-            <h2>Contacting Congress is now as easy as email.</h2>
-            <a href="{{ context.signup_link }}"><button class="button__hero">Get Started</button></a>
+            <div class="branding-bar" data-bb-brandingbar="true" data-bb-property-id="sunlightlabs-awesome"></div>
+            <div class="hero--content">
+                <h1 class="">{% include 'images/emailcongress-logo.svg' %}</h1>
+                <h2>Contacting Congress is now as easy as email.</h2>
+                <a href="{{ context.signup_link }}"><button class="button__hero">Get Started</button></a>
+            </div>
+            <video autoplay="true" class="intro-video visible-md visible-lg" loop="loop">
+                <source src="/static/images/flag-background.ogg" type="video/ogg">
+                <source src="/static/images/flag-background.mp4" type="video/mp4">
+            </video>
         </section>
 
         <section class="section--light" id="returninguser">
