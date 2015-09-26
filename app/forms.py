@@ -185,9 +185,9 @@ class LegislatorLookupForm(MyBaseForm, BaseLookupForm):
 class RegistrationForm(MyBaseForm, BaseLookupForm):
 
     prefix = MySelectField('Prefix',
-                         choices=[(x,x) for x in ['Title', 'Mr.', 'Mrs.', 'Ms.']],
+                         choices=[(x,x) for x in ['Prefix', 'Mr.', 'Ms.', 'Mrs.']],
                          validators=[validators.DataRequired(message='A title prefix is required.'),
-                                     validators.NoneOf(['Title'], message='Please select a prefix.')],
+                                     validators.NoneOf(['Prefix'], message='Please select a prefix.')],
                          option_widget=MyOption())
     first_name = StringField('First name',
                              validators=[validators.DataRequired(message="First name is required."),
