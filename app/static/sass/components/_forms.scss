@@ -1,10 +1,6 @@
 // Form Components
 
 .form {
-    
-    &--readonly {
-        font-size: $gamma;
-    }
 
     &__group {
         @include make-row(0);
@@ -139,11 +135,6 @@
             box-shadow: 0px 1px 0px $gray-dark;
         }
 
-        &[readonly] {
-            box-shadow: none;
-            background: transparent;
-        }
-
         &.is-invalid {
             box-shadow: 0px 1px 0px $red;
             background: lighten($red, 45%);
@@ -157,12 +148,18 @@
         }
     }
 
-    &__textarea {
-        @extend .form__input;
-        height: 175px;
-        
-        &[readonly] {
-            box-shadow: none;
+    &__readonly {
+        font-size: $gamma;
+        font-family: courier;
+        background: #eee;
+        padding: 25px;
+        cursor: not-allowed;
+        max-height: 200px;
+        overflow-y: scroll;
+        background: #eee;
+
+        p {
+            padding: 0 15px;
         }
     }
 
