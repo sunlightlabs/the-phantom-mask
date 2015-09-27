@@ -1,0 +1,48 @@
+
+.header--hero {
+    .branding-bar {
+        background-color: transparent !important;
+        height: 45px;
+        position: absolute;
+        width: 100%;
+        padding-left: 10px;
+        padding-right: 10px;
+        top: 0;
+        border-bottom: 1px solid rgba(255,255,255,.25);
+        color: #fff;
+        z-index: 1;
+    }
+
+    a.branding-bar_trigger {
+        color: #fff !important;
+
+    }
+
+    a.social [class^="sficon-"],
+    a.social [class*=" sficon-"] {
+        color: #fff !important;
+    }
+
+    .branding-bar_productof {
+        color: #fff !important;
+    }
+
+    a.branding-bar_sunlight-logo {
+        background: url('https://sunlight-cdn.s3.amazonaws.com/brandingbar/0.3/img/sunlight-logo-light.png') no-repeat 50% 50% !important;
+        background: rgba(0, 0, 0, 0) url('https://sunlight-cdn.s3.amazonaws.com/brandingbar/0.3/img/sunlight-logo-light.svg') no-repeat 50% 50% !important;
+    }
+}
+
+.branding-bar {
+    background-color: #fff !important;
+    height: 45px;
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px solid #f0f0f0;
+
+    a:link,
+    a:hover {
+        border-bottom: none;
+    }
+}

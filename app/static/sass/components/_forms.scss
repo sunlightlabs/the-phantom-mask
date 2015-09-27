@@ -230,6 +230,25 @@
     }
 }
 
+// email form
+.email-form-wrapper {
+    position: relative;
+
+    &:before {
+        @include triangle(16px, #fff);
+        content: ''; 
+        position: absolute;
+        top: 0;
+        left: 48%;
+        left: calc(50% - 16px);
+    }
+
+    .button {
+        margin-top: 0;
+        padding: 9px 14px 8px;
+    }
+}
+
 
 // Placeholder text
 

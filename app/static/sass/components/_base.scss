@@ -1,15 +1,6 @@
 //  Utility Classes
 
-%alpha { font-size: $alpha; }
-%beta { font-size: $beta; }
-%gamma { font-size: $gamma; }
-%micro { font-size: $micro; }
-
 .is-hidden { display: none; }
-
-.semibold { font-weight: 600; }
-
-.u-text-light { color: #fff;}
 
 
 // Layout
@@ -24,29 +15,6 @@ body {
     font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
     font-size: $gamma;
     min-height: 100%;
-}
-
-.header {
-    background: $white;
-    padding: 10px 0;
-    transition: padding 150ms;
-
-    @include breakpoint($screen-sm){
-        padding: 30px 0;
-    }
-    
-    &__logo {
-        display: block;
-        margin: auto;
-        transition: width 150ms;
-        width: 160px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-
-        @include breakpoint($screen-sm){
-            width: 200px;
-        }
-    }
 }
 
 .main {
@@ -96,20 +64,6 @@ body {
     }
 }
 
-.header--hero {
-    background: $green url('/static/images/flag-background.jpg');
-    background-size: cover;
-    // padding: 150px 0;
-    height: 500px;
-    position: relative;
-    overflow: hidden;
-
-    h2 {
-        text-align: center;
-        color: #fff;
-        margin: 25px 0 75px;
-    }
-}
 
 .emailcongress-logo {
     display: block;
@@ -117,34 +71,6 @@ body {
     margin: auto;
 
     g { fill: #fff; }
-}
-
-
-p {
-    margin: 0 0 1em;
-}
-
-a {
-    &:link,
-    &:visited  {
-        border-bottom: 0px solid transparent;
-        color: $green;
-        text-decoration: none;
-        transition: all 200ms;
-    }
-
-    &:hover,
-    &:active,
-    &:focus, {
-        border-bottom: 1px solid darken($blue, 20%);
-        color: darken($blue, 20%);
-        outline: none;
-    }
-
-    &.link-alt {
-        color: darken($gray, 15%);
-        border-bottom: none;
-    }
 }
 
 
@@ -201,23 +127,6 @@ a {
     }
 }
 
-.email-form-wrapper {
-    position: relative;
-
-    &:before {
-        @include triangle(16px, #fff);
-        content: ''; 
-        position: absolute;
-        top: 0;
-        left: 48%;
-        left: calc(50% - 16px);
-    }
-
-    .button {
-        margin-top: 0;
-        padding: 9px 14px 8px;
-    }
-}
 
 .content_wrapper {
     margin: auto;
@@ -259,54 +168,6 @@ a {
     }
 }
 
-.header--hero {
-    .branding-bar {
-        background-color: transparent !important;
-        height: 45px;
-        position: absolute;
-        width: 100%;
-        padding-left: 10px;
-        padding-right: 10px;
-        top: 0;
-        border-bottom: 1px solid rgba(255,255,255,.25);
-        color: #fff;
-        z-index: 1;
-    }
-
-    a.branding-bar_trigger {
-        color: #fff !important;
-
-    }
-
-    a.social [class^="sficon-"],
-    a.social [class*=" sficon-"] {
-        color: #fff !important;
-    }
-
-    .branding-bar_productof {
-        color: #fff !important;
-    }
-
-    a.branding-bar_sunlight-logo {
-        background: url('https://sunlight-cdn.s3.amazonaws.com/brandingbar/0.3/img/sunlight-logo-light.png') no-repeat 50% 50% !important;
-        background: rgba(0, 0, 0, 0) url('https://sunlight-cdn.s3.amazonaws.com/brandingbar/0.3/img/sunlight-logo-light.svg') no-repeat 50% 50% !important;
-    }
-}
-
-.branding-bar {
-    background-color: #fff !important;
-    height: 45px;
-    width: 100%;
-    padding-left: 10px;
-    padding-right: 10px;
-    border-bottom: 1px solid #f0f0f0;
-
-    a:link,
-    a:hover {
-        border-bottom: none;
-    }
-}
-
 .steps-group {
     margin-bottom: 50px;
 
@@ -318,46 +179,3 @@ a {
         }
     }
 }
-
-.prose {
-    text-align: left;
-    font-size: 18px;
-
-    @include breakpoint($screen-md){
-        padding-left: 50px;
-        padding-right: 50px;
-    }
-
-    p {
-        margin-top: 0;
-
-        @include breakpoint(768px){
-            margin-top: 10px;
-        }
-    }
-
-    .steps-group & {
-        padding-left: 0;
-        padding-right: 0;
-
-
-
-        @include breakpoint($screen-md){
-            padding-right: 50px;
-        }
-    }
-}
-
-.intro-video {
-    object-fit: cover;
-    width: 100%;
-    background: url('/static/images/flag-background.jpg');
-}
-
-.hero--content {
-    position: absolute;
-    top: 150px;
-    width: 100%;
-    z-index: 1;
-}
-
