@@ -9,8 +9,9 @@
     font-weight: normal;
     margin: 16px auto;
     padding: 14px;
-    transition: background 200ms, width 200ms;
     text-align: center;
+    text-decoration: none;
+    transition: background 200ms, width 200ms;
     width: 100%;
 
     &:hover {
@@ -26,13 +27,17 @@
         outline: none;
     }
 
+
+    // Disabled button states
+
     &.is-disabled {
-        background-color: #7dccbd;
         animation-name: shake;
         animation-duration: 200ms;
         animation-fill-mode: both;
+        background-color: #7dccbd;
         transition: none;
         
+        // Disabled button text states
         .button__text--disabled {
             display: block;
         }
@@ -46,24 +51,20 @@
         display: none;
     }
 
+
     // Button Variants
 
     &__primary {
         @extend .button;
         width: 100%;
-
-        @include breakpoint($screen-md){
-            // float: right;
-            // width: calc(100% - 135px);
-        }
     }
 
     &__secondary {
         @extend .button;
-        width: 100%;
-        color: $green;
-        box-shadow: inset 0 0 0 2px $green;
         background-color: $white;
+        box-shadow: inset 0 0 0 2px $green;
+        color: $green;
+        width: 100%;
         
         &:hover,
         &:active,
@@ -76,40 +77,5 @@
             background: $green;
             color: $white;
         }
-
-        &--red {
-            @extend .button__secondary;
-            color: $red;
-            box-shadow: inset 0 0 0 2px $red;
-            
-            &:hover,
-            &:active,
-            &:focus {
-                color: $red;
-            }
-        }
     }
-
-    &__alt {
-        @extend .button__secondary--red;
-
-        @include breakpoint($screen-md){
-            display: inline-block;
-            width: 120px;
-        }
-    }
-}
-
-@keyframes shake {
-  0%, 100% {
-    transform: translate3d(0, 0, 0);
-  }
-
-  25%, 75% {
-    transform: translate3d(-5px, 0, 0);
-  }
-
-  50%, 95% {
-    transform: translate3d(5px, 0, 0);
-  }
 }

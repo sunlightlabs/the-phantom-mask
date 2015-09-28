@@ -1,26 +1,24 @@
 //  Animations
 
-// svg [class^=pipe-] {
-//     fill: orange;
-// }
 
-// svg [class^=cog-] path,
-// svg [class^=cog-] circle {
-//     fill: green;
-// }
+// Button Shake
 
-// g.capitol path {
-//     fill: blue;
-// }
+@keyframes shake {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
 
-// g.letter path,
-// g.letter circle {
-//     fill: pink;
-// }
+  25%, 75% {
+    transform: translate3d(-5px, 0, 0);
+  }
 
-// g.envelope path {
-//     fill: yellow;
-// }
+  50%, 95% {
+    transform: translate3d(5px, 0, 0);
+  }
+}
+
+
+//  Machine Illustration Animation
 
 g.cog-1 {
     animation: rotate 20s infinite;
