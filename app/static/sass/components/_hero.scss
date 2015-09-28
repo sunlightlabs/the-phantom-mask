@@ -17,7 +17,7 @@
 
     &__description {
         color: #fff;
-        margin: 25px 0 75px;
+        margin: 25px 5px 75px;
         text-align: center;
     }
 
@@ -39,7 +39,8 @@
         font-size: $alpha;
         position: relative;
         transition: border-color 200ms, top 200ms;
-        width: 300px;
+        width: 80%;
+        max-width: 300px;
 
         &:hover {
             border-color: #bbb;
@@ -57,13 +58,15 @@
     }
 
     // Logo treatment in hero
-    
+
     .emailcongress-logo {
         display: block;
         margin: auto;
-        width: 325px;
+        width: 90%;
+        max-width: 325px;
 
         g { fill: #fff; }
+
     }
 }
 
