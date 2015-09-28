@@ -1,18 +1,26 @@
-// Import sass partials
+// Sass partials manifest
 
+// Vendors
 @import "vendor/bootstrap";
 @import "vendor/breakpoint-sass/stylesheets/breakpoint";
 
+// Utilies
 @import "components/variables";
 @import "components/mixins";
+
+// Base
 @import "components/base";
+@import "components/typography";
+@import "components/animations";
+
+// Layout
+@import "components/header";
+@import "components/footer";
+@import "components/branding-bar";
+@import "components/hero";
+
+// Components
 @import "components/buttons";
 @import "components/forms";
 @import "components/cards";
 @import "components/modals";
-@import "components/animations";
-@import "components/branding-bar";
-@import "components/typography";
-@import "components/hero";
-@import "components/header";
-@import "components/footer";
