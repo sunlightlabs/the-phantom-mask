@@ -2,6 +2,9 @@
 
 .is-hidden { display: none; }
 
+.u-bg-light { background: #fff; }
+.u-bg-dark { background: #333; }
+
 
 // Layout
 
@@ -17,11 +20,16 @@ body {
     min-height: 100%;
 }
 
+
+// Main container
+
 .main {
     @extend .container;
     max-width: 600px;
     padding: 0;
 }
+
+// Section container
 
 .section {
     padding: 50px 25px;
@@ -29,16 +37,6 @@ body {
     
     @include breakpoint($screen-md){
         padding: 50px 75px;
-    }
-
-    &--light {
-        @extend .section;
-        background: #fff;
-    }
-
-    &--dark {
-        @extend .section;
-        background: #333;
     }
 
     &__heading {
@@ -51,9 +49,7 @@ body {
     &__heading--large {
         font-size: 24px;
         font-weight: 600;
-        margin: 0;
-        margin-top: 25px;
-        margin-bottom: 50px;
+        margin: 25px 0 50px;
     }
 
     &__description {
@@ -67,8 +63,8 @@ body {
     }
 
     .icon {
-        width: 36px;
         height: 36px;
+        width: 36px;
 
         path {
             fill: $green;
@@ -76,6 +72,7 @@ body {
     }
 }
 
+// Content container
 
 .content_wrapper {
     margin: auto;
@@ -85,10 +82,10 @@ body {
 .content {
     background: $white;
     margin: 0 auto;
-    width: 100%;
     padding: 75px 25px;
     position: relative;
     transition: padding 200ms;
+    width: 100%;
     
     @include breakpoint($screen-sm){
         padding: 75px 50px;
@@ -116,6 +113,9 @@ body {
         padding-top: 50px;
     }
 }
+
+
+// Illustrated steps on homepage
 
 .steps-group {
     margin-bottom: 50px;
