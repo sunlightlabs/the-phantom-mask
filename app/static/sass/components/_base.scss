@@ -23,57 +23,6 @@ body {
     padding: 0;
 }
 
-.footer {
-    @extend .container;
-    margin-top: 50px;
-
-    &__disclaimer {
-        color: $gray;
-        margin-bottom: 10px;
-        text-align: center;
-        padding: 25px;
-    }
-
-    &__nav {
-        border-bottom: 1px solid #ddd;
-        padding: 25px;
-    }
-    
-    &__nav-item {
-        display: table;
-        width: 250px;
-        margin: auto;
-
-        .icon {
-            display: inline-block;
-            margin: auto;
-            display: table-cell;
-            vertical-align: middle;
-            margin: 20px;
-            width: 36px;
-            height: 36px;
-            path {
-                fill: #777;
-            }
-        }
-         .link {
-            display: table-cell;
-            width: 100%;
-            vertical-align: middle;
-        }
-    }
-}
-
-
-.emailcongress-logo {
-    display: block;
-    width: 325px;
-    margin: auto;
-
-    g { fill: #fff; }
-}
-
-
 .section {
     padding: 50px 25px;
     text-align: center;
