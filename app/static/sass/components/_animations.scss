@@ -21,14 +21,16 @@
 //  Machine Illustration Animation
 
 g.cog-1 {
-    animation: rotate 20s infinite;
-    transform-origin: 50% 50%;
+    // webkit only for now since svg transform-origin support is lacking in FF
+    -webkit-animation: rotate 20s infinite;
+    transform-origin: center;
     animation-timing-function: linear;
 }
 
 g.cog-2 {
-    animation: rotate 15s infinite;
-    transform-origin: 50% 50%;
+    // webkit only for now since svg transform-origin support is lacking in FF
+    -webkit-animation: rotate 15s infinite;
+    transform-origin: center;
     animation-timing-function: linear;
 }
 
