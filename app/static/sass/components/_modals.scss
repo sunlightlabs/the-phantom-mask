@@ -1,33 +1,37 @@
+// Bootstrap modal customization
+
 .modal {
 
-    // helper class to vertically center modal
+    // Helper class to vertically center modal
+
     &-u-vcenter {
-        display:table;
+        display: table;
         height: 100%;
         width: 100%;
-        pointer-events:none;
+        pointer-events: none;
     }
 
-    // need extra css on this bootstrap element for vertical centering
+    // Need extra css on this bootstrap element for vertical centering
+    
     &-dialog {
         display: table-cell;
+        pointer-events: none;
         vertical-align: middle;
-        pointer-events:none;
     }
 
     &__content {
-        position: relative;
         background: #fff;
         border-radius: 4px;
         margin: auto;
-        width: 95%;
         max-width: $screen-sm;
-        text-align: center;
         pointer-events:all;
+        position: relative;
+        text-align: center;
+        width: 95%;
 
         .icon {
-            width: 32px;
             height: 32px;
+            width: 32px;
             margin-bottom: 10px;
             
             path {
@@ -51,6 +55,9 @@
         padding-top: 0;
     }
 }
+
+
+// Modal backdrop
 
 .modal-backdrop.in {
     opacity: .65
