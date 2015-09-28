@@ -43,6 +43,7 @@ a {
         border-bottom: 1px solid $blue;
         color: $blue;
         outline: none;
+        text-decoration: none;
     }
 
     &.link-alt {
@@ -98,4 +99,31 @@ a {
             padding-right: 50px;
         }
     }
+}
+
+
+// FAQ type styles
+
+.faq {
+
+    &__list {
+        list-style: none;
+        padding-left: 0;
+
+        li {
+            margin-bottom: 5px;
+        }
+    }
+
+    &__group {
+        margin-top: 60px;
+    }
+
+    &__header {
+        @extend %beta;
+        font-weight: 700;
+        margin: 0;
+        margin-bottom: 15px;
+    }
+
 }
