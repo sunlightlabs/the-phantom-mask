@@ -18,7 +18,7 @@
     <div class="form__group">
         <div class="col-sm-8">
             {% if form.email.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-            {{ form.email(class=classes, type="text", placeholder="E-Mail", required="required") }}
+            {{ form.email(class=classes, type="email", placeholder="E-Mail", required="required") }}
             {{ form.email.label(class="form__label") }}
         </div>
         <div class="col-sm-4">

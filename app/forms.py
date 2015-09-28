@@ -61,7 +61,7 @@ class EmailForm(MyBaseForm):
             else:
                 return self.failure_msg()
         else:
-            return 'error'
+            return 'An error occurred.'
 
 
 class RecaptchaForm(MyBaseForm):

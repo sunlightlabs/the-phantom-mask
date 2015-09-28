@@ -108,7 +108,7 @@
             {% if not data.umi %}
             <div class="col-sm-8">
                 {% if data.form.email.errors %}{% set classes="form__input is-invalid" %}{% else %}{% set classes="form__input" %}{% endif %}
-                {{ data.form.email(class=classes,type="text", placeholder="E-Mail", title="Please enter your email.", required="required") }}
+                {{ data.form.email(class=classes,type="email", placeholder="E-Mail", title="Please enter your email.", required="required") }}
                 {{ data.form.email.label (class="form__label") }}
              </div>
             {% endif %}
