@@ -1,17 +1,23 @@
+// Card components
+
+
 .repcards-section {
     @extend .clearfix;
     margin-bottom: 50px;
 }
 
+
+// Vertical repcards
+
 .repcard {
     border: 1px solid $gray-light;
     cursor: pointer;
     display: inline-block;
+    margin-bottom: 10px;
     padding: 15px;
     position: relative;
     width: 100%;
     transition: all 100ms;
-    margin-bottom: 10px;
     
     @include breakpoint($screen-md){
         width: 160px;
@@ -52,18 +58,18 @@
     }
 
     &__photo {
+        border-radius: 50%;
         display: inline-block;
         width: 60px;
         height: 60px;
         overflow: hidden;
-        border-radius: 50%;
 
         -webkit-filter: grayscale(1);
         filter: grayscale(1);
         
         background-color: #eee;
-        background-size: cover;
         background-repeat: no-repeat;
+        background-size: cover;
         background-position: center center;
 
         vertical-align: middle;
@@ -110,15 +116,17 @@
         }
     }
 
+    // Checkboxes for vertical repcards
+
     &__checkbox {
-        opacity: 0;
         cursor: pointer;
+        float: right;
         height: 26px;
         width: 26px;
-        float: right;
+        opacity: 0;
+        padding: 10px;
         position: relative;
         z-index: 2;
-        padding: 10px;
 
         &:not(:checked) {
             
@@ -130,8 +138,8 @@
 
                 .icon {
                     margin: 2px;
-                    width: 18px;
                     height: 18px;
+                    width: 18px;
                 }
             }
         }
@@ -143,8 +151,8 @@
 
                 .icon {
                     margin: 2px;
-                    width: 18px;
                     height: 18px;
+                    width: 18px;
                 }
             }
 
@@ -154,13 +162,13 @@
         }
 
         &--add, &--check {
+            margin-top: 5px;
             position: absolute;
             transition: all 200ms;
-            margin-top: 5px;
             
             .icon {
-                width: 22px;
                 height: 22px;
+                width: 22px;
             }
 
         }
@@ -174,14 +182,16 @@
         }
     }
 
+
+    // Horizontal repcards
     
     &--horizontal {
         @extend .repcard;
 
         @include breakpoint($screen-md){
-            width: 100%;
-            margin-right: 0;
             display: inline-block;
+            margin-right: 0;
+            width: 100%;
         }
 
         .repcard__photo {
@@ -190,25 +200,25 @@
 
             @include breakpoint($screen-md){
                 display: inline-block;
-                width: 60px;
                 height: 60px;
+                width: 60px;
             }
         }
 
         .repcard__info {
-            text-align: center;
-            width: 100%;
             margin: auto;
             margin-top: 10px;
+            text-align: center;
+            width: 100%;
 
             @include breakpoint($screen-md){
                 display: inline-block;
-                vertical-align: middle;
                 margin-left: 15px;
                 margin-right: 15px;
                 margin-top: 5px;
-                width: calc(100% - 125px);
                 text-align: left;
+                vertical-align: middle;
+                width: calc(100% - 125px);
             }
 
             span {
