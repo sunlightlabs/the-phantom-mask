@@ -10,14 +10,14 @@
 {% block main %}
     <main>
 
-        <section class="header--hero">
+        <section class="hero">
             <div class="branding-bar" data-bb-brandingbar="true" data-bb-property-id="sunlightlabs-awesome"></div>
-            <div class="hero--content">
-                <h1 class="">{% include 'images/emailcongress-logo.svg' %}</h1>
-                <h2>Contacting Congress is now as easy as email.</h2>
-                <a href="{{ context.signup_link }}"><button class="button__hero">Get Started</button></a>
+            <div class="hero__content">
+                <h1>{% include 'images/emailcongress-logo.svg' %}</h1>
+                <h2 class="hero__description">Contacting Congress is now as easy as email.</h2>
+                <a class="hero__button" href="{{ context.signup_link }}">Get Started</a>
             </div>
-            <video autoplay="true" class="intro-video visible-md visible-lg" loop="loop">
+            <video autoplay="true" class="hero__video visible-md visible-lg" loop="loop">
                 <source src="/static/images/flag-background.ogg" type="video/ogg">
                 <source src="/static/images/flag-background.mp4" type="video/mp4">
             </video>

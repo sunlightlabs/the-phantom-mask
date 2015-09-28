@@ -1,28 +1,69 @@
+// Hero component
 
-.header--hero {
+.hero {
     background: $green url('/static/images/flag-background.jpg');
     background-size: cover;
-    // padding: 150px 0;
     height: 500px;
     position: relative;
     overflow: hidden;
 
-    h2 {
-        text-align: center;
+    // Layout hero content
+    &__content {
+        position: absolute;
+        top: 150px;
+        width: 100%;
+        z-index: 1;
+    }
+
+    &__description {
         color: #fff;
         margin: 25px 0 75px;
+        text-align: center;
+    }
+
+    // Video background
+
+    &__video {
+        background: url('/static/images/flag-background.jpg');
+        object-fit: cover;
+        width: 100%;
+    }
+
+    // Hero button
+
+    a#{&}__button {
+        @extend .button__secondary;
+        border-bottom: 4px solid #ccc;
+        box-shadow: none;
+        display: block;
+        font-size: $alpha;
+        position: relative;
+        transition: border-color 200ms, top 200ms;
+        width: 300px;
+
+        &:hover {
+            border-color: #bbb;
+        }
+
+        &:active {
+            border-bottom: 2px solid #ccc;
+            border-color: #bbb;
+            top: 2px;
+        }
+
+        &:focus {
+            border-color: #bbb;
+        }
+    }
+
+    // Logo treatment in hero
+    
+    .emailcongress-logo {
+        display: block;
+        margin: auto;
+        width: 325px;
+
+        g { fill: #fff; }
     }
 }
 
-.hero--content {
-    position: absolute;
-    top: 150px;
-    width: 100%;
-    z-index: 1;
-}
-
-.intro-video {
-    object-fit: cover;
-    width: 100%;
-    background: url('/static/images/flag-background.jpg');
-}

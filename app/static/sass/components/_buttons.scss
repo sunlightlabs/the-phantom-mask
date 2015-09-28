@@ -10,6 +10,7 @@
     margin: 16px auto;
     padding: 14px;
     transition: background 200ms, width 200ms;
+    text-align: center;
     width: 100%;
 
     &:hover {
@@ -95,31 +96,6 @@
         @include breakpoint($screen-md){
             display: inline-block;
             width: 120px;
-        }
-    }
-
-    // Hero button
-
-    &__hero {
-        @extend .button__secondary;
-        width: 300px;
-        box-shadow: none;
-        border-bottom: 4px solid #ccc;
-        position: relative;
-        transition: border-color 200ms, top 200ms;
-
-        &:hover {
-            border-color: #bbb;
-        }
-
-        &:active {
-            top: 2px;
-            border-color: #bbb;
-            border-bottom: 2px solid #ccc;
-        }
-
-        &:focus {
-            border-color: #bbb;
         }
     }
 }
