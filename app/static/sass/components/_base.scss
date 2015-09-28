@@ -14,9 +14,6 @@ html {
 
 body {
     background: $background;
-    color: $gray-dark;
-    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
-    font-size: $gamma;
     min-height: 100%;
 }
 
@@ -111,20 +108,5 @@ body {
         border-top: 1px dashed $gray-light;
         margin-top: 75px;
         padding-top: 50px;
-    }
-}
-
-
-// Illustrated steps on homepage
-
-.steps-group {
-    margin-bottom: 50px;
-
-    .illustration {
-        width: 50px;
-
-        @include breakpoint($screen-sm){
-            width: 75px;
-        }
     }
 }

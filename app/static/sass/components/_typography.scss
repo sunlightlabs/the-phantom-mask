@@ -1,4 +1,4 @@
-//  Utility Classes
+//  Type utility classes
 
 %alpha { font-size: $alpha; }
 %beta { font-size: $beta; }
@@ -7,13 +7,26 @@
 
 .semibold { font-weight: 600; }
 
-.u-text-light { color: #fff;}
+.u-text-light { color: #fff; }
+.u-text-green { color: $green; }
 
-// Typography
+
+// Default body type
+
+body {
+    color: $gray-dark;
+    font-family: $font-family-sans;
+    font-size: $gamma;
+}
+
+// Paragraphs
 
 p {
     margin: 0 0 1em;
 }
+
+
+// Links
 
 a {
     &:link,
@@ -27,21 +40,27 @@ a {
     &:hover,
     &:active,
     &:focus, {
-        border-bottom: 1px solid darken($blue, 20%);
-        color: darken($blue, 20%);
+        border-bottom: 1px solid $blue;
+        color: $blue;
         outline: none;
     }
 
     &.link-alt {
-        color: darken($gray, 15%);
         border-bottom: none;
+        color: $gray;
+
+        &:hover {
+            color: $green;
+        }
     }
 }
 
 
+// Styles for longer text
+
 .prose {
+    font-size: $alpha;
     text-align: left;
-    font-size: 18px;
 
     @include breakpoint($screen-md){
         padding-left: 50px;
@@ -55,12 +74,25 @@ a {
             margin-top: 10px;
         }
     }
+}
 
-    .steps-group & {
+
+// Illustrated explanatory text on homepage
+
+.steps-group {
+    margin-bottom: 50px;
+
+    .illustration {
+        width: 50px;
+
+        @include breakpoint($screen-sm){
+            width: 75px;
+        }
+    }
+
+    .prose {
         padding-left: 0;
         padding-right: 0;
-
-
 
         @include breakpoint($screen-md){
             padding-right: 50px;

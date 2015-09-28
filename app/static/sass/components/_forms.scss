@@ -150,7 +150,7 @@
 
     &__readonly {
         font-size: $gamma;
-        font-family: courier;
+        font-family: $font-family-mono;
         background: #eee;
         padding: 25px;
         cursor: not-allowed;
