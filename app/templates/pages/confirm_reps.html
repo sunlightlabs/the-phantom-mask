@@ -1,7 +1,12 @@
 {% extends 'root.html' %}
 
 {% block title %}
-    Verify your contact information to send your e-mail.
+    {% if context.msg %}
+        Verify your contact information to send your e-mail.
+    {% else %}
+        Information updated!
+    {% endif %}
+
 {% endblock %}
 
 {% block content %}
@@ -13,12 +18,6 @@
         <p class="section__description">
             For your first time, please review your message and message recipients
             below before we send it off.
-        </p>
-    {% elif context.view_legs %}
-        {% include 'images/icon_check.svg' %}
-        <h2 class="section__heading">Welcome back!</h2>
-        <p class="section__description">
-            You may message your representatives in Congress via email.
         </p>
     {% else %}
         {% include 'images/icon_check.svg' %}

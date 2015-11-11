@@ -3,13 +3,16 @@
 
         var $email_form = $('#email-form');
         var $email_form_wrapper = $('.email-form-wrapper');
-        var $email_form_submit = $email_form.children('button[type="submit"]').first();
+        var $email_form_submit = $email_form.find('button[type="submit"]').first();
         var $update_address_h3 = $('[data-js=update_address-h3]');
         var $remind_reps_h3 = $('[data-js=remind_reps-h3]');
+        var $toggle_email_form = $('[data-js=toggle-email-form]');
         var $email_form_message = $('[data-js=email-form-message]');
 
-        $('[data-js=toggle-email-form]').click(function() {
-            $(this).toggleClass('is-active');
+        $toggle_email_form.click(function() {
+            $email_form_message.hide();
+            $toggle_email_form.removeClass('is-active');
+            $(this).addClass('is-active');
 
             var id = $(this).attr('id');
             $email_form_submit.attr('value', id);

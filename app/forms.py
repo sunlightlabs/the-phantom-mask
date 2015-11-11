@@ -41,6 +41,7 @@ class TokenResetForm(MyBaseForm):
 class EmailForm(MyBaseForm):
 
     email = StringField('Email', validators=[validators.Email(message='Please enter a valid e-mail address.')])
+    submit_type = StringField()
 
     def success_msg(self):
         return 'Check your inbox! We just sent an email to ' + self.email.data + '.'
@@ -48,14 +49,13 @@ class EmailForm(MyBaseForm):
     def failure_msg(self):
         return "That email address hasn't been used with Email Congress yet"
 
-    def validate_and_process(self, submit_name):
+    def validate_and_process(self):
         if self.validate():
             user = User.query.filter_by(email=self.email.data).first()
             if user:
-                print submit_name
-                if submit_name == 'update_address':
+                if self.submit_type.data == 'update_address':
                     emailer.NoReply.token_reset(user).send()
-                elif submit_name == 'remind_reps':
+                elif self.submit_type.data == 'remind_reps':
                     emailer.NoReply.remind_reps(user).send()
                 return self.success_msg()
             else:
@@ -310,8 +310,10 @@ class RegistrationForm(MyBaseForm, BaseLookupForm):
         if self.validate():
             # get user's default info and either create new info or get the same info instance
             first_umi = UserMessageInfo.query.filter_by(user=user, default=True).first()
-            umi = first_umi if (first_umi and first_umi.accept_tos is None) \
-                else UserMessageInfo.first_or_create(user.id, **self.data_dict())
+            umi = UserMessageInfo.first_or_create(user.id, **self.data_dict())
+
+            #umi = first_umi if (first_umi and first_umi.accept_tos is None) \
+            #    else UserMessageInfo.first_or_create(user.id, **self.data_dict())
 
             # check if the new user info differs from the newly submitted info and adjust appropriately
             if first_umi.id is not umi.id:

@@ -604,6 +604,14 @@ class UserMessageInfo(MyBaseModel):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     messages = db.relationship('Message', backref='user_message_info')
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.comparable_attributes() == other.comparable_attributes()
+        return False
+
+    def comparable_attributes(self):
+        return {key: value for key, value in self.__dict__ if key in self.user_input_columns()}
+
     @classmethod
     def first_or_create(cls, user_id, created_at=datetime.now, **kwargs):
         user = User.query.filter_by(id=user_id).first()
@@ -1041,7 +1049,7 @@ class MessageLegislator(MyBaseModel):
         @return: self
         @rtype: models.MessageLegislator
         """
-        if not self.is_sent():
+        if self.is_sent() is not True:
 
             for bioguide_id, ra in phantom_on_the_capitol.retrieve_form_elements([self.legislator.bioguide_id]).iteritems():
                 json_dict = self.map_to_contact_congress()

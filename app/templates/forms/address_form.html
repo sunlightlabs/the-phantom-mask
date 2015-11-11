@@ -17,12 +17,12 @@
         {% with %}
         <div class="form__group">
             <div class="col-sm-2">
-                <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select is-gray {% if data.form.prefix.errors %}is-invalid{% endif %}" required="required">
+                <select name="{{ data.form.prefix.name }}" id="prefix" class="form__select {% if not data.umi %}is-gray{% endif %} {% if data.form.prefix.errors %}is-invalid{% endif %}" required="required">
                    {% for option in data.form.prefix %}
                        {% if not data.msg and data.umi and option.data==data.umi.prefix %}
                            {{ option(selected="selected") }}
                        {% elif option.data == 'Prefix' %}
-                           {% if not data.msg %}
+                           {% if not data.msg and data.umi %}
                                {{ option(disabled=True, selected="selected") }}
                            {% else %}
                                 {{ option(disabled=True, selected="selected") }}
@@ -118,7 +118,7 @@
 
         <p class="form__disclaimer">By using this service, I agree to the <a target="_blank" href="https://sunlightfoundation.com/legal/terms/">terms of service</a> and <a target="_blank" href="https://sunlightfoundation.com/legal/privacy/">privacy policy</a>.</p>
 
-        <button class="button" type="submit" name="signup" value="{%- if not context.msg or not context.umi -%}signup{% else %}{% endif %}" >
+        <button class="button" type="submit" name="signup" value="{%- if not data.msg and not data.umi -%}signup{% endif %}" >
             {%- if context.msg -%}
             Sign up and send my message
             {% elif context.umi %}

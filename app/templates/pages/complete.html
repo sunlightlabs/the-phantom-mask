@@ -1,10 +1,14 @@
 {% extends 'root.html' %}
 
 {% block title %}
-    {% if context.msg and context.msg.is_already_sent() %}
-        Message sent!
+    {% if context.msg %}
+        {% if context.msg.is_already_sent() %}
+            Message sent!
+        {% else %}
+            Message not sent
+        {% endif %}
     {% else %}
-        Message not sent
+        You're signed up!
     {% endif %}
 {% endblock %}
 

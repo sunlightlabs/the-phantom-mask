@@ -96,7 +96,7 @@ def index():
     }
 
     if request.method == 'POST':
-        context['status'] = email_form.validate_and_process(request.form.get('submit_type'))
+        context['status'] = email_form.validate_and_process()
 
     if request.is_xhr:
         return context['status']
@@ -130,6 +130,8 @@ def resolve_token(viewfunc):
                     return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
             elif user.default_info.accept_tos is None and viewfunc.__name__ is not 'complete':
                 return redirect(url_for_with_prefix('app_router.complete', token=token))
+        elif token:
+            return redirect(url_for_with_prefix('app_router.index'))
 
         return viewfunc(**kwargs)
 
@@ -258,9 +260,7 @@ def confirm_reps(token='', context=None):
     else:
         if context['msg'] is not None:
             form.populate_data_from_message(context['msg'])
-            context['legs_buckets'] = Legislator.get_leg_buckets_from_emails(context['umi'].members_of_congress,                                                       json.loads(context['msg'].to_originally))
-        else:
-            context['view_legs'] = True
+            context['legs_buckets'] = Legislator.get_leg_buckets_from_emails(context['umi'].members_of_congress, json.loads(context['msg'].to_originally))
 
         return render_template_wctx('pages/confirm_reps.html', context=context)
 
@@ -285,6 +285,7 @@ def update_user_address(token='', context=None):
                 emailer.NoReply.signup_confirm(status).send()
                 context['signup'] = result
         else:
+
             error = form.validate_and_save_to_db(context['user'], msg=context['msg'])
             if type(error) is str:
                 if error == 'district_error': context['district_error'] = True
@@ -294,7 +295,7 @@ def update_user_address(token='', context=None):
                     emailer.NoReply.address_changed(context['user']).send()
                 else:
                     emailer.NoReply.signup_success(context['user'], context['msg']).send()
-                return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
+            return redirect(url_for_with_prefix('app_router.confirm_reps', token=token))
 
     return render_template_wctx("pages/update_user_address.html", context=context)
 
