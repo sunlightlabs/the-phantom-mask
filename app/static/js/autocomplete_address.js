@@ -2,6 +2,7 @@
 
     function init_autocomplete($form) {
         // JQUERY SELECTORS
+        var $submit = $form.find("button[type='submit']");
         var $zip5 = $form.find("[name='zip5']");
         var $city = $form.find("[name='city']");
         var $state = $form.find("[name='state']");
@@ -31,6 +32,8 @@
         }
 
         function autocomplete_address(street_address, zip5) {
+            $submit.prop('disabled', true);
+            $submit.text('Autofilling address ... please wait');
             $.ajax({
                 type: 'POST',
                 url: URL_PREFIX  + '/ajax/autofill_address',
@@ -43,8 +46,12 @@
                         zipcode_css_switch(true);
                         $no_zip4_error.show();
                         $autofill__group.addClass('has-error');
+                        $submit.prop('disabled', false);
+                        $submit.text('Submit');
                     } else {
                         autocomplete_address_values(result['city'], result['state'], result['zip4'], result['zip5']);
+                        $submit.prop('disabled', false);
+                        $submit.text('Submit');
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
