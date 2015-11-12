@@ -340,7 +340,6 @@ class Legislator(MyBaseModel):
 
         return legs
 
-
     def full_title(self):
         return {
             'Com': 'Commissioner',
@@ -368,6 +367,10 @@ class Legislator(MyBaseModel):
         }
         return "https://raw.githubusercontent.com/unitedstates/images/gh-pages/congress/" + \
                dimensions.get(size, dimensions.values()[0]) + "/" + self.bioguide_id + '.jpg'
+
+    @property
+    def email(self):
+        return self.oc_email.replace('opencongress.org', settings.EMAIL_DOMAIN)
 
 
 

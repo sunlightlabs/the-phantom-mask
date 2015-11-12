@@ -15,7 +15,7 @@
             <span>{{ leg.full_title() }}</span>
             <span>{{ leg.full_name() }}</span>
             {% if not context.msg or context.msg.is_already_sent() or complete_not_sent %}
-            <p><a href="mailto:{{ leg.oc_email }}">{{ leg.oc_email }}</a></p>
+            <p><a href="mailto:{{ leg.email }}">{{ leg.email }}</a></p>
             {% endif %}
         </div>
         {% if context.msg and not context.msg.is_already_sent() and context.legs_buckets%}
