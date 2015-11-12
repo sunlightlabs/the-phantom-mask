@@ -139,6 +139,23 @@ class NoReply():
                       track_opens=True
                       )
 
+    @classmethod
+    @apply_admin_filter
+    def over_rate_limit(cls, user, msg):
+
+        return PMMail(api_key=settings.POSTMARK_API_KEY,
+              sender=cls.SENDER_EMAIL,
+              to=user.email,
+              subject="You've sent too many emails recently.",
+              html_body=render_without_request("emails/over_rate_limit.html",
+                                                context={'user': user,
+                                                         'msg': msg}),
+              custom_headers={
+                  'In-Reply-To': msg.email_uid,
+                  'References': msg.email_uid,
+              },
+              track_opens=True
+              )
 
     @classmethod
     @apply_admin_filter

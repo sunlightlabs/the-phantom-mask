@@ -308,6 +308,9 @@ def process_inbound_message(user, umi, msg, send_email=False):
     if msg.has_legislators() and msg.is_free_to_send():
         emailer.NoReply.message_queued(user, legs['contactable'], msg).send()
         msg.queue_to_send()
+    elif not msg.is_free_to_send():
+        emailer.NoReply.over_rate_limit(user, msg).send()
+
     if legs['does_not_represent'] or legs['non_existent']:
         emailer.NoReply.message_undeliverable(user, legs, msg).send()
 
