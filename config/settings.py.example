@@ -2,9 +2,10 @@ APP_DEBUG = True
 
 ADMIN_EMAILS = []
 
-APP_SECRET_KEY = ""
+APP_SECRET_KEY = "not-very-secret"
 
-BASE_URL = 'http://localhost:5000'
+BASE_PROTOCOL = 'http://'
+BASE_URL = 'localhost:5000'
 BASE_PREFIX = ''
 
 # API KEYS
@@ -13,8 +14,8 @@ PHANTOM_DEBUG_KEY = ''
 TEXAS_AM_API_KEY = ''
 TEXAS_API_VERSION = '4.01'
 
-# gmail
-EMAIL_SERVER = 'pop.gmail.com'
+# gmail if you want to use imap_courier instead of postmark
+EMAIL_SERVER = ''
 EMAIL_USERNAME = ''
 EMAIL_PASSWORD = ''
 
@@ -22,33 +23,34 @@ EMAIL_PASSWORD = ''
 POSTMARK_API_KEY = ""
 PHANTOM_API_BASE = ""
 CONGRESS_API_BASE = "http://congress.api.sunlightfoundation.com"
-SELECT_SOLVER_BASE = ""
+SELECT_SOLVER_BASE = ''
 
 
 DATABASE = {
     'prod': {
-        'uri': 'postgresql://<username>:<password>@<host>/<database_name>',
-        'echo': False # set to true to print SQL statements to console
+        'uri': 'postgresql://username:password@ip_location/database_name',
+        'echo': False
     },
     'dev': {
-        'uri': 'sqlite:////tmp/phantom_mask_dev.db',
-        'echo': True # set to true to print SQL statements to console
+        'uri': 'sqlite:////path/to/datebase.db',
+        'echo': True
     },
     'test': {
-        'uri': 'sqlite:////tmp/phantom_mask_test.db',
+        'uri': 'sqlite:////path/top/database.db',
         'echo': False
     }
 }
 
 # for fabric
-DEPLOY_SERVER_HOSTS = []
+DEPLOY_SERVER_HOSTS = ['']
 DEPLOY_SERVER_USER = ''
 DEPLOY_SERVER_APP_PATH = ''
 
 VIRTUAL_ENV_PATH = '.venv'
 
-NO_REPLY_EMAIL = ''
-SUPPORT_EMAIL = ''
+EMAIL_DOMAIN = 'emailcongress.us'
+NO_REPLY_EMAIL = 'noreply' + '@' + EMAIL_DOMAIN
+SUPPORT_EMAIL = 'support' + '@' + EMAIL_DOMAIN
 
 LEGISLATOR_DATA_CACHE = 'data/cached_legislators.json'
 TOPIC_DATA_CACHE = 'data/cached_topics.json'
@@ -58,7 +60,7 @@ CELERY_BROKER = 'redis://localhost:6379'
 CELERY_RETRY_DELAY = 3600 # seconds
 CELERY_MAX_RETRIES = 3
 
-CATCH_ALL_MYREPS = ''
+CATCH_ALL_MYREPS = 'myreps' + '@' + EMAIL_DOMAIN
 
 ADDRESS_DAYS_VALID = 180
 
@@ -67,4 +69,7 @@ USER_MESSAGE_LIMIT_CAPTCHA_COUNT = 5
 USER_MESSAGE_LIMIT_BLOCK_COUNT = 25
 
 GLOBAL_HOURLY_CAPTCHA_THRESHOLD = 1000
+
+RECAPTCHA_PUBLIC_KEY = ''
+RECAPTCHA_PRIVATE_KEY = ''
 

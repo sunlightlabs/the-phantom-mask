@@ -1,88 +1,88 @@
 <!doctype html>
 <html class="bb_wrapper">
-<head>
-    <title>{% block title %}Default Title{% endblock %}</title>
-    
-    <meta charset="UTF-8">
-    <meta name="description" content="Put description here">
-    <meta name="keywords" content="Put key words here">
-    <meta name="author" content="put author here">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <title>{% block title %}Email Congress{% endblock %}</title>
 
-    <link rel="icon" href="/static/images/favicon.png">
-    <!--[if IE]><link rel="shortcut icon" href="/static/images/favicon.ico"><![endif]-->
-    
-    <link rel="stylesheet" href="//sunlight-cdn.s3.amazonaws.com/brandingbar/0.4/css/brandingbar.css">
-    <link rel="stylesheet" href="//sunlight-cdn.s3.amazonaws.com/sf-icons/0.2/css/sf-icons.css">
-    <link rel="stylesheet" href="{{ context.url_for_static('/static/css/style.min.css') }}" />
-    <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,400italic' rel='stylesheet' type='text/css'>
-    
-    <!-- CDN javascript -->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="https://cdn.rawgit.com/dennyferra/TypeWatch/master/jquery.typewatch.js"></script>
+        <meta charset="UTF-8">
+        <meta name="description" content="Contacting Congress is now as easy as email.">
+        <meta name="keywords" content="email congress, email representatives, contact congress, write congress">
+        <meta name="author" content="Sunlight Foundation">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="google-site-verification" content="EdnpiQpviE9253VW5UTfTcGp9H-7BaEgjfxzjIG17v0" />
 
-    <script type="text/javascript">
-        var URL_PREFIX = "{{ context.url_for_static('') }}";
-        var csrftoken = "{{ csrf_token() }}";
+        <link rel="icon" href="/static/images/favicon.png">
+        <!--[if IE]><link rel="shortcut icon" href="/static/images/favicon.ico"><![endif]-->
 
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+        <link rel="stylesheet" type='text/css' href="//sunlight-cdn.s3.amazonaws.com/brandingbar/0.4/css/brandingbar.css">
+        <link rel="stylesheet" type='text/css' href="//sunlight-cdn.s3.amazonaws.com/sf-icons/0.2/css/sf-icons.css">
+        <link rel="stylesheet" type='text/css' href="{{ context.url_for_static('/static/css/style.min.css') }}" />
+        <link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,400italic' />
+
+        <!-- CDN javascript -->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+        <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="https://cdn.rawgit.com/dennyferra/TypeWatch/master/jquery.typewatch.js"></script>
+
+        <script type="text/javascript">
+            var URL_PREFIX = "{{ context.url_for_static('') }}";
+            var csrftoken = "{{ csrf_token() }}";
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                    }
                 }
-            }
-        });
-    </script>
-</head>
+            });
+        </script>
+    </head>
+    <body>
+        {% block brandingbar %}
+        <div class="branding-bar" data-bb-brandingbar="true" data-bb-property-id="sunlightlabs-awesome"></div>
+        {% endblock %}
 
-<body>
-    {% block brandingbar %}
-    <div class="branding-bar" data-bb-brandingbar="true" data-bb-property-id="sunlightlabs-awesome"></div>
-    {% endblock %}
+        {% block header %}
+        <header class="header">
+            <a href="/"><img class="header__logo" src="{{ context.url_for_static('/static/images/emailcongress-logo.svg') }}" alt="EmailCongress Logo"></a>
+        </header>
+        {% endblock %}
 
-    {% block header %}
-    <header class="header">
-        <a href="/"><img class="header__logo" src="{{ context.url_for_static('/static/images/emailcongress-logo.svg') }}" alt="EmailCongress Logo"></a>
-    </header>
-    {% endblock %}
-    
-    {% block main %}
-    <main class="main">
-        {% block content %}{% endblock %}
-    </main>
-    {% endblock %}
+        {% block main %}
+        <main class="main">
+            {% block content %}{% endblock %}
+        </main>
+        {% endblock %}
 
-    {% block footer %}
-    <footer class="footer">
-        <nav class="row footer__nav">
-            <div class="col-sm-4">
-                <div class="footer__nav-item">
-                    {% include 'images/icon_user.svg' %}
-                    <span class="link"><a href="{{ context.url_for_static('/#returninguser') }}">Update my reps and info</a></span>
+        {% block footer %}
+        <footer class="footer">
+            <nav class="row footer__nav">
+                <div class="col-sm-4">
+                    <div class="footer__nav-item">
+                        {% include 'images/icon_user.svg' %}
+                        <span class="link"><a href="{{ context.url_for_static('/#returninguser') }}">Update my reps and info</a></span>
+                    </div>
                 </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="footer__nav-item">
-                    {% include 'images/icon_question.svg' %}
-                    <span class="link"><a href="{{ context.url_for_static('/faq') }}">Questions? Check our FAQ</a></span>
+                <div class="col-sm-4">
+                    <div class="footer__nav-item">
+                        {% include 'images/icon_question.svg' %}
+                        <span class="link"><a href="{{ context.url_for_static('/faq') }}">Questions? Check our FAQ</a></span>
+                    </div>
                 </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="footer__nav-item">
-                    {% include 'images/icon_lock.svg' %}
-                    <span class="link"><a href="https://sunlightfoundation.com/legal/terms/">Terms</a> <span class="u-text-green">&amp;</span> <a href="https://sunlightfoundation.com/legal/privacy/">Privacy Policy</a></span>
+                <div class="col-sm-4">
+                    <div class="footer__nav-item">
+                        {% include 'images/icon_lock.svg' %}
+                        <span class="link"><a href="https://sunlightfoundation.com/legal/terms/">Terms</a> <span class="u-text-green">&amp;</span> <a href="https://sunlightfoundation.com/legal/privacy/">Privacy Policy</a></span>
+                    </div>
                 </div>
+            </nav>
+            <div class="row">
+                <div class="footer__disclaimer">This service is offered by the <a class="link-alt" href="https://sunlightfoundation.com">Sunlight Foundation</a> and is not affiliated with Congress.</div>
             </div>
-        </nav>
-        <div class="row">
-            <div class="footer__disclaimer">This service is offered by the <a class="link-alt" href="https://sunlightfoundation.com">Sunlight Foundation</a> and is not affiliated with Congress.</div>
-        </div>
-    </footer>
-    {% endblock %}
-    <!-- JavaScript -->
-    <script type="text/javascript" src="{{ context.url_for_static('/static/js/build/phantom-mask.min.js') }}"></script>
-    <script src="//sunlight-cdn.s3.amazonaws.com/brandingbar/0.4/js/brandingbar.min.js.gz"></script>
-    {% block javascript %}{% endblock %}
-</body>
+        </footer>
+        {% endblock %}
+        <!-- JavaScript -->
+        <script type="text/javascript" src="{{ context.url_for_static('/static/js/build/phantom-mask.min.js') }}"></script>
+        <script src="//sunlight-cdn.s3.amazonaws.com/brandingbar/0.4/js/brandingbar.min.js.gz"></script>
+        {% block javascript %}{% endblock %}
+    </body>
 </html>

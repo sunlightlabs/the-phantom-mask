@@ -271,6 +271,15 @@ class Legislator(MyBaseModel):
     }
 
     @staticmethod
+    def find_by_recip_email(recip_email):
+        return Legislator.query.filter(
+            func.lower(Legislator.oc_email) == func.lower(Legislator.doctor_oc_email(recip_email))).first()
+
+    @staticmethod
+    def doctor_oc_email(email):
+        return email.replace(settings.EMAIL_DOMAIN, "opencongress.org")
+
+    @staticmethod
     def humanized_district(state, district):
         return (ordinal(int(district)) if int(district) > 0 else 'At-Large') + ' Congressional district of ' + usps.CODE_TO_STATE.get(state)
 
@@ -297,12 +306,6 @@ class Legislator(MyBaseModel):
 
         return Legislator.query.filter(query).all()
 
-        """
-
-        return Legislator.query.filter(and_(Legislator.contactable.is_(True), Legislator.state == self.state,
-                 or_(Legislator.district.is_(None), Legislator.district == self.district))).all()
-        """
-
     @classmethod
     def congress_api_columns(cls):
         return [col.name for col in cls.__table__.columns if 'official' in col.info and col.info['official']]
@@ -316,10 +319,14 @@ class Legislator(MyBaseModel):
         if settings.CATCH_ALL_MYREPS in inbound_emails:
             legs['contactable'] = permitted_legs
             inbound_emails.remove(settings.CATCH_ALL_MYREPS)
+        elif Legislator.doctor_oc_email(settings.CATCH_ALL_MYREPS) in inbound_emails:
+            legs['contactable'] = permitted_legs
+            inbound_emails.remove(Legislator.doctor_oc_email(settings.CATCH_ALL_MYREPS))
 
         # maximize error messages for users for individual addresses
         for recip_email in inbound_emails:
-            leg = Legislator.query.filter(func.lower(Legislator.oc_email) == func.lower(recip_email)).first()
+            # IMPORTANT! OC_EMAIL is legacy from @opencongress.org. The new addresses are @emailcongress.us.
+            leg = Legislator.find_by_recip_email(recip_email)
             if leg is None:
                 legs['non_existent'].append(recip_email)  # TODO refer user to index page?
             elif not leg.contactable:
@@ -332,6 +339,7 @@ class Legislator(MyBaseModel):
                 continue
 
         return legs
+
 
     def full_title(self):
         return {
