@@ -14,7 +14,7 @@ def send_to_phantom_of_the_capitol(self, msg_id=None, msgleg_id=None, force=Fals
     @return:
     @rtype:
     """
-    if not settings.APP_DEBUG or force:
+    if settings.SUBMIT_MESSAGES or force:
         from models import Message, MessageLegislator
         if msgleg_id is not None:
             msgleg = MessageLegislator.query.filter_by(id=msgleg_id).first()

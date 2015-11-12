@@ -1,4 +1,5 @@
 APP_DEBUG = True
+SUBMIT_MESSAGES = True
 
 ADMIN_EMAILS = []
 
