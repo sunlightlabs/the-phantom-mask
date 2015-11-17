@@ -24,7 +24,7 @@ function stop_gunicorn()
 
 function start_gunicorn()
 {
-    PHANTOM_ENVIRONMENT=prod gunicorn -w 4 run:application --daemon -p gunicorn.pid -b unix:$PROJECT_DIR/gunicorn.sock
+    PHANTOM_ENVIRONMENT=prod gunicorn -w 4 run:application --daemon -p gunicorn.pid -b unix:$PROJECT_DIR/gunicorn.sock --log-file errors.log
 }
 
 function stop_celery()

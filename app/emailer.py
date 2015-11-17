@@ -325,8 +325,8 @@ class NoReply():
         return PMMail(api_key=settings.POSTMARK_API_KEY,
               sender=cls.SENDER_EMAIL,
               to=user.email,
-              subject='',
-              html_body=render_without_request('emails/address_changed.html',
+              subject="Reminder of your members of Congress",
+              html_body=render_without_request('emails/remind_reps.html',
                                                context={'link': user.address_change_link(),
                                                         'user': user,
                                                         'moc': user.default_info.members_of_congress})

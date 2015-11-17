@@ -6,3 +6,4 @@ config/settings.py
 node_modules
 .project
 .DS_Store
+*.log
