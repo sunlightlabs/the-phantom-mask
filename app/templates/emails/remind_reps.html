@@ -26,7 +26,7 @@
                 Contact your members of Congress at:
                 <ul>
                     {% for member in context.moc %}
-                        <li>{{ member.title_and_full_name() }} - <a href="mailto:{{ member.email }}">{{ member.email }}</a></li>
+                        <li>{{ member.full_title_and_full_name() }} - <a href="mailto:{{ member.email }}">{{ member.email }}</a></li>
                     {% endfor %}
                 </ul>
             </p>
