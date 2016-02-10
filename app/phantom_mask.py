@@ -3,6 +3,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CsrfProtect
 from config import settings
 import jinja2
+import logging
+from logging import handlers
 
 env = os.environ.get('PHANTOM_ENVIRONMENT', 'dev' if settings.APP_DEBUG else 'prod')
 
@@ -25,6 +27,13 @@ def create_app():
     app.config['RECAPTCHA_PUBLIC_KEY'] = settings.RECAPTCHA_PUBLIC_KEY
     app.config['RECAPTCHA_PRIVATE_KEY'] = settings.RECAPTCHA_PRIVATE_KEY
     app.config['SERVER_NAME'] = settings.BASE_URL
+
+    # logging
+    handler = handlers.RotatingFileHandler(settings.LOGGING_LOCATION, maxBytes=10000000, backupCount=10)
+    handler.setLevel(logging.ERROR)
+    formatter = logging.Formatter(settings.LOGGING_FORMAT)
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
 
     app.jinja_options['extensions'].append('jinja2.ext.loopcontrols')
     my_loader = jinja2.ChoiceLoader([

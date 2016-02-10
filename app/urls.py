@@ -1,9 +1,11 @@
-from flask import Blueprint, g, request
+from flask import Blueprint, g
 from flask_admin import Admin
 
 import views
 import actions
 from config import settings
+from helpers import render_template_wctx
+
 
 def register_with_app(inst_func):
 
@@ -64,7 +66,17 @@ def create_app_router(app, csrf):
     # static pages
     app_router.route('/faq', methods=['GET'])(views.faq)
 
+    # error pages
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return render_template_wctx('404.html'), 404
 
+    @app.errorhandler(500)
+    def internal_server(error):
+        app.logger.error('Server Error: %s', (error))
+        return render_template_wctx('500.html'), 500
+
+    # handlers
     @app.after_request
     def call_after_request_callbacks(response):
         for callback in getattr(g, 'after_request_callbacks', ()):
