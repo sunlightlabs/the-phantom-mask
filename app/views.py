@@ -285,7 +285,6 @@ def update_user_address(token='', context=None):
                 emailer.NoReply.signup_confirm(status).send()
                 context['signup'] = result
         else:
-
             error = form.validate_and_save_to_db(context['user'], msg=context['msg'])
             if type(error) is str:
                 if error == 'district_error': context['district_error'] = True
