@@ -137,7 +137,7 @@ class BaseLookupForm(Form):
     city = StringField('City', [validators.DataRequired(message="City is required."),
                                 validators.Length(min=1, max=256)])
     state = MySelectField('State',
-                        choices=[('State', 'State')]+[(state, state) for state in usps.CODE_TO_STATE.keys()],
+                        choices=[('State', 'State')]+[(state, state) for state in sorted(usps.CODE_TO_STATE.keys())],
                         validators=[validators.NoneOf(['State'], message='Please select a state.')],
                         option_widget=MyOption())
     zip5 = StringField('Zipcode', [validators.Regexp(re.compile('^\d{5}$'), message='Zipcode and Zip+4 must have form XXXXX-XXXX. Lookup up <a target="_blank" href="https://tools.usps.com/go/ZipLookupAction!input.action">here</a>')])
@@ -287,7 +287,6 @@ class RegistrationForm(MyBaseForm, BaseLookupForm):
 
     def update_address(self):
         pass
-
 
 
     def validate_and_save_to_db(self, user, msg=None, accept_tos=True):

@@ -2,25 +2,24 @@ import requests
 from bs4 import BeautifulSoup
 
 CODE_TO_STATE = {
-    'WA': 'Washington', 'WI': 'Wisconsin', 'WV': 'West Virginia',
-    'FL': 'Florida', 'FM': 'Federated States of Micronesia',
-    'WY': 'Wyoming', 'NH': 'New Hampshire', 'NJ': 'New Jersey',
-    'NM': 'New Mexico', 'NC': 'North Carolina', 'ND': 'North Dakota',
-    'NE': 'Nebraska', 'NY': 'New York', 'RI': 'Rhode Island',
-    'NV': 'Nevada', 'GU': 'Guam', 'CO': 'Colorado',
-    'CA': 'California', 'GA': 'Georgia', 'CT': 'Connecticut',
-    'OK': 'Oklahoma', 'OH': 'Ohio', 'KS': 'Kansas', 'SC': 'South Carolina',
-    'KY': 'Kentucky', 'OR': 'Oregon', 'SD': 'South Dakota', 'DE': 'Delaware',
-    'DC': 'District of Columbia', 'HI': 'Hawaii', 'PR': 'Puerto Rico',
-    'PW': 'Palau', 'TX': 'Texas', 'LA': 'Louisiana', 'TN': 'Tennessee',
-    'PA': 'Pennsylvania', 'AA': 'Armed Forces Americas', 'VA': 'Virginia',
-    'AE': 'Armed Forces Middle East', 'VI': 'Virgin Islands', 'AK': 'Alaska',
-    'AL': 'Alabama', 'AP': 'Armed Forces Pacific', 'AS': 'American Samoa',
-    'AR': 'Arkansas', 'VT': 'Vermont', 'IL': 'Illinois', 'IN': 'Indiana',
-    'IA': 'Iowa', 'AZ': 'Arizona', 'ID': 'Idaho', 'ME': 'Maine',
-    'MD': 'Maryland', 'MA': 'Massachusetts', 'UT': 'Utah',
-    'MO': 'Missouri', 'MN': 'Minnesota', 'MI': 'Michigan', 'MH': 'Marshall Islands',
-    'MT': 'Montana', 'MP': 'Northern Mariana Islands', 'MS': 'Mississippi'
+    'AL': 'Alabama', 'AK': 'Alaska', 'AS': 'American Samoa',
+    'AZ': 'Arizona', 'AR': 'Arkansas', 'AA': 'Armed Forces Americas',
+    'AE': 'Armed Forces Middle East', 'AP': 'Armed Forces Pacific',
+    'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut',
+    'DE': 'Delaware', 'DC': 'District of Columbia',
+    'FM': 'Federated States of Micronesia', 'FL': 'Florida',
+    'GA': 'Georgia', 'GU': 'Guam', 'HI': 'Hawaii', 'ID': 'Idaho',
+    'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas',
+    'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MH': 'Marshall Islands',
+    'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota',
+    'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska',
+    'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico',
+    'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota',
+    'MP': 'Northern Mariana Islands', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon',
+    'PW': 'Palau', 'PA': 'Pennsylvania', 'PR': 'Puerto Rico', 'RI': 'Rhode Island',
+    'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas',
+    'UT': 'Utah', 'VT': 'Vermont', 'VI': 'Virgin Islands', 'VA': 'Virginia',
+    'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming',
 }
 
 USPS_BASE_URL = 'https://tools.usps.com/go/ZipLookupResultsAction!input.action'
