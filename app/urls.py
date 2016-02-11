@@ -73,7 +73,7 @@ def create_app_router(app, csrf):
 
     @app.errorhandler(500)
     def internal_server(error):
-        app.logger.error('Server Error: %s', (error))
+        app.logger.error('Server Error: %s', error)
         return render_template_wctx('500.html'), 500
 
     # handlers
