@@ -25,11 +25,7 @@ def app_router_path(func_name='', **kwargs):
 
 
 def url_for_static(rel_path, _external=False):
-    url = ''
-    if _external:
-        url += settings.BASE_PROTOCOL + settings.BASE_URL
-    url += settings.BASE_PREFIX + rel_path
-    return url
+    return settings.URL_FOR_STATIC + rel_path
 
 
 def render_template_wctx(template_name_or_list, **context):
