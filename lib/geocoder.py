@@ -1,6 +1,7 @@
 from inflection import camelize
 import requests
 
+
 class Geocoder():
 
     def __init__(self, service, opts=None):
@@ -18,10 +19,12 @@ class Geocoder():
 
     def check_for_data(self):
         func = self
+
         def check_for_data_and_call(self, *args, **kwargs):
             if self.service.data is None:
                 raise Exception('No data available. Do a lookup or reverse lookup first.')
             return func(self, *args, **kwargs)
+
         return check_for_data_and_call
 
     @check_for_data
